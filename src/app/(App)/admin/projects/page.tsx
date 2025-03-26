@@ -56,6 +56,7 @@ export default function AdminProjectsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<IProject | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [aiData, setAiData] = useState<IBlog | null>(null);
 
   // Query hooks
   const { data, isLoading, error } = useProjects(filters);
@@ -84,6 +85,10 @@ export default function AdminProjectsPage() {
 
   const handleCreateDialogClose = () => {
     setIsCreateDialogOpen(false);
+  };
+  const aiCreation = (project: IProject) => {
+    setAiData(project);
+    setIsCreateDialogOpen(true);
   };
 
   const handleEditDialogClose = () => {
@@ -169,6 +174,7 @@ export default function AdminProjectsPage() {
               open={isCreateDialogOpen}
               onOpenChange={setIsCreateDialogOpen}
               onClose={handleCreateDialogClose}
+              initialData={aiData}
             />
           </DialogContent>
         </Dialog>

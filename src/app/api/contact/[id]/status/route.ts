@@ -14,7 +14,9 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
+    // Ensure params.id is processed correctly
+    const contactId = params.id;
+
     const body = await request.json();
 
     // Validate the status value
@@ -23,7 +25,7 @@ export async function PATCH(
     await connectDB();
 
     const updatedContact = await Contact.findByIdAndUpdate(
-      id,
+      contactId,
       { status },
       { new: true }
     );

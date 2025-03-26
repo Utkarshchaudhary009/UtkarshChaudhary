@@ -7,4 +7,5 @@
 export * from './projectService';
 export * from './blogService';
 export * from './contactService';
+export * from './adService';
 // Add more service exports here 

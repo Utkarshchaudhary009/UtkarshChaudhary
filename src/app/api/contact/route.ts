@@ -15,18 +15,6 @@ export async function POST(request: Request) {
 
     console.log(contactData);
 
-    // Sample contact data structure
-    /*
-    {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      subject: "Inquiry about services",
-      message: "Hello, I would like to know more about your services.",
-      clerkId: "clerk_123456",
-      status: "unread",
-      createdAt: "2023-10-01T12:00:00Z"
-    }
-    */
     const validatedData = ContactSchema.parse(contactData);
 
     await connectDB();
@@ -34,7 +22,7 @@ export async function POST(request: Request) {
 
     // Send email notification
     const fromEmail = `Utkarsh Chaudhary <onboarding@resend.dev>`;  // Using Resend's default testing domain
-    const toEmail = "work.utkarshchaudhary426@gmail.com";
+    const toEmail = "utkarshchaudhary426@gmail.com";
 
     // Validate the 'from' email address
     if (!fromEmail || !fromEmail.includes("@")) {
@@ -74,7 +62,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Failed to send email:", error);
       return NextResponse.json(
-        { message: "Failed to send email" },
+        { message: `Failed to send email: ${error.message}` },
         { status: 500 }
       );
     }

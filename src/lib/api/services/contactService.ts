@@ -46,9 +46,15 @@ export const contactKeys = {
  * Fetch all contact messages with optional filtering
  */
 export function useContacts(filters: ContactFilters = {}) {
-  return useApiQuery<IContact[]>(contactKeys.list(filters), "/api/contact", {
+  // Construct URL with query parameters for status filtering
+  let url = "/api/contact";
+  if (filters.status) {
+    url += `?status=${filters.status}`;
+  }
+
+  return useApiQuery<IContact[]>(contactKeys.list(filters), url, {
     queryKey: contactKeys.list(filters),
-    next: { revalidate: 60 }, // Cache for 60 seconds
+    next: { revalidate: 180 }, // Cache for 180 seconds
   });
 }
 

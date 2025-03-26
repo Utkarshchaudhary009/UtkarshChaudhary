@@ -5,7 +5,7 @@ import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { useContacts } from "@/lib/api/services/contactService";
 import { ClerkLoaded, ClerkLoading, useAuth } from "@clerk/nextjs";
-import { Tabs,  TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContactDetailsModal } from "./contact-details-modal";
 import { ReplyModal } from "./reply-modal";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,12 +20,12 @@ export default function InboxPage() {
   const { isLoaded } = useAuth();
 
   const { data: contacts, isLoading } = useContacts(
-    statusFilter !== "all" ? { status: statusFilter } : {}
+    statusFilter !== "all"
+      ? { status: statusFilter as "unread" | "read" | "replied" }
+      : {}
   );
 
   useEffect(() => {
-   
-
     // Event listeners for modal triggers
     const handleViewDetails = (e: CustomEvent) => {
       setSelectedContact(e.detail.contact);
@@ -59,10 +59,62 @@ export default function InboxPage() {
     <>
       <ClerkLoading>
         <div className='container py-10'>
-          <h1 className='text-2xl font-bold mb-6'>Loading...</h1>
-          <div className='space-y-4'>
-            <Skeleton className='h-10 w-[200px]' />
-            <Skeleton className='h-[600px] w-full' />
+          <div className='space-y-6'>
+            <Skeleton className='h-8 w-32 md:h-10 md:w-48' />
+
+            <div className='mb-6'>
+              <div className='flex space-x-1 md:space-x-2'>
+                <Skeleton className='h-8 w-16 md:w-20 rounded-md' />
+                <Skeleton className='h-8 w-16 md:w-20 rounded-md' />
+                <Skeleton className='h-8 w-16 md:w-20 rounded-md' />
+                <Skeleton className='h-8 w-16 md:w-20 rounded-md' />
+              </div>
+            </div>
+
+            <div className='rounded-md border'>
+              <div className='border-b p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-4 w-24 md:w-32' />
+                  </div>
+                  <Skeleton className='h-8 w-32 md:w-40' />
+                </div>
+              </div>
+
+              <div className='divide-y'>
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className='p-4'
+                  >
+                    <div className='grid grid-cols-1 md:grid-cols-5 gap-4 items-center'>
+                      <Skeleton className='h-5 w-24 md:w-32' />
+                      <Skeleton className='h-5 w-32 md:w-48 md:col-span-2' />
+                      <div className='flex items-center'>
+                        <Skeleton className='h-5 w-16' />
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Skeleton className='h-5 w-24 md:w-32' />
+                        <Skeleton className='h-8 w-8 rounded-md' />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className='p-4 border-t'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-8 w-8 rounded-md' />
+                    <Skeleton className='h-8 w-8 rounded-md' />
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-4 w-20' />
+                    <Skeleton className='h-8 w-20 rounded-md' />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </ClerkLoading>
@@ -85,7 +137,50 @@ export default function InboxPage() {
           </Tabs>
 
           {isLoading ? (
-            <Skeleton className='h-[600px] w-full' />
+            <div className='rounded-md border'>
+              <div className='border-b p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-4 w-24 md:w-32' />
+                  </div>
+                  <Skeleton className='h-8 w-32 md:w-40' />
+                </div>
+              </div>
+
+              <div className='divide-y'>
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className='p-4'
+                  >
+                    <div className='grid grid-cols-1 md:grid-cols-5 gap-4 items-center'>
+                      <Skeleton className='h-5 w-24 md:w-32' />
+                      <Skeleton className='h-5 w-32 md:w-48 md:col-span-2' />
+                      <div className='flex items-center'>
+                        <Skeleton className='h-5 w-16' />
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Skeleton className='h-5 w-24 md:w-32' />
+                        <Skeleton className='h-8 w-8 rounded-md' />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className='p-4 border-t'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-8 w-8 rounded-md' />
+                    <Skeleton className='h-8 w-8 rounded-md' />
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Skeleton className='h-4 w-20' />
+                    <Skeleton className='h-8 w-20 rounded-md' />
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : (
             <DataTable
               columns={columns}

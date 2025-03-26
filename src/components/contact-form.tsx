@@ -55,17 +55,10 @@ export function ContactForm() {
         subject: "",
         message: "",
       });
-      toast({
-        title: "Success",
-        description: "Message sent successfully!",
-      });
+      toast.success("Message sent successfully!");
     } catch (error) {
       console.error("Failed to send message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again later.",
-        variant: "destructive",
-      });
+      toast.error("Failed to send message. Please try again later.");
     }
   }
 

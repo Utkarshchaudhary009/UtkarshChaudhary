@@ -17,7 +17,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = params.id;
+    const contactId = params.id;
     const body = await request.json();
 
     // Validate the reply message
@@ -26,7 +26,7 @@ export async function POST(
     await connectDB();
 
     // Find the contact message
-    const contact = await Contact.findById(id);
+    const contact = await Contact.findById(contactId);
 
     if (!contact) {
       return NextResponse.json(
@@ -41,15 +41,10 @@ export async function POST(
 
     // Send the reply email
     await resend.emails.send({
-      from: "work.utkarshchaudhary426@gmail.com",
+      from: "Utkarsh Chaudhary <onboarding@resend.dev>",
       to: contact.email,
       subject: `Re: ${contact.subject}`,
-      html: `
-        <h2>Reply to your message</h2>
-        <p>Dear ${contact.name},</p>
-        <p>${message}</p>
-        <p>Best regards,<br>Utkarsh Chaudhary</p>
-      `,
+      html: message,
     });
 
     revalidatePath("/admin/inbox");

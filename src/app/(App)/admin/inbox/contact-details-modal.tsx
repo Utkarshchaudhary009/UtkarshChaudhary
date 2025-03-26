@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IContact } from "@/lib/types";
 import {
   Dialog,
@@ -9,12 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, User, Mail, FileText, Calendar } from "lucide-react";
@@ -35,10 +30,13 @@ export function ContactDetailsModal({
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const { mutate: updateStatus } = useUpdateContactStatus(contact.id);
 
-  // Update status to read when opened if status is unread
-  if (open && contact.status === "unread") {
-    updateStatus({ status: "read" });
-  }
+  // Move status update logic into useEffect
+  useEffect(() => {
+    // Update status to read when opened if status is unread
+    if (open && contact.status === "unread") {
+      updateStatus({ status: "read" });
+    }
+  }, [open, contact.status, updateStatus, contact.id]);
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);

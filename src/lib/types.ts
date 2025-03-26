@@ -99,6 +99,22 @@ export interface IPersonalDetails {
   updatedAt: Date;
 }
 
+// Ad Schema
+export interface IAd {
+  _id?: string;
+  title: string;
+  image: string;
+  cta_url: string;
+  target: {
+    categories?: string[];
+    tags?: string[];
+    location?: string;
+  };
+  impressions: number;
+  clicks: number;
+  created_at: Date;
+}
+
 // Zod Schemas
 export const OpenGraphSchema = z.object({
   title: z.string().optional(),
@@ -232,9 +248,49 @@ export const ContactSchema = z.object({
   clerkId: z.string().optional(),
 });
 
-// Add a request schema for Blog
-export const BlogRequestSchema = BlogSchema.omit({
-  aiGenerated: true,
-  createdAt: true,
-  updatedAt: true,
+// Add Ad Zod Schema
+export const AdTargetSchema = z.object({
+  categories: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+  location: z.string().optional(),
+});
+
+export const AdSchema = z.object({
+  _id: z.string().optional(),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  image: z.string().url("Image must be a valid URL"),
+  cta_url: z.string().url("CTA URL must be a valid URL"),
+  target: AdTargetSchema,
+  impressions: z.number().default(0),
+  clicks: z.number().default(0),
+  created_at: z.date().default(() => new Date()),
+});
+
+export const AdRequestSchema = AdSchema.omit({
+  _id: true,
+  impressions: true,
+  clicks: true,
+  created_at: true,
+}).extend({
+  target: AdTargetSchema,
+});
+
+// Fix the BlogRequestSchema issue
+export const BlogRequestSchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+  content: z.string(),
+  excerpt: z.string().max(160).optional(),
+  featuredImage: z.string().optional(),
+  featured: z.boolean().default(false),
+  seo: z
+    .object({
+      metaTitle: z.string().optional(),
+      metaDescription: z.string().min(10).max(160).optional(),
+      canonicalUrl: z.string().optional(),
+      openGraph: OpenGraphSchema.optional(),
+    })
+    .optional(),
+  publishedAt: z.date().optional(),
+  isPublished: z.boolean().default(false),
 });
