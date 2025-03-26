@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import { IProject, IBlog, IContact, IPersonalDetails, IAd } from "./types";
-import { ContentNode } from "./types/langraph";
+import { ContentNode } from "../../Trash/types/langraph";
 
 const DEFAULT_IMG =
   "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1742598419/uploads/d9eqgzesei4wsgbb6mko.png";
