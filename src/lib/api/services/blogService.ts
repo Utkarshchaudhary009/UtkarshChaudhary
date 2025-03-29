@@ -27,10 +27,12 @@ const fetchBlogBySlug = async (slug: string): Promise<IBlog> => {
   return data?.[0] || data;
 };
 
-const fetchFeaturedBlogs = async (): Promise<{ blogs: IBlog[] }> => {
+const fetchFeaturedBlogs = async (): Promise<IBlog[]> => {
   const response = await fetch("/api/blogs?featured=true");
   if (!response.ok) throw new Error("Failed to fetch featured blogs");
-  return response.json();
+  const data = await response.json();
+  // Handle if the response is an object with blogs property or direct array
+  return Array.isArray(data) ? data : data.blogs || [];
 };
 
 const createBlog = async (blog: BlogFormData): Promise<IBlog> => {
@@ -55,12 +57,12 @@ const updateBlog = async ({
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  
+
   if (!response.ok) {
     const error = await response.text();
     throw new Error(error || "Failed to update blog");
   }
-  
+
   return response.json();
 };
 
@@ -98,7 +100,7 @@ export function useFeaturedBlogs() {
 
 export function useCreateBlog() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: createBlog,
     onSuccess: () => {
@@ -110,7 +112,7 @@ export function useCreateBlog() {
 
 export function useUpdateBlog() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: updateBlog,
     onSuccess: (data) => {
@@ -128,7 +130,7 @@ export function useUpdateBlog() {
 
 export function useDeleteBlog() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: deleteBlog,
     onSuccess: () => {

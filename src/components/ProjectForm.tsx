@@ -60,7 +60,7 @@ const ProjectForm = ({
     console.log("Form open state:", open);
   }, [open]);
 
-console.log("Initial Data:?:",initialData)
+  console.log("Initial Data:?:", initialData);
   // Memoize initial form values
   const defaultValues = useMemo(
     () => ({
@@ -267,11 +267,9 @@ console.log("Initial Data:?:",initialData)
         gallery,
         githubUrl: formData.githubUrl || undefined, // Convert empty string to undefined
         liveUrl: formData.liveUrl || undefined, // Convert empty string to undefined
-        // Convert date strings to Date objects for API compatibility
-        startDate: formData.startDate
-          ? new Date(formData.startDate)
-          : undefined,
-        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
+        // Use string dates directly
+        startDate: formData.startDate || undefined,
+        endDate: formData.endDate || undefined,
         aiGenerated: false,
         seo: {
           ...formData.seo,
@@ -435,13 +433,9 @@ console.log("Initial Data:?:",initialData)
           gallery,
           githubUrl: validatedData.githubUrl || undefined, // Convert empty string to undefined
           liveUrl: validatedData.liveUrl || undefined, // Convert empty string to undefined
-          // Convert date strings to Date objects for API compatibility
-          startDate: validatedData.startDate
-            ? new Date(validatedData.startDate)
-            : undefined,
-          endDate: validatedData.endDate
-            ? new Date(validatedData.endDate)
-            : undefined,
+          // Store dates as ISO strings for API compatibility
+          startDate: validatedData.startDate || undefined,
+          endDate: validatedData.endDate || undefined,
           aiGenerated: false,
           seo: {
             ...validatedData.seo,
