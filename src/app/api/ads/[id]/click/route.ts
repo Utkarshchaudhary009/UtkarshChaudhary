@@ -5,11 +5,11 @@ import { AdModel } from "@/lib/models";
 // POST handler - increment click count for an ad
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params:  Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const id = params.id;
+    const id = (await params).id;
 
     // Check if ad exists
     const existingAd = await AdModel.findById(id);

@@ -11,11 +11,11 @@ const StatusUpdateSchema = z.object({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Ensure params.id is processed correctly
-    const contactId = params.id;
+    const contactId = (await params).id;
 
     const body = await request.json();
 

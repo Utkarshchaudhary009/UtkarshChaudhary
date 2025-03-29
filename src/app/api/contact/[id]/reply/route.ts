@@ -14,10 +14,10 @@ const ReplySchema = z.object({
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const contactId = params.id;
+    const contactId = (await params).id;
     const body = await request.json();
 
     // Validate the reply message
