@@ -28,7 +28,7 @@ export function ContactDetailsModal({
   contact,
 }: ContactDetailsModalProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { mutate: updateStatus } = useUpdateContactStatus(contact.id);
+  const { mutate: updateStatus } = useUpdateContactStatus(contact._id);
 
   // Move status update logic into useEffect
   useEffect(() => {
@@ -36,7 +36,7 @@ export function ContactDetailsModal({
     if (open && contact.status === "unread") {
       updateStatus({ status: "read" });
     }
-  }, [open, contact.status, updateStatus, contact.id]);
+  }, [open, contact.status, updateStatus, contact._id]);
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);

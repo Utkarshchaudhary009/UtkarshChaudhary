@@ -57,8 +57,8 @@ const ProjectSchema = new mongoose.Schema<IProjectDocument>({
   technologies: [{ type: String, required: true }],
   githubUrl: { type: String },
   liveUrl: { type: String },
-  startDate: { type: Date },
-  endDate: { type: Date },
+  startDate: { type: String },
+  endDate: { type: String },
   category: { type: String, required: true },
   status: {
     type: String,
@@ -198,14 +198,12 @@ const BlogSchema = new mongoose.Schema<IBlogDocument>({
       description: { type: String },
       images: [
         {
-          type: {
-            url: { type: String, default: DEFAULT_IMG },
-          },
+          url: { type: String },
         },
       ],
     },
   },
-  publishedAt: { type: Date },
+  publishedAt: { type: String },
   isPublished: { type: Boolean, default: false },
 });
 

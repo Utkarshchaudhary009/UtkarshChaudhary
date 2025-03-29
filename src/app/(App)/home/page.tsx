@@ -46,7 +46,7 @@ export default function HomePage() {
           ) : (
             <>
               <h1 className='text-4xl md:text-5xl font-bold'>
-                Hi, I'm {personalDetails?.name || "Your Name"}
+                Hi, I&apos;m {personalDetails?.name || "Your Name"}
               </h1>
               <p className='text-xl text-muted-foreground'>
                 {personalDetails?.title || "Your Profession"}

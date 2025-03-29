@@ -32,9 +32,17 @@ const upload = multer({
   },
 });
 
+interface MulterRequest extends NextRequest {
+  files: Express.Multer.File[];
+}
+
+interface MulterResponse extends NextResponse {
+  locals: Record<string, unknown>;
+}
+
 const runMulter = (req: NextRequest, res: NextResponse) => {
   return new Promise<void>((resolve, reject) => {
-    upload.array('images', MAX_FILES)(req as any, res as any, (result: Error | undefined) => {
+    upload.array('images', MAX_FILES)(req as MulterRequest, res as MulterResponse, (result: Error | undefined) => {
       if (result instanceof Error) {
         reject(result);
       }

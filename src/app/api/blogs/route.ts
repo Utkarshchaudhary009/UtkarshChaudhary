@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       const validatedData = BlogSchema.parse(body);
       const blogData = {
         ...validatedData,
-        publishedAt: validatedData.isPublished ? new Date() : undefined,
+        publishedAt: validatedData.isPublished ? new Date().toISOString() : undefined,
         // Set default featured image if none provided
         featuredImage: validatedData.featuredImage || "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1742598419/uploads/d9eqgzesei4wsgbb6mko.png"
       };

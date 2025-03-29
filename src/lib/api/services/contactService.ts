@@ -3,7 +3,7 @@
  * Handles all contact form and admin inbox related API functionality
  */
 
-import { useApiQuery, useApiMutation } from "@/lib/tanstack/hooks";
+import { useApiMutation } from "@/lib/tanstack/hooks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IContact } from "@/lib/types";
 import { useAuth } from "@clerk/nextjs";
@@ -45,10 +45,11 @@ export const contactKeys = {
  * Fetch all contact messages with optional filtering
  */
 const fetchContacts = async (status: string | null): Promise<IContact[]> => {
+  let response;
   if (status) {
-    var response = await fetch(`/api/contact?status=${status}`);
+    response = await fetch(`/api/contact?status=${status}`);
   } else {
-    var response = await fetch(`/api/contact`);
+    response = await fetch(`/api/contact`);
   }
   if (!response.ok) throw new Error("Failed to fetch contacts");
   return response.json();

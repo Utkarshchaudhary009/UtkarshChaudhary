@@ -26,8 +26,8 @@ export interface IProject {
   technologies: string[];
   githubUrl?: string;
   liveUrl?: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
   category: string;
   status: "in-progress" | "completed" | "planned";
   aiGenerated: boolean;
@@ -54,11 +54,12 @@ export interface IBlog {
     canonicalUrl?: string;
     openGraph?: IOpenGraph;
   };
-  publishedAt?: Date;
+  publishedAt?: string;
   isPublished?: boolean;
 }
 // Contact Schema
 export interface IContact extends Document {
+  _id?: string;
   name: string;
   email: string;
   subject: string;
@@ -136,17 +137,15 @@ export const ProjectSchema = z.object({
   content: z.string().min(100, "Content must be at least 100 characters"),
   description: z.string().min(30, "Description must be at least 50 characters"),
   excerpt: z.string().max(160, "Excerpt must not exceed 160 characters"),
-  featuredImage: z
-    .string()
-    .optional(),
+  featuredImage: z.string().optional(),
   gallery: z
     .array(z.string().url("Gallery images must be valid URLs"))
     .optional(),
   technologies: z.array(z.string()),
   githubUrl: z.string().url("GitHub URL must be valid").optional().nullable(),
   liveUrl: z.string().url("Live URL must be valid").optional().nullable(),
-  startDate: z.date().optional().nullable(),
-  endDate: z.date().optional().nullable(),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable(),
   category: z.string().min(2, "Category must be at least 2 characters"),
   status: z.enum(["in-progress", "completed", "planned"]),
   aiGenerated: z.boolean().default(false),
@@ -199,12 +198,15 @@ export const BlogSchema = z.object({
       openGraph: OpenGraphSchema.optional(),
     })
     .optional(),
-  publishedAt: z.date().optional(),
+  publishedAt: z.string().optional(),
   isPublished: z.boolean().default(false),
 });
 
 // Add BlogFormData type
 export type BlogFormData = Omit<IBlog, "_id" | "createdAt" | "updatedAt">;
+
+// Add ProjectFormData type
+export type ProjectFormData = Omit<IProject, "_id" | "createdAt" | "updatedAt">;
 
 // Define the Zod schema for the form
 export const jobSchema = z.object({
@@ -290,6 +292,6 @@ export const BlogRequestSchema = z.object({
       openGraph: OpenGraphSchema.optional(),
     })
     .optional(),
-  publishedAt: z.date().optional(),
+  publishedAt: z.string().optional(),
   isPublished: z.boolean().default(false),
 });

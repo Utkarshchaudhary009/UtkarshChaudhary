@@ -3,7 +3,6 @@
 import { useBlogs } from '@/lib/api/services/blogService';
 import { IBlog } from '@/lib/types';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,7 +55,8 @@ export default function ClientBlogList() {
     );
   }
 
-  const blogs = data || [];
+  // Handle both array and object with blogs property formats
+  const blogItems = Array.isArray(data) ? data : data?.blogs || [];
 
   return (
     <main className="container py-24 space-y-8">
@@ -68,7 +68,7 @@ export default function ClientBlogList() {
       </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {blogs.map((blog: IBlog) => (
+        {blogItems.map((blog: IBlog) => (
           <Card key={blog.slug} className="overflow-hidden">
             <CardContent className="p-0">
               <AspectRatio ratio={16/9}>

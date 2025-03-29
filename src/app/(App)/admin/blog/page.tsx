@@ -6,7 +6,7 @@ import {
   useDeleteBlog,
   useUpdateBlog,
 } from "@/lib/api/services/blogService";
-import { IBlog } from "@/lib/types";
+import { IBlog, BlogFormData } from "@/lib/types";
 import {
   Table,
   TableBody,
@@ -49,7 +49,7 @@ export default function AdminBlogPage() {
   const [isAILoading, setIsAILoading] = useState(false);
 
   // Fetch blogs with TanStack Query
-  const { data, isLoading, error } = useBlogs({});
+  const { data, isLoading } = useBlogs({});
   const blogs = data;
 
   // Use our custom mutation hooks
@@ -97,9 +97,8 @@ export default function AdminBlogPage() {
         onSuccess: () => {
           toast.success("Blog post deleted successfully");
         },
-        onError: (error) => {
+        onError: () => {
           toast.error("Failed to delete blog post");
-          console.error("Delete error:", error);
         },
       });
     }
@@ -111,7 +110,7 @@ export default function AdminBlogPage() {
         id: blog._id || "",
         data: {
           isPublished: !blog.isPublished,
-          publishedAt: !blog.isPublished ? new Date() : undefined,
+          publishedAt: !blog.isPublished ? new Date().toISOString() : undefined,
         },
       },
       {
@@ -122,7 +121,7 @@ export default function AdminBlogPage() {
             } successfully`
           );
         },
-        onError: (error) => {
+        onError: () => {
           toast.error(
             `Failed to ${blog.isPublished ? "unpublish" : "publish"} blog`
           );
@@ -143,19 +142,20 @@ export default function AdminBlogPage() {
             `Blog ${blog.featured ? "removed from" : "marked as"} featured`
           );
         },
-        onError: (error) => {
+        onError: () => {
           toast.error("Failed to update featured status");
         },
       }
     );
   };
 
-  if (error) {
+  if (isLoading) {
     return (
       <Card className='m-4'>
         <CardContent className='p-6'>
-          <div className='text-center text-red-500'>
-            Error loading blogs. Please try again later.
+          <div className='space-y-4'>
+            <Skeleton className='h-8 w-48' />
+            <Skeleton className='h-72 w-full' />
           </div>
         </CardContent>
       </Card>
@@ -215,7 +215,9 @@ export default function AdminBlogPage() {
                 </DialogDescription>
               </DialogHeader>
               <BlogForm
-                initialData={aiData}
+                initialData={
+                  aiData as (BlogFormData & { _id?: string }) | undefined
+                }
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
               />
@@ -237,7 +239,9 @@ export default function AdminBlogPage() {
             </DialogDescription>
           </DialogHeader>
           <BlogForm
-            initialData={selectedBlog || undefined}
+            initialData={
+              selectedBlog as (BlogFormData & { _id?: string }) | undefined
+            }
             onOpenChange={setIsEditDialogOpen}
             open={isEditDialogOpen}
           />
@@ -276,7 +280,7 @@ export default function AdminBlogPage() {
                     </TableRow>
                   ))}
                 </>
-              ) : blogs?.length === 0 ? (
+              ) : blogs?.blogs?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
@@ -286,7 +290,7 @@ export default function AdminBlogPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                blogs?.map((blog: IBlog) => (
+                blogs?.blogs?.map((blog: IBlog) => (
                   <TableRow key={blog._id || blog.slug}>
                     <TableCell className='font-medium'>
                       {blog.title}

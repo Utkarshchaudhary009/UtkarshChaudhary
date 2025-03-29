@@ -21,7 +21,7 @@ export async function PUT(
 
     // Handle publish status change
     if (body.isPublished && !body.publishedAt) {
-      body.publishedAt = new Date();
+      body.publishedAt = new Date().toISOString();
     }
 
     const blog = await Blog.findByIdAndUpdate((await params).id, body, {

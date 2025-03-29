@@ -6,7 +6,7 @@ import {
   useDeleteProject,
   useUpdateProject,
 } from "@/lib/api/services/projectService";
-import { IProject } from "@/lib/types";
+import { IProject, ProjectFormData } from "@/lib/types";
 import {
   Table,
   TableBody,
@@ -236,7 +236,7 @@ export default function AdminProjectsPage() {
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
                 onClose={handleCreateDialogClose}
-                initialData={aiData || undefined}
+                initialData={aiData as (ProjectFormData & { _id?: string }) | undefined}
               />
             </DialogContent>
           </Dialog>
@@ -256,7 +256,7 @@ export default function AdminProjectsPage() {
             </DialogDescription>
           </DialogHeader>
           <ProjectForm
-            initialData={selectedProject || undefined}
+            initialData={selectedProject as (ProjectFormData & { _id?: string }) | undefined}
             open={isEditDialogOpen}
             onOpenChange={setIsEditDialogOpen}
             onClose={handleEditDialogClose}

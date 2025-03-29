@@ -73,3 +73,5 @@ public/uploads/
 /tmp/
 *.bak
 *.tmp
+erors.txt
+.env.local
