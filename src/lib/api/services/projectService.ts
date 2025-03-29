@@ -16,8 +16,8 @@ export const projectKeys = {
 const fetchProjects = async (
   params = {}
 ): Promise<{ projects: IProject[] }> => {
-  const searchParams = new URLSearchParams(params as Record<string, string>);
-  const response = await fetch(`/api/projects?${searchParams}`);
+    const searchParams = new URLSearchParams(params as Record<string, string>);
+    const response = await fetch(`/api/projects?${searchParams}`);
   if (!response.ok) throw new Error("Failed to fetch projects");
   return response.json();
 };
@@ -43,8 +43,8 @@ const createProject = async (
   const response = await fetch("/api/projects", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(project),
-  });
+      body: JSON.stringify(project),
+    });
   if (!response.ok) throw new Error("Failed to create project");
   return response.json();
 };
@@ -100,7 +100,7 @@ export function useFeaturedProjects() {
 export function useCreateProject() {
   console.log("at db 1");
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: createProject,
     onSuccess: () => {
@@ -112,7 +112,7 @@ export function useCreateProject() {
 
 export function useUpdateProject() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: updateProject,
     onSuccess: (data) => {
@@ -125,7 +125,7 @@ export function useUpdateProject() {
 
 export function useDeleteProject() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: deleteProject,
     onSuccess: () => {

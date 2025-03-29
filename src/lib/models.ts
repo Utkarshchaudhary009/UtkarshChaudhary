@@ -1,20 +1,10 @@
-import mongoose, { Document } from "mongoose";
+import mongoose from "mongoose";
 import { IProject, IBlog, IContact, IPersonalDetails, IAd } from "./types";
-import { ContentNode } from "../../Trash/types/langraph";
 
 const DEFAULT_IMG =
   "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1742598419/uploads/d9eqgzesei4wsgbb6mko.png";
 
 // Add interface for model instance types
-interface IProjectDocument extends IProject, Document {
-  generateStructuredData(): Record<string, any>;
-  toLangGraphNode(): ContentNode;
-}
-
-interface IBlogDocument extends IBlog, Document {
-  generateOpenGraph(): Record<string, any>;
-  toLangGraphNode(): ContentNode;
-}
 
 const PersonalDetailsSchema = new mongoose.Schema<IPersonalDetails>({
   name: { type: String, required: true },
@@ -48,7 +38,7 @@ const PersonalDetailsSchema = new mongoose.Schema<IPersonalDetails>({
 });
 
 // Project Schema
-const ProjectSchema = new mongoose.Schema<IProjectDocument>({
+const ProjectSchema = new mongoose.Schema<IProject>({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   content: { type: String, required: true },
@@ -156,19 +146,6 @@ const AdSchema = new mongoose.Schema<IAd>(
   }
 );
 
-// Add LangGraph methods to ProjectSchema
-ProjectSchema.methods.toLangGraphNode = function (): ContentNode {
-  return {
-    content: this.content,
-    metadata: {
-      title: this.title,
-      excerpt: this.excerpt,
-      seo: this.seo,
-    },
-    type: "project",
-  };
-};
-
 const ContactSchema = new mongoose.Schema<IContact>({
   name: { type: String, required: true },
   email: { type: String, required: true },
@@ -183,7 +160,7 @@ const ContactSchema = new mongoose.Schema<IContact>({
 });
 
 // Blog Schema
-const BlogSchema = new mongoose.Schema<IBlogDocument>({
+const BlogSchema = new mongoose.Schema<IBlog>({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   content: { type: String, required: true },
@@ -208,34 +185,6 @@ const BlogSchema = new mongoose.Schema<IBlogDocument>({
   publishedAt: { type: String },
   isPublished: { type: Boolean, default: false },
 });
-
-// Add utility methods to BlogSchema
-BlogSchema.methods.generateOpenGraph = function () {
-  return {
-    title: this.seo?.openGraph?.title || this.title,
-    description: this.seo?.openGraph?.description || this.excerpt,
-    images: this.seo?.openGraph?.images || [{ url: this.featuredImage }],
-    type: "article",
-    article: {
-      publishedTime: this.publishedAt,
-      modifiedTime: this.updatedAt,
-    },
-  };
-};
-
-// Add LangGraph methods to BlogSchema
-BlogSchema.methods.toLangGraphNode = function (): ContentNode {
-  return {
-    content: this.content,
-    metadata: {
-      title: this.title,
-      excerpt: this.excerpt,
-      seo: this.seo,
-      publishedAt: this.publishedAt,
-    },
-    type: "blog",
-  };
-};
 
 // SEO Metadata Schema
 const SEOSchema = new mongoose.Schema({
@@ -324,10 +273,9 @@ BlogSchema.pre("validate", function (next) {
 // Export models
 export const Project =
   mongoose.models.Project ||
-  mongoose.model<IProjectDocument>("Project", ProjectSchema);
+  mongoose.model<IProject>("Project", ProjectSchema);
 
-export const Blog =
-  mongoose.models.Blog || mongoose.model<IBlogDocument>("Blog", BlogSchema);
+export const Blog = mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
 export const SEO = mongoose.models.SEO || mongoose.model("SEO", SEOSchema);
 export const Sitemap =
   mongoose.models.Sitemap || mongoose.model("Sitemap", SitemapSchema);

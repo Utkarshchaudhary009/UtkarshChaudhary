@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { IBlog } from "@/lib/types";
+import { IBlog, BlogFormData } from "@/lib/types";
 
 // Query keys
 export const blogKeys = {
   all: ["blogs"] as const,
   lists: () => [...blogKeys.all, "list"] as const,
-  list: (filters: Record<string, any> = {}) =>
+  list: (filters: Record<string, string> = {}) =>
     [...blogKeys.lists(), filters] as const,
   details: () => [...blogKeys.all, "detail"] as const,
   detail: (slug: string) => [...blogKeys.details(), slug] as const,
@@ -13,7 +13,7 @@ export const blogKeys = {
 };
 
 // API functions
-const fetchBlogs = async (params = {}): Promise<{ blogs: IBlog[] }> => {
+const fetchBlogs = async (params = {}): Promise<IBlog[]> => {
   const searchParams = new URLSearchParams(params as Record<string, string>);
   const response = await fetch(`/api/blogs?${searchParams}`);
   if (!response.ok) throw new Error("Failed to fetch blogs");
@@ -33,7 +33,7 @@ const fetchFeaturedBlogs = async (): Promise<{ blogs: IBlog[] }> => {
   return response.json();
 };
 
-const createBlog = async (blog: Omit<IBlog, "_id">): Promise<IBlog> => {
+const createBlog = async (blog: BlogFormData): Promise<IBlog> => {
   const response = await fetch("/api/blogs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -55,12 +55,12 @@ const updateBlog = async ({
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-
+  
   if (!response.ok) {
     const error = await response.text();
     throw new Error(error || "Failed to update blog");
   }
-
+  
   return response.json();
 };
 
@@ -98,7 +98,7 @@ export function useFeaturedBlogs() {
 
 export function useCreateBlog() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: createBlog,
     onSuccess: () => {
@@ -110,7 +110,7 @@ export function useCreateBlog() {
 
 export function useUpdateBlog() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: updateBlog,
     onSuccess: (data) => {
@@ -128,7 +128,7 @@ export function useUpdateBlog() {
 
 export function useDeleteBlog() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
     mutationFn: deleteBlog,
     onSuccess: () => {

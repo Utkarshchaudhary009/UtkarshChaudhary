@@ -55,7 +55,7 @@ export default function AdminAdsPage() {
 
   // Handle create ad
   const handleCreateAd = (
-    formData: Omit<IAd, "_id" | "impressions" | "clicks" | "created_at">
+    formData: Omit<IAd, "id" | "impressions" | "clicks" | "created_at">
   ) => {
     createAd(formData, {
       onSuccess: () => {
@@ -76,10 +76,10 @@ export default function AdminAdsPage() {
 
   // Handle update ad
   const handleUpdateAd = (formData: Partial<IAd>) => {
-    if (!currentAd?._id) return;
+    if (!currentAd?.id) return;
 
     updateAd(
-      { id: currentAd._id as string, data: formData },
+      { id: currentAd.id as string, data: formData },
       {
         onSuccess: () => {
           setIsEditDialogOpen(false);
@@ -94,29 +94,29 @@ export default function AdminAdsPage() {
 
   // Handle delete dialog
   const handleDeleteDialog = (id: string) => {
-    const adToDelete = data?.ads.find((ad) => ad._id === id);
+    const adToDelete = data?.ads.find((ad) => ad.id === id);
     setCurrentAd(adToDelete || null);
     setIsDeleteDialogOpen(true);
   };
 
   // Handle confirm delete
   const handleConfirmDelete = () => {
-    if (!currentAd?._id) {
+    if (!currentAd?.id) {
       console.error("Cannot delete: No ad ID available", { currentAd });
       toast.error("Cannot delete ad: Missing ID");
       return;
     }
 
-    console.log("Attempting to delete ad:", currentAd._id);
+    console.log("Attempting to delete ad:", currentAd.id);
 
-    deleteAd(currentAd._id as string, {
+    deleteAd(currentAd.id as string, {
       onSuccess: () => {
-        console.log("Delete success for ad:", currentAd._id);
+        console.log("Delete success for ad:", currentAd.id);
         setIsDeleteDialogOpen(false);
         toast.success("Ad deleted successfully");
       },
       onError: (error) => {
-        console.error("Delete failed for ad:", currentAd._id, error);
+        console.error("Delete failed for ad:", currentAd.id, error);
         toast.error(`Failed to delete ad: ${error.message}`);
       },
     });
@@ -196,7 +196,7 @@ export default function AdminAdsPage() {
           {data?.ads && data.ads.length > 0 ? (
             data.ads.map((ad: IAd) => (
               <AdCard
-                key={ad._id}
+                key={ad.id}
                 ad={ad}
                 onEdit={handleEditAd}
                 onDelete={handleDeleteDialog}

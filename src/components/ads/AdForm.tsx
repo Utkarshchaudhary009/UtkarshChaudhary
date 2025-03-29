@@ -36,7 +36,7 @@ const adFormSchema = z.object({
               .split(",")
               .map((item) => item.trim())
               .filter(Boolean)
-          : []
+          : undefined
       ),
     tags: z
       .string()
@@ -47,7 +47,7 @@ const adFormSchema = z.object({
               .split(",")
               .map((item) => item.trim())
               .filter(Boolean)
-          : []
+          : undefined
       ),
     location: z.string().optional(),
   }),
@@ -156,7 +156,16 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   const handleSubmit = (values: AdFormValues) => {
     console.log("Form submission values:", values);
     try {
-      onSubmit(values);
+      // Transform string values to arrays before submission
+      const processedValues = {
+        ...values,
+        target: {
+          ...values.target,
+          categories: values.target.categories || undefined,
+          tags: values.target.tags || undefined,
+        }
+      };
+      onSubmit(processedValues);
       // Clear localStorage after successful submission
       localStorage.removeItem("adFormData");
     } catch (error) {

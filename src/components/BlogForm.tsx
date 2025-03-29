@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlogFormData, BlogRequestSchema, IBlog } from "@/lib/types";
+import { BlogFormData, BlogRequestSchema } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,10 +31,6 @@ const BlogForm = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [categories, setCategories] = useState<string[]>(
-    initialData?.seo?.keywords || []
-  );
-  const [newCategory, setNewCategory] = useState("");
 
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
@@ -58,8 +54,7 @@ const BlogForm = ({
       seo: {
         metaTitle: initialData?.seo?.metaTitle || "",
         metaDescription: initialData?.seo?.metaDescription || "",
-        canonicalUrl: initialData?.seo?.canonicalUrl || "",
-        keywords: initialData?.seo?.keywords || [],
+        canonicalUrl: initialData?.seo?.canonicalUrl || ""
       },
     },
   });
@@ -149,8 +144,7 @@ const BlogForm = ({
       const seoData = {
         metaTitle: formData.seo?.metaTitle || formData.title,
         metaDescription: formData.seo?.metaDescription || formData.excerpt || formData.content.slice(0, 160),
-        canonicalUrl: formData.seo?.canonicalUrl || "",
-        keywords: categories,
+        canonicalUrl: formData.seo?.canonicalUrl || ""
       };
 
       // Prepare the final data with complete SEO information
@@ -191,16 +185,8 @@ const BlogForm = ({
     }
   };
 
-  const handleAddCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-      setNewCategory("");
-    }
-  };
+ 
 
-  const handleRemoveCategory = (category: string) => {
-    setCategories(categories.filter((c) => c !== category));
-  };
 
   const generateSlug = () => {
     const currentTitle = watchTitle;
@@ -344,38 +330,7 @@ const BlogForm = ({
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Categories</h3>
-          <div className="space-y-2">
-            <div className="flex gap-2">
-              <Input
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="Add category"
-              />
-              <Button type="button" onClick={handleAddCategory}>
-                Add
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <div
-                  key={category}
-                  className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md flex items-center gap-2"
-                >
-                  {category}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCategory(category)}
-                    className="text-secondary-foreground/50 hover:text-secondary-foreground"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">SEO Settings</h3>

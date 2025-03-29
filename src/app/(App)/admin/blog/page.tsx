@@ -280,7 +280,7 @@ export default function AdminBlogPage() {
                     </TableRow>
                   ))}
                 </>
-              ) : blogs?.blogs?.length === 0 ? (
+              ) : blogs?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
@@ -290,7 +290,7 @@ export default function AdminBlogPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                blogs?.blogs?.map((blog: IBlog) => (
+                blogs?.map((blog: IBlog) => (
                   <TableRow key={blog._id || blog.slug}>
                     <TableCell className='font-medium'>
                       {blog.title}

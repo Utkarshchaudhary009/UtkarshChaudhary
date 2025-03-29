@@ -12,6 +12,7 @@ interface RequestOptions {
   body?: any;
   cache?: RequestCache;
   next?: NextFetchRequestConfig;
+  params?: Record<string, any>;
 }
 
 interface NextFetchRequestConfig {
@@ -44,13 +45,28 @@ export async function apiRequest<T>(
     body,
     cache,
     next,
+    params,
   } = options;
 
-  const url = endpoint.startsWith('http') 
+  let url = endpoint.startsWith('http') 
     ? endpoint 
     : endpoint.startsWith('/api') 
       ? `${BASE_URL}${endpoint}` 
       : `${BASE_URL}/api${endpoint}`;
+
+  // Add query parameters if provided
+  if (params && Object.keys(params).length > 0) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, String(value));
+      }
+    });
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += url.includes('?') ? `&${queryString}` : `?${queryString}`;
+    }
+  }
 
   const requestHeaders: HeadersInit = {
     'Content-Type': 'application/json',

@@ -104,7 +104,7 @@ export interface IPersonalDetails {
 
 // Ad Schema
 export interface IAd {
-  _id?: string;
+  id?: string;
   title: string;
   image: string;
   cta_url: string;
@@ -205,7 +205,10 @@ export const BlogSchema = z.object({
 });
 
 // Add BlogFormData type
-export type BlogFormData = Omit<IBlog, "_id" | "createdAt" | "updatedAt">;
+export type BlogFormData = Omit<IBlog, "_id" | "createdAt" | "updatedAt"> & {
+  featured: boolean;
+  isPublished: boolean;
+};
 
 // Add ProjectFormData type
 export type ProjectFormData = Omit<IProject, "_id" | "createdAt" | "updatedAt">;
@@ -287,7 +290,7 @@ export const BlogRequestSchema = z.object({
   content: z.string(),
   excerpt: z.string().max(160).optional(),
   featuredImage: z.string().optional(),
-  featured: z.boolean().default(false),
+  featured: z.boolean(),
   seo: z
     .object({
       metaTitle: z.string().optional(),
@@ -297,5 +300,5 @@ export const BlogRequestSchema = z.object({
     })
     .optional(),
   publishedAt: z.string().optional(),
-  isPublished: z.boolean().default(false),
+  isPublished: z.boolean(),
 });
