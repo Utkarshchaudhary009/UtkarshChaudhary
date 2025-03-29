@@ -14,9 +14,9 @@ import ReactMarkdown from "react-markdown";
 export default function ClientProjectDetail() {
   const { slug } = useParams();
   // Use TanStack Query to fetch the project
-  const { data: projects_Data, isLoading, error } = useProject(slug as string);
-  console.log(projects_Data);
-  const project = projects_Data ? projects_Data.projects[0] : null;
+  const { data, isLoading, error } = useProject(slug as string);
+  console.log(data);
+  const project = data?.projects?.[0] || null;
   if (isLoading) {
     return (
       <div className='container py-8 space-y-8'>

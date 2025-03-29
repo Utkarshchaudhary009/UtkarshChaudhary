@@ -20,6 +20,8 @@ const PersonalDetailsSchema = new mongoose.Schema<IPersonalDetails>({
   name: { type: String, required: true },
   age: { type: Number, required: true },
   bio: { type: String, required: true },
+  title: { type: String },
+  profileImage: { type: String },
   work: [
     {
       title: { type: String, required: true },

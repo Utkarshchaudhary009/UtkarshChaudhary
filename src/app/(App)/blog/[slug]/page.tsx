@@ -17,14 +17,13 @@ const AD_DISPLAY_INTERVAL = 2 * 1000; // 2 seconds in milliseconds
 
 export default function ClientBlogDetail() {
   const { slug } = useParams();
-  const { data: blogs, isLoading, error } = useBlog(slug as string);
+  const { data: blog, isLoading, error } = useBlog(slug as string);
   const [shouldFetchAd, setShouldFetchAd] = useState(false);
   const [showAd, setShowAd] = useState(false);
   const { data: ad, isSuccess: adFetched } = useRandomAd(
     shouldFetchAd ? true : false
   );
-  console.log("prh", blogs);
-  const blog = blogs ? blogs[0] : null;
+  console.log("prh", blog);
 
   useEffect(() => {
     const checkAdDisplay = () => {

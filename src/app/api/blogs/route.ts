@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     console.log('Found blogs:', blogs);
 
     if (!blogs || blogs.length === 0) {
-      return NextResponse.json(blogs, { status: 200 }); // Return empty array instead of 404
+      return NextResponse.json(blogs[0], { status: 200 }); // Return empty array instead of 404
     }
 
     return NextResponse.json(blogs);

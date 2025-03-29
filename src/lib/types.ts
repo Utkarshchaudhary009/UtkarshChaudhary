@@ -233,6 +233,8 @@ export const socialLinkSchema = z.object({
 export const personalDetailsSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   age: z.number().min(1, { message: "Age is required" }),
+  title: z.string().optional(),
+  profileImage: z.string().optional(),
   work: z.array(jobSchema),
   stories: z.array(storySchema),
   bio: z.string().min(1, { message: "Bio is required" }),
