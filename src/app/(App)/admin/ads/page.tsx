@@ -76,10 +76,10 @@ export default function AdminAdsPage() {
 
   // Handle update ad
   const handleUpdateAd = (formData: Partial<IAd>) => {
-    if (!currentAd?.id) return;
+    if (!currentAd?._id) return;
 
     updateAd(
-      { id: currentAd.id as string, data: formData },
+      { id: currentAd._id as string, data: formData },
       {
         onSuccess: () => {
           setIsEditDialogOpen(false);
