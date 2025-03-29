@@ -2,14 +2,20 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AdModel } from "@/lib/models";
 
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 // POST handler - increment click count for an ad
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: RouteContext
 ) {
   try {
     await connectDB();
-    const id = params.id;
+    const id = context.params.id;
 
     // Check if ad exists
     const existingAd = await AdModel.findById(id);
