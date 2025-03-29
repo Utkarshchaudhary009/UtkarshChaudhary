@@ -7,7 +7,8 @@ const adminNavItems = [
   { name: "Inbox", path: "/admin/inbox" },
   { name: "Blog", path: "/admin/blog" },
   { name: "Projects", path: "/admin/projects" },
-  { name: "Users", path: "/admin/users" },
+  { name: "About Me", path: "/admin/me" },
+  { name: "Ad's", path: "/admin/ads" },
 ];
 
 export default function AdminLayout({

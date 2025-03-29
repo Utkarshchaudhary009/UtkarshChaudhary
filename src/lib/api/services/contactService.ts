@@ -4,10 +4,9 @@
  */
 
 import { useApiQuery, useApiMutation } from "@/lib/tanstack/hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { IContact } from "@/lib/types";
 import { useAuth } from "@clerk/nextjs";
-
 // Type definitions
 export interface CreateContactInput {
   name: string;
@@ -45,26 +44,39 @@ export const contactKeys = {
 /**
  * Fetch all contact messages with optional filtering
  */
-export function useContacts(filters: ContactFilters = {}) {
-  // Construct URL with query parameters for status filtering
-  let url = "/api/contact";
-  if (filters.status) {
-    url += `?status=${filters.status}`;
+const fetchContacts = async (status: string | null): Promise<IContact[]> => {
+  if (status) {
+    var response = await fetch(`/api/contact?status=${status}`);
+  } else {
+    var response = await fetch(`/api/contact`);
   }
+  if (!response.ok) throw new Error("Failed to fetch contacts");
+  return response.json();
+};
 
-  return useApiQuery<IContact[]>(contactKeys.list(filters), url, {
+export function useContacts(filters: ContactFilters = {}) {
+  return useQuery({
     queryKey: contactKeys.list(filters),
-    next: { revalidate: 180 }, // Cache for 180 seconds
+    queryFn: () => fetchContacts(filters.status || null),
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
   });
 }
-
 /**
  * Fetch a single contact message by ID
  */
 export function useContact(id: string) {
-  return useApiQuery<IContact>(contactKeys.detail(id), `/api/contact/${id}`, {
+  const fetchContact = async (): Promise<IContact> => {
+    const response = await fetch(`/api/contact/${id}`);
+    if (!response.ok) throw new Error("Failed to fetch contact");
+    return response.json();
+  };
+
+  return useQuery({
     queryKey: contactKeys.detail(id),
+    queryFn: fetchContact,
     enabled: !!id,
+    staleTime: 0, // Set to 0 to always fetch fresh data
+    gcTime: 60 * 1000, // Cache for 60 seconds
   });
 }
 

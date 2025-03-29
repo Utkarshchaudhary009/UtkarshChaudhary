@@ -10,18 +10,21 @@ import { AdBanner } from "@/components/ads/AdBanner";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 // const AD_DISPLAY_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
 const AD_DISPLAY_INTERVAL = 2 * 1000; // 2 seconds in milliseconds
 
 export default function ClientBlogDetail() {
   const { slug } = useParams();
-  const { data: blog, isLoading, error } = useBlog(slug as string);
+  const { data: blogs, isLoading, error } = useBlog(slug as string);
   const [shouldFetchAd, setShouldFetchAd] = useState(false);
   const [showAd, setShowAd] = useState(false);
   const { data: ad, isSuccess: adFetched } = useRandomAd(
     shouldFetchAd ? true : false
   );
+  console.log("prh",blogs)
+  const blog=blogs ? blogs[0] : null
 
   useEffect(() => {
     const checkAdDisplay = () => {
@@ -107,8 +110,8 @@ export default function ClientBlogDetail() {
     <>
       <div className='container py-8 space-y-8 max-w-4xl mx-auto'>
         <div className='space-y-4'>
-          <h1 className='text-4xl font-bold'>{blog.title}</h1>
-          {blog.publishedAt && (
+          <h1 className='text-4xl font-bold'>{blog?.title}</h1>
+          {blog?.publishedAt && (
             <p className='text-muted-foreground'>
               Published on{" "}
               {new Date(blog.publishedAt).toLocaleDateString("en-US", {
@@ -120,14 +123,14 @@ export default function ClientBlogDetail() {
           )}
         </div>
 
-        {blog.featuredImage && (
+        {blog?.featuredImage && (
           <AspectRatio
             ratio={16 / 9}
             className='overflow-hidden rounded-lg'
           >
             <Image
               src={blog.featuredImage}
-              alt={blog.title}
+              alt={blog?.title || "Blog post"}
               fill
               className='object-cover'
             />
@@ -135,7 +138,7 @@ export default function ClientBlogDetail() {
         )}
 
         <div className='prose max-w-none dark:prose-invert'>
-          <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+          {blog?.content && <ReactMarkdown>{blog.content}</ReactMarkdown>}
         </div>
 
         <Button

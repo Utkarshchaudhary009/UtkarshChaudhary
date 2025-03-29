@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   useBlogs,
   useDeleteBlog,
-  useCreateBlog,
   useUpdateBlog,
 } from "@/lib/api/services/blogService";
 import { IBlog } from "@/lib/types";
@@ -38,12 +37,16 @@ import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import BlogForm from "@/components/BlogForm"; // Adjust if your component has a different name
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 
 export default function AdminBlogPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<IBlog | null>(null);
   const [aiData, setAiData] = useState<IBlog | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [isAILoading, setIsAILoading] = useState(false);
 
   // Fetch blogs with TanStack Query
   const { data, isLoading, error } = useBlogs({});
@@ -57,9 +60,35 @@ export default function AdminBlogPage() {
     setSelectedBlog(blog);
     setIsEditDialogOpen(true);
   };
+
   const aiCreation = (blog: IBlog) => {
     setAiData(blog);
     setIsCreateDialogOpen(true);
+  };
+
+  const fetchAIBlog = async () => {
+    if (!topic.trim()) {
+      toast.error("Please enter a topic");
+      return;
+    }
+
+    setIsAILoading(true);
+    try {
+      const response = await fetch(
+        `/api/ai/blog?topic=${encodeURIComponent(topic)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to generate blog post");
+      }
+      const data = await response.json();
+      aiCreation(data);
+      setIsAIDialogOpen(false);
+    } catch (error) {
+      console.error("Error fetching AI blog:", error);
+      toast.error("Failed to generate blog post");
+    } finally {
+      setIsAILoading(false);
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -137,30 +166,62 @@ export default function AdminBlogPage() {
     <div className='p-4 space-y-4'>
       <div className='flex justify-between items-center'>
         <h1 className='text-2xl font-bold'>Blog Posts</h1>
-        <Dialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        >
-          <DialogTrigger asChild>
-            <Button>
-              <PlusIcon className='mr-2 h-4 w-4' />
-              New Blog Post
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-[625px]'>
-            <DialogHeader>
-              <DialogTitle>Create New Blog Post</DialogTitle>
-              <DialogDescription>
-                Fill in the blog details below.
-              </DialogDescription>
-            </DialogHeader>
-            <BlogForm
-              initialData={aiData}
-              open={isCreateDialogOpen}
-              onOpenChange={setIsCreateDialogOpen}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className='flex gap-2'>
+          <Dialog
+            open={isAIDialogOpen}
+            onOpenChange={setIsAIDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button variant='outline'>AI Blog Generator</Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-[425px]'>
+              <DialogHeader>
+                <DialogTitle>Generate Blog with AI</DialogTitle>
+                <DialogDescription>
+                  Enter a topic to generate a blog post using AI.
+                </DialogDescription>
+              </DialogHeader>
+              <div className='flex flex-col gap-4 py-4'>
+                <Input
+                  placeholder='Enter blog topic'
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                />
+                <Button
+                  onClick={fetchAIBlog}
+                  disabled={isAILoading}
+                >
+                  {isAILoading ? "Generating..." : "Fetch AI Content"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button>
+                <PlusIcon className='mr-2 h-4 w-4' />
+                New Blog Post
+              </Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-[625px]'>
+              <DialogHeader>
+                <DialogTitle>Create New Blog Post</DialogTitle>
+                <DialogDescription>
+                  Fill in the blog details below.
+                </DialogDescription>
+              </DialogHeader>
+              <BlogForm
+                initialData={aiData}
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Edit Dialog */}
@@ -215,7 +276,7 @@ export default function AdminBlogPage() {
                     </TableRow>
                   ))}
                 </>
-              ) : blogs.length === 0 ? (
+              ) : blogs?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
@@ -225,7 +286,7 @@ export default function AdminBlogPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                blogs.map((blog: IBlog) => (
+                blogs?.map((blog: IBlog) => (
                   <TableRow key={blog._id || blog.slug}>
                     <TableCell className='font-medium'>
                       {blog.title}

@@ -63,25 +63,15 @@ export function ReplyModal({ open, onOpenChange, contact }: ReplyModalProps) {
         Subject: ${contact.subject}
         Message: ${contact.message}
         
-        The reply should be courteous, address their concerns, and provide relevant information.
+        The reply should be courteous, address their concerns, and provide relevant information. and my regards utkarsh chaudhary.
       `;
 
-      // In a real implementation, you would call your AI service here
-      // For now, we'll just simulate a delay and provide a template
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const generatedReply = `Dear ${contact.name},
-
-Thank you for reaching out to me regarding "${contact.subject}". I appreciate you taking the time to share your thoughts.
-
-I've reviewed your message and I'd be happy to discuss this further. 
-
-[Add specific response to their inquiry here]
-
-Please feel free to contact me if you have any other questions or need further clarification.
-
-Best regards,
-Utkarsh Chaudhary`;
+      const response = await fetch("/api/ai/mail", {
+        method: "POST",
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await response.json();
+      const generatedReply = data.reply;
 
       setReply(generatedReply);
     } catch (error) {

@@ -96,7 +96,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || false;
-
+    console.log(`status At Api: ${status}`)
     await connectDB();
 
     let query = {};
@@ -106,6 +106,7 @@ export async function GET(request: Request) {
 
     const messages = await Contact.find(query).sort({ createdAt: -1 });
 
+    console.log(`Messages At Api:`,messages)
     if (!messages.length) {
       return NextResponse.json(messages, { status: 200 });
     }

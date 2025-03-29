@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "@copilotkit/react-ui/styles.css";
 import TanstackProvider from "@/lib/tanstack/provider";
-import { CopilotKit } from "@copilotkit/react-core";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,10 +31,8 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <TanstackProvider>
-            <CopilotKit runtimeUrl='/api/copilotkit'>
               <Toaster position='top-right' />
               {children}
-            </CopilotKit>
           </TanstackProvider>
         </body>
       </html>

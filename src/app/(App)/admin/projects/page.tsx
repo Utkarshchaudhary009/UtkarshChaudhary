@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import {
@@ -38,6 +39,7 @@ import { toast } from "sonner";
 import ProjectForm from "@/components/ProjectForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -54,9 +56,12 @@ export default function AdminProjectsPage() {
     technology: "all",
   });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<IProject | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [aiData, setAiData] = useState<IBlog | null>(null);
+  const [aiData, setAiData] = useState<IProject | null>(null);
+  const [idea, setIdea] = useState("");
+  const [isAILoading, setIsAILoading] = useState(false);
 
   // Query hooks
   const { data, isLoading, error } = useProjects(filters);
@@ -86,9 +91,35 @@ export default function AdminProjectsPage() {
   const handleCreateDialogClose = () => {
     setIsCreateDialogOpen(false);
   };
+
   const aiCreation = (project: IProject) => {
     setAiData(project);
     setIsCreateDialogOpen(true);
+  };
+
+  const fetchAIProject = async () => {
+    if (!idea.trim()) {
+      toast.error("Please enter a project idea");
+      return;
+    }
+
+    setIsAILoading(true);
+    try {
+      const response = await fetch(
+        `/api/ai/project?idea=${encodeURIComponent(idea)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to generate project");
+      }
+      const data = await response.json();
+      aiCreation(data);
+      setIsAIDialogOpen(false);
+    } catch (error) {
+      console.error("Error fetching AI project:", error);
+      toast.error("Failed to generate project");
+    } finally {
+      setIsAILoading(false);
+    }
   };
 
   const handleEditDialogClose = () => {
@@ -155,29 +186,61 @@ export default function AdminProjectsPage() {
     <div className='p-4 space-y-4'>
       <div className='flex justify-between items-center'>
         <h1 className='text-2xl font-bold'>Projects</h1>
-        <Dialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-        >
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <PlusIcon className='mr-2 h-4 w-4' />
-            New Project
-          </Button>
-          <DialogContent className='sm:max-w-[625px]'>
-            <DialogHeader>
-              <DialogTitle>Create New Project</DialogTitle>
-              <DialogDescription>
-                Fill in the project details below.
-              </DialogDescription>
-            </DialogHeader>
-            <ProjectForm
-              open={isCreateDialogOpen}
-              onOpenChange={setIsCreateDialogOpen}
-              onClose={handleCreateDialogClose}
-              initialData={aiData}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className='flex gap-2'>
+          <Dialog
+            open={isAIDialogOpen}
+            onOpenChange={setIsAIDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button variant='outline'>AI Project Generator</Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-[425px]'>
+              <DialogHeader>
+                <DialogTitle>Generate Project with AI</DialogTitle>
+                <DialogDescription>
+                  Enter a project idea to generate a project using AI.
+                </DialogDescription>
+              </DialogHeader>
+              <div className='flex flex-col gap-4 py-4'>
+                <Input
+                  placeholder='Enter project idea'
+                  value={idea}
+                  onChange={(e) => setIdea(e.target.value)}
+                />
+                <Button
+                  onClick={fetchAIProject}
+                  disabled={isAILoading}
+                >
+                  {isAILoading ? "Generating..." : "Fetch AI Content"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
+            <Button onClick={() => setIsCreateDialogOpen(true)}>
+              <PlusIcon className='mr-2 h-4 w-4' />
+              New Project
+            </Button>
+            <DialogContent className='sm:max-w-[625px]'>
+              <DialogHeader>
+                <DialogTitle>Create New Project</DialogTitle>
+                <DialogDescription>
+                  Fill in the project details below.
+                </DialogDescription>
+              </DialogHeader>
+              <ProjectForm
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
+                onClose={handleCreateDialogClose}
+                initialData={aiData || undefined}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Edit Dialog */}
@@ -322,6 +385,11 @@ export default function AdminProjectsPage() {
                       {project.featured && (
                         <Badge className='ml-2 bg-amber-500 hover:bg-amber-600'>
                           Featured
+                        </Badge>
+                      )}
+                      {project.aiGenerated && (
+                        <Badge className='ml-2 bg-purple-500 hover:bg-purple-600'>
+                          AI Generated
                         </Badge>
                       )}
                     </TableCell>

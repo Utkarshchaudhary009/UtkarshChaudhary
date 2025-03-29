@@ -4,7 +4,7 @@ import connectDB from "@/lib/db";
 import { z } from "zod";
 import { Resend } from "resend";
 import { revalidatePath } from "next/cache";
-
+import usersMail from "@/components/Mail/usersMail";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Reply schema
@@ -38,13 +38,14 @@ export async function POST(
     // Update the contact status to replied
     contact.status = "replied";
     await contact.save();
-
+    const html = usersMail(contact.name, message);
+    console.log(html);
     // Send the reply email
     await resend.emails.send({
       from: "Utkarsh Chaudhary <onboarding@resend.dev>",
       to: contact.email,
       subject: `Re: ${contact.subject}`,
-      html: message,
+      html: html,
     });
 
     revalidatePath("/admin/inbox");

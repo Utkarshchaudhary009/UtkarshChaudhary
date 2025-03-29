@@ -18,9 +18,10 @@ export function useApiQuery<TData = unknown, TError = APIError>(
     headers?: HeadersInit;
     cache?: RequestCache;
     next?: { revalidate?: number | false; tags?: string[] };
+    params?: Record<string, any>;
   }
 ) {
-  const { headers, cache, next, ...queryOptions } = options || {};
+  const { headers, cache, next, params, ...queryOptions } = options || {};
   
   return useQuery<TData, TError>({
     queryKey,
@@ -30,6 +31,7 @@ export function useApiQuery<TData = unknown, TError = APIError>(
         headers,
         cache,
         next,
+        params,
       });
     },
     ...queryOptions,

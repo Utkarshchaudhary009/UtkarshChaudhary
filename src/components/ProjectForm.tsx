@@ -46,7 +46,6 @@ interface ProjectFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
 const LOCAL_STORAGE_KEY_NEW = "projectFormData_new";
 const LOCAL_STORAGE_KEY = "projectFormData";
 
@@ -61,6 +60,7 @@ const ProjectForm = ({
     console.log("Form open state:", open);
   }, [open]);
 
+console.log("Initial Data:?:",initialData)
   // Memoize initial form values
   const defaultValues = useMemo(
     () => ({

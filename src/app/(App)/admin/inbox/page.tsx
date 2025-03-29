@@ -25,6 +25,9 @@ export default function InboxPage() {
       : {}
   );
 
+
+  useEffect(() => {console.log(statusFilter)},[statusFilter])
+  
   useEffect(() => {
     // Event listeners for modal triggers
     const handleViewDetails = (e: CustomEvent) => {

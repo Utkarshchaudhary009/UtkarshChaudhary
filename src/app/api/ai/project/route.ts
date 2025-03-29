@@ -1,84 +1,112 @@
-import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { z } from "zod";
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
+import { ProjectRequestSchema } from "@/lib/types";
 
-// Define the input schema for the content to be improved
-const ContentImprovementSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters." }),
-  description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  content: z.string().min(20, { message: "Content must be at least 20 characters." }).optional(),
-  keywords: z.array(z.string()).optional(),
-});
-
-// Define the structure of the improved content
-interface ImprovedContent {
-  title: string;
-  description: string;
-  content?: string;
-  keywords?: string[];
-}
-
-// Function to improve content using Gemini API
-async function improveContent(
-  input: z.infer<typeof ContentImprovementSchema>
-): Promise<ImprovedContent> {
-  const geminiApiKey = process.env.GEMINI_API_KEY;
-  if (!geminiApiKey) {
-    throw new Error("Missing GEMINI_API_KEY environment variable");
+async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
+  const prompt = `Expert Project Developer Generator\n\n Data: ${idea}.
+    "\n\n"
+  )}\n\nPlease generate a comprehensive and detailed project description that includes the following elements:\n- A concise and professional title that captures the essence of the project\n- Detailed project description that clearly explains the concept\n- A technical breakdown including appropriate technologies\n- A concise excerpt that summarizes the main points of the project\n\nThe output should be formatted as JSON, containing fields that match the project schema format. Please adhere to the following schema(note - FOLLOW THE SCHEMA ALWAYS): 
+  
+  title: string.MIN(10).max(25),
+  slug: string.MIN(20).max(35),
+  content: string.min(100).max(1000),
+  description: string.min(50).max(150),
+  excerpt: string.max(130),
+  technologies: string[] (at least 3 to 5 relevant technologies),
+  category: string,
+  status: "planned",
+  markdown: true,
+  seo: {
+    metaTitle: string.min(10).max(60),
+    metaDescription: string.min(50).max(130),
+    keywords: string[] (4-7 relevant keywords)
   }
-
-  const genAI = new GoogleGenerativeAI(geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-  const prompt = `
-    You are a professional content writer and SEO expert. Your task is to rewrite and improve the following content to make it more engaging, well-structured, and optimized for search engines.
-
-    Title: ${input.title}
-    Description: ${input.description}
-    ${input.content ? `Content: ${input.content}` : ""}
-    ${input.keywords && input.keywords.length > 0 ? `Keywords: ${input.keywords.join(", ")}` : ""}
-
-    Instructions:
-    1. Rewrite the title to make it more catchy and compelling.
-    2. Rewrite the description to make it more engaging and informative.
-    3. If content is provided, rewrite it to make it more professional, well-structured, and engaging.
-    4. If keywords are provided, incorporate them naturally into the improved content.
-    5. Ensure the improved content is grammatically correct and flows well.
-    6. Use a professional and engaging tone.
-    7. Use markdown format.
-
-    Improved Content:
   `;
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+  try {
+    const result = await genAI.models.generateContent({
+      contents: prompt,
+      model: "gemini-2.0-flash",
+    });
 
-  // Extract title and description from the generated text
-  const titleMatch = text.match(/^#\s+(.+)$/m);
-  const title = titleMatch ? titleMatch[1] : input.title;
-  const descriptionMatch = text.match(/(?<=^|\n\n)(.*?)(?=\n\n|$)/s);
-  const description = descriptionMatch ? descriptionMatch[1].trim() : input.description;
-
-  return {
-    title: title,
-    description: description,
-    content: text,
-    keywords: input.keywords,
-  };
+    const response =
+      result.text?.replace(/^```json\n/, "").replace(/\n```$/, "") || "[]";
+    // console.log(`project content response:`, response);
+    return response;
+  } catch (error) {
+    console.error("Error generating project content:", error);
+    throw new Error("Failed to parse project JSON");
+  }
 }
 
-// Main API route handler
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const validatedData = ContentImprovementSchema.parse(body);
-    const improvedContent = await improveContent(validatedData);
-    return NextResponse.json(improvedContent);
-  } catch (error: unknown) {
-    console.error("AI Content Improvement API Error:", error instanceof Error ? error.message : error);
+export async function GET(request: NextRequest) {
+  const idea = request.nextUrl.searchParams.get("idea");
+
+  if (!idea) {
     return NextResponse.json(
-      { message: "Failed to improve content", error: error instanceof Error ? error.message : "An unknown error occurred" },
+      { error: "Missing idea parameter" },
+      { status: 400 }
+    );
+  }
+
+  const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY;
+  if (!googleApiKey) {
+    return NextResponse.json(
+      { error: "Google AI API key not found" },
+      { status: 500 }
+    );
+  }
+
+  const genAI = new GoogleGenAI({ apiKey: googleApiKey });
+
+  try {
+    const partialProject = await generateProjectContent(idea, genAI);
+    // console.log(`partial project:`, partialProject);
+    if (!partialProject) {
+      return NextResponse.json(
+        { error: "Failed to generate project" },
+        { status: 500 }
+      );
+    }
+    const projectData = JSON.parse(partialProject);
+    const slug = projectData.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    const fullProject = {
+      title: projectData.title,
+      slug: projectData.slug || slug,
+      content: projectData.content,
+      description: projectData.description,
+      excerpt: projectData.excerpt || projectData.description.substring(0, 157),
+      featuredImage: "",
+      gallery: [],
+      technologies: projectData.technologies || [],
+      category: projectData.category || "Web Development",
+      status: "planned",
+      markdown: true,
+      featured: false,
+      aiGenerated: true,
+      seo: {
+        metaTitle: projectData.seo?.metaTitle || projectData.title,
+        metaDescription:
+          projectData.seo?.metaDescription ||
+          projectData.description?.substring(0, 157) ||
+          "",
+        keywords: projectData.seo?.keywords || projectData.technologies || [],
+      },
+    };
+
+    ProjectRequestSchema.parse(fullProject);
+    console.log("full project:", fullProject);
+    return NextResponse.json(fullProject);
+  } catch (error: unknown) {
+    console.error("Error generating project:", error);
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
       { status: 500 }
     );
   }

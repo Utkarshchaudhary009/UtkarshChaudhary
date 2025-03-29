@@ -134,11 +134,10 @@ export const ProjectSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
   content: z.string().min(100, "Content must be at least 100 characters"),
-  description: z.string().min(50, "Description must be at least 50 characters"),
+  description: z.string().min(30, "Description must be at least 50 characters"),
   excerpt: z.string().max(160, "Excerpt must not exceed 160 characters"),
   featuredImage: z
     .string()
-    .url("Featured image must be a valid URL")
     .optional(),
   gallery: z
     .array(z.string().url("Gallery images must be valid URLs"))
