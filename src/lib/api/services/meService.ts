@@ -13,7 +13,12 @@ export const meKeys = {
 
 // API functions
 const fetchPersonalDetails = async (): Promise<PersonalDetails> => {
-  const response = await fetch("/api/me");
+  const response = await fetch("/api/me", {
+    cache: "force-cache",
+    next: {
+      revalidate: 3600,
+    },
+  });
   if (!response.ok) throw new Error("Failed to fetch personal details");
   return response.json();
 };

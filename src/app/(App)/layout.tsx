@@ -8,7 +8,7 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className='px-12'>
+    <div className=''>
       <NavbarServer />
       <div className='py-12'>{children}</div>
       <Copilot />

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link"; // Or your preferred Link component
+import { Skeleton } from "@/components/ui/skeleton";
 // Define the type for the data we'll fetch
 type PersonalDetails = z.infer<typeof personalDetailsSchema>;
 
@@ -18,7 +19,13 @@ export default function UserPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/me"); // Replace with your actual API endpoint
+        const response = await fetch("/api/me",  {
+          cache: "force-cache",
+          next: {
+            revalidate: 3600,
+          }
+        
+        }); // Replace with your actual API endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -26,17 +33,77 @@ export default function UserPage() {
         // You might want to validate the data here against your schema if needed
         setPersonalDetails(data as PersonalDetails);
         setLoading(false);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'An unknown error occurred');
         setLoading(false);
       }
     };
 
     fetchData();
-  });
+  },[]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className='container mx-auto py-10'>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-3/4 mb-2" />
+            <Skeleton className="h-4 w-1/4 mb-1" />
+            <Skeleton className="h-4 w-1/3 mb-1" />
+            <Skeleton className="h-16 w-full mt-2 mb-1" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <div>
+              <h3 className='text-lg font-semibold mb-2'>Work Experience</h3>
+              <div className="space-y-3">
+                <div>
+                  <Skeleton className="h-5 w-1/3 mb-1" />
+                  <Skeleton className="h-4 w-1/2 mb-1" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-5 w-1/3 mb-1" />
+                  <Skeleton className="h-4 w-1/2 mb-1" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className='text-lg font-semibold mb-2'>Stories</h3>
+              <div className="space-y-3">
+                <Card>
+                  <CardHeader>
+                    <Skeleton className="h-5 w-1/2" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <Skeleton className="h-5 w-1/2" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <div>
+              <h3 className='text-lg font-semibold mb-2'>Social Links</h3>
+              <div className='flex flex-wrap gap-2'>
+                <Skeleton className="h-8 w-24 rounded-full" />
+                <Skeleton className="h-8 w-32 rounded-full" />
+                <Skeleton className="h-8 w-28 rounded-full" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (error) {
