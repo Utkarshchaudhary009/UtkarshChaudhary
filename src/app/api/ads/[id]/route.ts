@@ -7,11 +7,11 @@ import { getAuth } from "@clerk/nextjs/server";
 // GET handler - get a specific ad by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
-    const id = params.id;
+    const id = (await params).id;
 
     const ad = await AdModel.findById(id);
 
@@ -29,7 +29,7 @@ export async function GET(
 // PATCH handler - update an existing ad
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(req);
@@ -40,7 +40,7 @@ export async function PATCH(
     }
 
     await connectDB();
-    const id = params.id;
+    const id = (await params).id;
 
     // Check if ad exists
     const existingAd = await AdModel.findById(id);
@@ -87,7 +87,7 @@ export async function PATCH(
 // DELETE handler - delete an ad
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(req);
@@ -98,7 +98,7 @@ export async function DELETE(
     }
 
     await connectDB();
-    const id = params.id;
+    const id = (await params).id;
 
     // Check if ad exists before deletion
     const existingAd = await AdModel.findById(id);

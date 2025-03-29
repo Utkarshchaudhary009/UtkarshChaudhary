@@ -44,7 +44,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // const { userId } = await auth();
@@ -55,7 +55,7 @@ export async function DELETE(
     //   );
     // }
 
-    const ProjectId = await params.id;
+    const ProjectId = (await params).id;
     await connectDB();
     const project = await Project.findByIdAndDelete(ProjectId);
 

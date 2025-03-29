@@ -23,8 +23,8 @@ export default function ClientBlogDetail() {
   const { data: ad, isSuccess: adFetched } = useRandomAd(
     shouldFetchAd ? true : false
   );
-  console.log("prh",blogs)
-  const blog=blogs ? blogs[0] : null
+  console.log("prh", blogs);
+  const blog = blogs ? blogs[0] : null;
 
   useEffect(() => {
     const checkAdDisplay = () => {

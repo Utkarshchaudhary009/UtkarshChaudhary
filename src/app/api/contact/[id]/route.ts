@@ -4,10 +4,10 @@ import connectDB from "@/lib/db";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const data = params;
+    const data = await params;
     const id = data.id;
 
     await connectDB();
