@@ -74,7 +74,7 @@ const deleteBlog = async (id: string): Promise<void> => {
 
 // Hooks
 export function useBlogs(filters = {}) {
-  return useQuery({
+  return useQuery<IBlog[]>({
     queryKey: blogKeys.list(filters),
     queryFn: () => fetchBlogs(filters),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
@@ -82,7 +82,7 @@ export function useBlogs(filters = {}) {
 }
 
 export function useBlog(slug: string) {
-  return useQuery({
+  return useQuery<IBlog>({
     queryKey: blogKeys.detail(slug),
     queryFn: () => fetchBlogBySlug(slug),
     enabled: !!slug, // Only run when slug is available
@@ -91,7 +91,7 @@ export function useBlog(slug: string) {
 }
 
 export function useFeaturedBlogs() {
-  return useQuery({
+  return useQuery<IBlog[]>({
     queryKey: blogKeys.featured(),
     queryFn: fetchFeaturedBlogs,
     staleTime: 1000 * 60 * 30, // Consider data fresh for 30 minutes

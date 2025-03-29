@@ -36,7 +36,7 @@ const adFormSchema = z.object({
               .split(",")
               .map((item) => item.trim())
               .filter(Boolean)
-          : undefined
+          : []
       ),
     tags: z
       .string()
@@ -47,11 +47,23 @@ const adFormSchema = z.object({
               .split(",")
               .map((item) => item.trim())
               .filter(Boolean)
-          : undefined
+          : []
       ),
     location: z.string().optional(),
   }),
 });
+
+// Define separate interfaces for the form input and the transformed output
+interface AdFormInputValues {
+  title: string;
+  image: string;
+  cta_url: string;
+  target: {
+    categories: string;
+    tags: string;
+    location?: string;
+  };
+}
 
 type AdFormValues = z.infer<typeof adFormSchema>;
 
@@ -65,7 +77,7 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   // Initialize form with default values or editing values
-  const form = useForm<AdFormValues>({
+  const form = useForm<AdFormInputValues>({
     resolver: zodResolver(adFormSchema),
     defaultValues: {
       title: "",
@@ -153,19 +165,12 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   };
 
   // Handle form submission
-  const handleSubmit = (values: AdFormValues) => {
+  const handleSubmit = (values: AdFormInputValues) => {
     console.log("Form submission values:", values);
     try {
-      // Transform string values to arrays before submission
-      const processedValues = {
-        ...values,
-        target: {
-          ...values.target,
-          categories: values.target.categories || undefined,
-          tags: values.target.tags || undefined,
-        }
-      };
-      onSubmit(processedValues);
+      // The zodResolver transforms the input values according to the schema
+      onSubmit(values as unknown as AdFormValues);
+
       // Clear localStorage after successful submission
       localStorage.removeItem("adFormData");
     } catch (error) {

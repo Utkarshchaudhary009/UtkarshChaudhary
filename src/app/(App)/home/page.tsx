@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
+import { IBlog } from "@/lib/types";
 
 export default function HomePage() {
   // Using TanStack Query for all data fetching
@@ -192,7 +193,7 @@ export default function HomePage() {
           </Card>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {featuredBlogs.map((blog) => (
+            {featuredBlogs.map((blog: IBlog) => (
               <Card
                 key={blog._id || blog.slug}
                 className='overflow-hidden flex flex-col'
