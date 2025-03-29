@@ -5,12 +5,11 @@ import { AdModel } from "@/lib/models";
 // POST handler - increment impression count for an ad
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await connectDB();
-    const id = params.id;
-
+    const id = context.params.id;
     // Check if ad exists
     const existingAd = await AdModel.findById(id);
     if (!existingAd) {
