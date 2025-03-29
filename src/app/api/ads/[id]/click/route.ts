@@ -2,20 +2,14 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AdModel } from "@/lib/models";
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 // POST handler - increment click count for an ad
 export async function POST(
   request: Request,
-  context: RouteContext
+  { params }: { params: { id: string } }
 ) {
   try {
     await connectDB();
-    const id = context.params.id;
+    const id = params.id;
 
     // Check if ad exists
     const existingAd = await AdModel.findById(id);
@@ -35,7 +29,7 @@ export async function POST(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error tracking click:", error);
+    console.error("Error tracking click :", error);
     return NextResponse.json(
       { error: "Failed to track click" },
       { status: 500 }
