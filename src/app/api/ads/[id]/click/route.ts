@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AdModel } from "@/lib/models";
 
 // POST handler - increment click count for an ad
 export async function POST(
-  req: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     await connectDB();
-    const id = context.params.id;
+    const id = params.id;
 
     // Check if ad exists
     const existingAd = await AdModel.findById(id);

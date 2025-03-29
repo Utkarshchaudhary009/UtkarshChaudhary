@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AdModel } from "@/lib/models";
 
 // POST handler - increment impression count for an ad
 export async function POST(
-  req: NextRequest,
+  request: Request,
   context: { params: { id: string } }
 ) {
   try {
