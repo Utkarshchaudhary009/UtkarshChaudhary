@@ -30,7 +30,7 @@ export default function HomePage() {
 
   const featuredProjects = featuredProjectsData?.projects || [];
   // Handle both array and object formats for blogs
-  const featuredBlogs = Array.isArray(featuredBlogsData) ? featuredBlogsData : featuredBlogsData?.blogs || [];
+  const featuredBlogs = Array.isArray(featuredBlogsData) ? featuredBlogsData : featuredBlogsData || [];
 
   return (
     <main className='container mx-auto py-12 px-4 space-y-16'>

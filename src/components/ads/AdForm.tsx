@@ -27,43 +27,11 @@ const adFormSchema = z.object({
     .min(1, "Image is required"),
   cta_url: z.string().url("CTA URL must be a valid URL"),
   target: z.object({
-    categories: z
-      .string()
-      .optional()
-      .transform((val) =>
-        val
-          ? val
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : []
-      ),
-    tags: z
-      .string()
-      .optional()
-      .transform((val) =>
-        val
-          ? val
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : []
-      ),
+    categories: z.array(z.string()),
+    tags: z.array(z.string()),
     location: z.string().optional(),
   }),
 });
-
-// Define separate interfaces for the form input and the transformed output
-interface AdFormInputValues {
-  title: string;
-  image: string;
-  cta_url: string;
-  target: {
-    categories: string;
-    tags: string;
-    location?: string;
-  };
-}
 
 type AdFormValues = z.infer<typeof adFormSchema>;
 
@@ -75,17 +43,21 @@ interface AdFormProps {
 
 export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [newTag, setNewTag] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   // Initialize form with default values or editing values
-  const form = useForm<AdFormInputValues>({
+  const form = useForm<AdFormValues>({
     resolver: zodResolver(adFormSchema),
     defaultValues: {
       title: "",
       image: "",
       cta_url: "",
       target: {
-        categories: "",
-        tags: "",
+        categories: [],
+        tags: [],
         location: "",
       },
     },
@@ -100,11 +72,13 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
         image: ad.image,
         cta_url: ad.cta_url,
         target: {
-          categories: ad.target.categories?.join(", ") || "",
-          tags: ad.target.tags?.join(", ") || "",
+          categories: ad.target.categories || [],
+          tags: ad.target.tags || [],
           location: ad.target.location || "",
         },
       });
+      setCategories(ad.target.categories || []);
+      setTags(ad.target.tags || []);
     }
   }, [ad, form]);
 
@@ -116,6 +90,8 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
       try {
         const parsedForm = JSON.parse(savedForm);
         form.reset(parsedForm);
+        setCategories(parsedForm.target.categories || []);
+        setTags(parsedForm.target.tags || []);
       } catch (error) {
         console.error("Error parsing saved form data:", error);
         localStorage.removeItem("adFormData");
@@ -127,6 +103,42 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   const handleFormChange = () => {
     const formValues = form.getValues();
     localStorage.setItem("adFormData", JSON.stringify(formValues));
+  };
+
+  // Category management
+  const handleAddCategory = () => {
+    if (newCategory && !categories.includes(newCategory)) {
+      const updatedCategories = [...categories, newCategory];
+      setCategories(updatedCategories);
+      form.setValue("target.categories", updatedCategories, {
+        shouldDirty: true,
+      });
+      setNewCategory("");
+    }
+  };
+
+  const handleRemoveCategory = (category: string) => {
+    const updatedCategories = categories.filter((c) => c !== category);
+    setCategories(updatedCategories);
+    form.setValue("target.categories", updatedCategories, {
+      shouldDirty: true,
+    });
+  };
+
+  // Tag management
+  const handleAddTag = () => {
+    if (newTag && !tags.includes(newTag)) {
+      const updatedTags = [...tags, newTag];
+      setTags(updatedTags);
+      form.setValue("target.tags", updatedTags, { shouldDirty: true });
+      setNewTag("");
+    }
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    const updatedTags = tags.filter((t) => t !== tag);
+    setTags(updatedTags);
+    form.setValue("target.tags", updatedTags, { shouldDirty: true });
   };
 
   // Handle image upload
@@ -165,12 +177,13 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
   };
 
   // Handle form submission
-  const handleSubmit = (values: AdFormInputValues) => {
+  const handleSubmit = (values: AdFormValues) => {
     console.log("Form submission values:", values);
     try {
-      // The zodResolver transforms the input values according to the schema
-      onSubmit(values as unknown as AdFormValues);
-
+      // Ensure the arrays from state are used for submission
+      values.target.categories = categories;
+      values.target.tags = tags;
+      onSubmit(values);
       // Clear localStorage after successful submission
       localStorage.removeItem("adFormData");
     } catch (error) {
@@ -302,39 +315,73 @@ export function AdForm({ ad, onSubmit, isSubmitting }: AdFormProps) {
         <div className='border p-4 rounded-md space-y-4'>
           <h3 className='font-medium'>Targeting Options</h3>
 
-          <FormField
-            control={form.control}
-            name='target.categories'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Categories (comma separated)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='technology, design, marketing'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='space-y-2'>
+            <FormLabel>Categories</FormLabel>
+            <div className='flex gap-2'>
+              <Input
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder='Add category'
+              />
+              <Button
+                type='button'
+                onClick={handleAddCategory}
+              >
+                Add
+              </Button>
+            </div>
+            <div className='flex flex-wrap gap-2 mt-2'>
+              {categories.map((category) => (
+                <div
+                  key={category}
+                  className='bg-secondary text-secondary-foreground px-2 py-1 rounded-md flex items-center gap-2'
+                >
+                  {category}
+                  <button
+                    type='button'
+                    onClick={() => handleRemoveCategory(category)}
+                    className='text-secondary-foreground/50 hover:text-secondary-foreground'
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
-          <FormField
-            control={form.control}
-            name='target.tags'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tags (comma separated)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='nextjs, react, web'
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='space-y-2'>
+            <FormLabel>Tags</FormLabel>
+            <div className='flex gap-2'>
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder='Add tag'
+              />
+              <Button
+                type='button'
+                onClick={handleAddTag}
+              >
+                Add
+              </Button>
+            </div>
+            <div className='flex flex-wrap gap-2 mt-2'>
+              {tags.map((tag) => (
+                <div
+                  key={tag}
+                  className='bg-secondary text-secondary-foreground px-2 py-1 rounded-md flex items-center gap-2'
+                >
+                  {tag}
+                  <button
+                    type='button'
+                    onClick={() => handleRemoveTag(tag)}
+                    className='text-secondary-foreground/50 hover:text-secondary-foreground'
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <FormField
             control={form.control}

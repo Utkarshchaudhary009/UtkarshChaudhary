@@ -41,7 +41,7 @@ const fetchRandomAd = async (params = {}): Promise<IAd | null> => {
 };
 
 const createAd = async (
-  ad: Omit<IAd, "_id" | "impressions" | "clicks" | "created_at">
+  ad: Omit<IAd, "id" | "impressions" | "clicks" | "created_at">
 ): Promise<IAd> => {
   const response = await fetch("/api/ads", {
     method: "POST",
@@ -151,7 +151,7 @@ export function useUpdateAd() {
       // Invalidate affected queries
       queryClient.invalidateQueries({ queryKey: adKeys.lists() });
       queryClient.invalidateQueries({
-        queryKey: adKeys.detail(data._id as string),
+        queryKey: adKeys.detail(data.id as string),
       });
     },
     onError: (error: Error) => {

@@ -5,7 +5,7 @@ import { IProject } from "@/lib/types";
 export const projectKeys = {
   all: ["projects"] as const,
   lists: () => [...projectKeys.all, "list"] as const,
-  list: (filters: Record<string, any> = {}) =>
+  list: (filters: Record<string, string> = {}) =>
     [...projectKeys.lists(), filters] as const,
   details: () => [...projectKeys.all, "detail"] as const,
   detail: (slug: string) => [...projectKeys.details(), slug] as const,
@@ -117,7 +117,7 @@ export function useUpdateProject() {
     mutationFn: updateProject,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: projectKeys.detail(data._id) });
+      queryClient.invalidateQueries({ queryKey: projectKeys.detail(data._id as string) });
       queryClient.invalidateQueries({ queryKey: projectKeys.featured() });
     },
   });
