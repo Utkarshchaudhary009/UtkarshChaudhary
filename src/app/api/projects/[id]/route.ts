@@ -5,7 +5,7 @@ import connectDB from "@/lib/db";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // const { userId } = await auth();
