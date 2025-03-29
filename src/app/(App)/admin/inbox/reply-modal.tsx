@@ -28,8 +28,12 @@ interface ReplyModalProps {
 export function ReplyModal({ open, onOpenChange, contact }: ReplyModalProps) {
   const [reply, setReply] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const { mutateAsync: sendReply, isPending } = useReplyContact(contact._id);
-  const { mutate: updateStatus } = useUpdateContactStatus(contact._id);
+  const { mutateAsync: sendReply, isPending } = useReplyContact(
+    contact._id as string
+  );
+  const { mutate: updateStatus } = useUpdateContactStatus(
+    contact._id as string
+  );
 
   // Move status update logic to useEffect
   useEffect(() => {
@@ -75,6 +79,7 @@ export function ReplyModal({ open, onOpenChange, contact }: ReplyModalProps) {
 
       setReply(generatedReply);
     } catch (error) {
+      console.error("Error generating AI reply:", error);
       toast.error("Failed to generate AI reply. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -92,6 +97,7 @@ export function ReplyModal({ open, onOpenChange, contact }: ReplyModalProps) {
       toast.success("Reply sent successfully!");
       handleClose();
     } catch (error) {
+      console.error("Error sending reply:", error);
       toast.error("Failed to send reply. Please try again.");
     }
   };

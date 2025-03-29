@@ -28,7 +28,8 @@ export default function HomePage() {
     useFeaturedBlogs();
 
   const featuredProjects = featuredProjectsData?.projects || [];
-  const featuredBlogs = featuredBlogsData || [];
+  // Handle both array and object formats for blogs
+  const featuredBlogs = Array.isArray(featuredBlogsData) ? featuredBlogsData : featuredBlogsData?.blogs || [];
 
   return (
     <main className='container mx-auto py-12 px-4 space-y-16'>
@@ -133,7 +134,7 @@ export default function HomePage() {
                 <div className='relative'>
                   <AspectRatio ratio={16 / 9}>
                     <Image
-                      src={project.image || "/placeholder-project.jpg"}
+                      src={project.featuredImage || "/placeholder-project.jpg"}
                       alt={project.title}
                       fill
                       className='object-cover'

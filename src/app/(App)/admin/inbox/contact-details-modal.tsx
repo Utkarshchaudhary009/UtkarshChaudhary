@@ -28,7 +28,7 @@ export function ContactDetailsModal({
   contact,
 }: ContactDetailsModalProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { mutate: updateStatus } = useUpdateContactStatus(contact._id);
+  const { mutate: updateStatus } = useUpdateContactStatus(contact._id as string);
 
   // Move status update logic into useEffect
   useEffect(() => {

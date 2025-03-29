@@ -92,6 +92,8 @@ export interface IPersonalDetails {
   name: string;
   age: number;
   bio: string;
+  title?: string;
+  profileImage?: string;
   work: IJob[];
   email: string;
   location: string;
