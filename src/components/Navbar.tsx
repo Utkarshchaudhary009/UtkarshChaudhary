@@ -9,6 +9,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface NavbarProps {
   isAdmin: boolean;
@@ -31,6 +32,7 @@ const AuthButtons = () => (
     <SignedIn>
       <UserButton />
     </SignedIn>
+    <ThemeToggle />
   </div>
 );
 
