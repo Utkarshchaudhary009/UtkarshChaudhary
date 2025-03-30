@@ -104,7 +104,7 @@ export interface IPersonalDetails {
 
 // Ad Schema
 export interface IAd {
-  id?: string;
+  _id?: string;
   title: string;
   image: string;
   cta_url: string;

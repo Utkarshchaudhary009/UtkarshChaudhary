@@ -24,14 +24,14 @@ export function AdBanner({ ad, onClose }: AdBannerProps) {
     // If ad exists, show the banner and track impression
     if (ad) {
       setIsOpen(true);
-      trackImpression(ad.id as string);
+      trackImpression(ad._id as string);
     }
   }, [ad, trackImpression]);
 
   const handleClickCTA = () => {
     // Track click before navigating to CTA URL
     if (ad) {
-      trackClick(ad.id as string);
+      trackClick(ad._id as string);
       // Open in new tab
       window.open(ad.cta_url, "_blank");
     }

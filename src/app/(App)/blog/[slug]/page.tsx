@@ -13,8 +13,8 @@ async function getBlogData(slug: string) {
     );
 
     if (!response.ok) return null;
-
-    return await response.json();
+    const blogs = await response.json();
+    return blogs[0];
   } catch (error) {
     console.error("Error fetching blog data for metadata:", error);
     return null;

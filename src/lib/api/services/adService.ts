@@ -8,7 +8,7 @@ export const adKeys = {
   list: (filters: Record<string, string | number | boolean> = {}) =>
     [...adKeys.lists(), filters] as const,
   details: () => [...adKeys.all, "detail"] as const,
-  detail: (id: string) => [...adKeys.details(), id] as const,
+  detail: (_id: string) => [...adKeys.details(), _id] as const,
   random: () => [...adKeys.all, "random"] as const,
 };
 
@@ -20,8 +20,8 @@ const fetchAds = async (params = {}): Promise<{ ads: IAd[] }> => {
   return response.json();
 };
 
-const fetchAdById = async (id: string): Promise<IAd> => {
-  const response = await fetch(`/api/ads/${id}`);
+const fetchAdById = async (_id: string): Promise<IAd> => {
+  const response = await fetch(`/api/ads/${_id}`);
   if (!response.ok) throw new Error("Failed to fetch ad");
   return response.json();
 };
@@ -41,7 +41,7 @@ const fetchRandomAd = async (params = {}): Promise<IAd | null> => {
 };
 
 const createAd = async (
-  ad: Omit<IAd, "id" | "impressions" | "clicks" | "created_at">
+  ad: Omit<IAd, "_id" | "impressions" | "clicks" | "created_at">
 ): Promise<IAd> => {
   const response = await fetch("/api/ads", {
     method: "POST",
@@ -53,13 +53,13 @@ const createAd = async (
 };
 
 const updateAd = async ({
-  id,
+  _id,
   data,
 }: {
-  id: string;
+  _id: string;
   data: Partial<IAd>;
 }): Promise<IAd> => {
-  const response = await fetch(`/api/ads/${id}`, {
+  const response = await fetch(`/api/ads/${_id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -73,9 +73,9 @@ const updateAd = async ({
   return response.json();
 };
 
-const deleteAd = async (id: string): Promise<void> => {
-  console.log(`Making DELETE request to /api/ads/${id}`);
-  const response = await fetch(`/api/ads/${id}`, { method: "DELETE" });
+const deleteAd = async (_id: string): Promise<void> => {
+  console.log(`Making DELETE request to /api/ads/${_id}`);
+  const response = await fetch(`/api/ads/${_id}`, { method: "DELETE" });
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -83,20 +83,20 @@ const deleteAd = async (id: string): Promise<void> => {
     throw new Error(errorText || "Failed to delete ad");
   }
 
-  console.log(`Delete API success for ad ${id}`);
+  console.log(`Delete API success for ad ${_id}`);
   return response.json();
 };
 
-const trackImpression = async (id: string): Promise<void> => {
-  const response = await fetch(`/api/ads/${id}/impression`, {
+const trackImpression = async (_id: string): Promise<void> => {
+  const response = await fetch(`/api/ads/${_id}/impression`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   });
   if (!response.ok) throw new Error("Failed to track impression");
 };
 
-const trackClick = async (id: string): Promise<void> => {
-  const response = await fetch(`/api/ads/${id}/click`, {
+const trackClick = async (_id: string): Promise<void> => {
+  const response = await fetch(`/api/ads/${_id}/click`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   });
@@ -112,11 +112,11 @@ export function useAds(filters = {}) {
   });
 }
 
-export function useAd(id: string) {
+export function useAd(_id: string) {
   return useQuery({
-    queryKey: adKeys.detail(id),
-    queryFn: () => fetchAdById(id),
-    enabled: !!id, // Only run when id is available
+    queryKey: adKeys.detail(_id),
+    queryFn: () => fetchAdById(_id),
+    enabled: !!_id, // Only run when _id is available
     staleTime: 1000 * 60 * 10, // Consider data fresh for 10 minutes
   });
 }
@@ -151,7 +151,7 @@ export function useUpdateAd() {
       // Invalidate affected queries
       queryClient.invalidateQueries({ queryKey: adKeys.lists() });
       queryClient.invalidateQueries({
-        queryKey: adKeys.detail(data.id as string),
+        queryKey: adKeys.detail(data._id as string),
       });
     },
     onError: (error: Error) => {

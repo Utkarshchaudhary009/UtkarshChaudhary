@@ -106,7 +106,7 @@ export function AdCard({ ad, onEdit, onDelete }: AdCardProps) {
           <Button
             variant='outline'
             size='sm'
-            onClick={() => onDelete(ad.id as string)}
+            onClick={() => onDelete(ad._id as string)}
             className='text-destructive hover:text-destructive'
           >
             <Trash2 className='h-3.5 w-3.5 mr-1' />

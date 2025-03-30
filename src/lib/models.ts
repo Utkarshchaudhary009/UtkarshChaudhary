@@ -91,60 +91,47 @@ ProjectSchema.methods.generateStructuredData = function () {
   };
 };
 
-const AdSchema = new mongoose.Schema<IAd>(
-  {
-    title: {
+const AdSchema = new mongoose.Schema<IAd>({
+  title: {
+    type: String,
+    required: [true, "Title is required"],
+    minlength: [3, "Title must be at least 3 characters"],
+  },
+  image: {
+    type: String,
+    required: [true, "Image URL is required"],
+  },
+  cta_url: {
+    type: String,
+    required: [true, "CTA URL is required"],
+  },
+  target: {
+    categories: {
+      type: [String],
+      default: [],
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    location: {
       type: String,
-      required: [true, "Title is required"],
-      minlength: [3, "Title must be at least 3 characters"],
-    },
-    image: {
-      type: String,
-      required: [true, "Image URL is required"],
-    },
-    cta_url: {
-      type: String,
-      required: [true, "CTA URL is required"],
-    },
-    target: {
-      categories: {
-        type: [String],
-        default: [],
-      },
-      tags: {
-        type: [String],
-        default: [],
-      },
-      location: {
-        type: String,
-        default: null,
-      },
-    },
-    impressions: {
-      type: Number,
-      default: 0,
-    },
-    clicks: {
-      type: Number,
-      default: 0,
-    },
-    created_at: {
-      type: Date,
-      default: Date.now,
+      default: null,
     },
   },
-  {
-    // Convert _id to id in JSON response
-    toJSON: {
-      virtuals: true,
-      transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
-  }
-);
+  impressions: {
+    type: Number,
+    default: 0,
+  },
+  clicks: {
+    type: Number,
+    default: 0,
+  },
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 const ContactSchema = new mongoose.Schema<IContact>({
   name: { type: String, required: true },
@@ -272,10 +259,10 @@ BlogSchema.pre("validate", function (next) {
 
 // Export models
 export const Project =
-  mongoose.models.Project ||
-  mongoose.model<IProject>("Project", ProjectSchema);
+  mongoose.models.Project || mongoose.model<IProject>("Project", ProjectSchema);
 
-export const Blog = mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
+export const Blog =
+  mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
 export const SEO = mongoose.models.SEO || mongoose.model("SEO", SEOSchema);
 export const Sitemap =
   mongoose.models.Sitemap || mongoose.model("Sitemap", SitemapSchema);
