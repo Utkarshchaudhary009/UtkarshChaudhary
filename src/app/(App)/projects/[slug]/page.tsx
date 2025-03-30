@@ -1,11 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import ClientProjectDetail from "./client";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-  searchParams: { [key: string]: string | string[] | undefined };
-};
-
 // Function to fetch project data for metadata
 async function getProjectData(slug: string) {
   try {
@@ -28,7 +23,11 @@ async function getProjectData(slug: string) {
 
 // Dynamic metadata generation
 export async function generateMetadata(
-  { params }: Props,
+  {
+    params,
+  }: {
+    params: Promise<{ slug: string }>;
+  },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   // Get the project data

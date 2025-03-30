@@ -1,10 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import ClientBlogDetail from "./client";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-  searchParams: { [key: string]: string | string[] | undefined };
-};
 
 // Function to fetch blog data for metadata
 async function getBlogData(slug: string) {
@@ -27,7 +23,7 @@ async function getBlogData(slug: string) {
 
 // Dynamic metadata generation
 export async function generateMetadata(
-  { params }: Props,
+  { params }: { params: Promise<{ slug: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await params;
