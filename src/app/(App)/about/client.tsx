@@ -17,19 +17,31 @@ import {
 } from "lucide-react";
 
 const getSocialIcon = (platform: string) => {
-  switch (platform.toLowerCase()) {
-    case "facebook" || "meta" || "fb":
-      return <FacebookIcon className='h-4 w-4' />;
-    case "twitter" || "x" || "tw":
-      return <TwitterIcon className='h-4 w-4' />;
-    case "instagram" || "insta":
-      return <InstagramIcon className='h-4 w-4' />;
-    case "linkedin" || "in":
-      return <LinkedinIcon className='h-4 w-4' />;
-    case "github" || "gh":
-      return <GithubIcon className='h-4 w-4' />;
-    default:
-      return <LucideLinkIcon className='h-4 w-4' />;
+  const lowercasePlatform = platform.toLowerCase();
+
+  if (
+    lowercasePlatform === "facebook" ||
+    lowercasePlatform === "meta" ||
+    lowercasePlatform === "fb"
+  ) {
+    return <FacebookIcon className='h-4 w-4' />;
+  } else if (
+    lowercasePlatform === "twitter" ||
+    lowercasePlatform === "x" ||
+    lowercasePlatform === "tw"
+  ) {
+    return <TwitterIcon className='h-4 w-4' />;
+  } else if (
+    lowercasePlatform === "instagram" ||
+    lowercasePlatform === "insta"
+  ) {
+    return <InstagramIcon className='h-4 w-4' />;
+  } else if (lowercasePlatform === "linkedin" || lowercasePlatform === "in") {
+    return <LinkedinIcon className='h-4 w-4' />;
+  } else if (lowercasePlatform === "github" || lowercasePlatform === "gh") {
+    return <GithubIcon className='h-4 w-4' />;
+  } else {
+    return <LucideLinkIcon className='h-4 w-4' />;
   }
 };
 // Define the type for the data we'll fetch
