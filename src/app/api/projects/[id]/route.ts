@@ -5,7 +5,7 @@ import connectDB from "@/lib/db";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // const { userId } = await auth();
@@ -15,7 +15,7 @@ export async function PUT(
     //     { status: 401 }
     //   );
     // }
-    const ProjectId = params.id;
+    const ProjectId = (await params).id;
     await connectDB();
     const body = await request.json();
     const project = await Project.findByIdAndUpdate(ProjectId, body, {
@@ -44,7 +44,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // const { userId } = await auth();
@@ -55,7 +55,7 @@ export async function DELETE(
     //   );
     // }
 
-    const ProjectId = params.id;
+    const ProjectId = (await params).id;
     await connectDB();
     const project = await Project.findByIdAndDelete(ProjectId);
 
