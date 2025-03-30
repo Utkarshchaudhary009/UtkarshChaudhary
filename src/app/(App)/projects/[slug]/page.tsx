@@ -10,7 +10,7 @@ type Props = {
 async function getProjectData(slug: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/projects/${slug}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${slug}`,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       }
