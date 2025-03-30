@@ -242,7 +242,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY;
+    const googleApiKey = process.env.GOOGLE_AI_KEY;
     if (!googleApiKey) {
       return NextResponse.json(
         { error: "Google AI API key not found" },

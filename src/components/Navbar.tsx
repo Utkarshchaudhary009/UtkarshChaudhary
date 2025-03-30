@@ -135,7 +135,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
               whileTap={{ scale: 0.95 }}
             >
               <Link
-                href="/admin/projects"
+                href="/admin"
                 className="flex items-center"
                 aria-label="Admin Panel"
               >
@@ -203,7 +203,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
                   transition={{ delay: navItems.length * 0.1 }}
                 >
                   <Link
-                    href="/admin/projects"
+                    href="/admin"
                     className="flex items-center gap-2 px-4 py-3 text-base hover:bg-muted rounded-lg transition-colors"
                     aria-label="Admin Panel"
                     onClick={() => setIsOpen(false)}

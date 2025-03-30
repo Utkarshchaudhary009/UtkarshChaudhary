@@ -12,7 +12,7 @@ interface Result {
 async function conductResearch(topic: string) {
   const researchNotes: string[] = [];
 
-  const apiKey = process.env.NEXT_PUBLIC_TAVILY_API_KEY;
+  const apiKey = process.env.TAVILY_API_KEY;
   const options = {
     method: "POST",
     headers: {
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY;
+  const googleApiKey = process.env.GOOGLE_AI_KEY;
   if (!googleApiKey) {
     return NextResponse.json(
       { error: "Google AI API key not found" },

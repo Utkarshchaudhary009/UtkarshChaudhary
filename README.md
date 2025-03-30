@@ -80,8 +80,8 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 NEXT_PUBLIC_BASE_URL=http://localhost:3000/
 
 # AI/ML
-NEXT_PUBLIC_GOOGLE_AI_KEY=your_google_ai_key
-NEXT_PUBLIC_TAVILY_API_KEY=your_tavily_api_key
+GOOGLE_AI_KEY=your_google_ai_key
+TAVILY_API_KEY=your_tavily_api_key
 NEXT_PUBLIC_LANGSMITH_API_KEY=your_langsmith_api_key (Optional)
 
 # Optional: Analytics, etc.

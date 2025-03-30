@@ -6,11 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import FormData from "form-data";
 
 // Initialize Google GenAI
-const NEXT_PUBLIC_GOOGLE_AI_KEY = process.env.NEXT_PUBLIC_GOOGLE_AI_KEY;
-if (!NEXT_PUBLIC_GOOGLE_AI_KEY) {
-  throw new Error("NEXT_PUBLIC_GOOGLE_AI_KEY is not set");
+const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
+if (!GOOGLE_AI_KEY) {
+  throw new Error("GOOGLE_AI_KEY is not set");
 }
-const ai = new GoogleGenAI({ apiKey: NEXT_PUBLIC_GOOGLE_AI_KEY });
+const ai = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY });
 
 async function PromptGenerator(data: any) {
   try {
@@ -20,7 +20,7 @@ async function PromptGenerator(data: any) {
 
     const result = await ai.models.generateContent({
       contents: enhancementPrompt,
-      model: "gemini-2.0-flash",    
+      model: "gemini-2.0-flash",
     });
     let generatedPrompt = result.text;
     if (result.text?.includes(`"`)) {

@@ -42,7 +42,7 @@ export default function RootLayout({
           >
             <TanstackProvider>
               <Toaster position='top-right' />
-              {children}
+              <div className='mx-2 md:mx-10'>{children}</div>
             </TanstackProvider>
           </ThemeProvider>
         </body>
