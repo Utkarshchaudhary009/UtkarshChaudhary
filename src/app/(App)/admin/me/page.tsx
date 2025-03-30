@@ -56,7 +56,7 @@ export default function AdminMePage() {
       age: 0,
       work: [],
       stories: [],
-      title:""
+      title:"",
       bio: "",
       email: "",
       location: "",
