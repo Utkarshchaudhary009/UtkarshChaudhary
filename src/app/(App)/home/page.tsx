@@ -85,6 +85,7 @@ export default function HomePage() {
                 alt={personalDetails?.name || "Profile"}
                 fill
                 className='object-cover'
+                priority
               />
             </AspectRatio>
           ) : (

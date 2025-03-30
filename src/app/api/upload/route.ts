@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 import streamifier from "streamifier";
+import sharp from "sharp";
 
 // Cloudinary configuration
 cloudinary.config({
@@ -24,6 +25,41 @@ interface CustomFile {
   originalname: string;
   mimetype: string;
   size: number;
+}
+
+// Compress image using Sharp before uploading to Cloudinary
+async function compressImage(
+  buffer: Buffer,
+  mimetype: string
+): Promise<Buffer> {
+  // Start with a Sharp instance
+  let sharpInstance = sharp(buffer);
+
+  // Apply different optimization strategies based on image type
+  if (mimetype === "image/jpeg" || mimetype === "image/jpg") {
+    sharpInstance = sharpInstance.jpeg({
+      quality: 80, // High quality but still reduced
+      mozjpeg: true, // Use mozjpeg compression
+    });
+  } else if (mimetype === "image/png") {
+    sharpInstance = sharpInstance.png({
+      compressionLevel: 8, // Higher compression level
+      adaptiveFiltering: true,
+      palette: true, // Convert to indexed color palette when possible
+    });
+  } else if (mimetype === "image/webp") {
+    sharpInstance = sharpInstance.webp({
+      quality: 80,
+      effort: 6, // Balance between compression speed and ratio
+    });
+  } else if (mimetype === "image/gif") {
+    // GIFs are more challenging to compress without quality loss
+    // Simply pass through with minimal processing
+    return buffer;
+  }
+
+  // Return compressed buffer
+  return await sharpInstance.toBuffer();
 }
 
 const uploadToCloudinary = async (file: CustomFile) => {
@@ -120,15 +156,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Convert Files to CustomFile format
+    // Convert Files to CustomFile format and compress
     const customFiles = await Promise.all(
       files.map(async (file) => {
         const buffer = await file.arrayBuffer();
+        const originalBuffer = Buffer.from(buffer);
+
+        // Compress the image
+        const compressedBuffer = await compressImage(originalBuffer, file.type);
+
+        // Calculate compression ratio for logging/monitoring
+        const compressionRatio =
+          (1 - compressedBuffer.length / originalBuffer.length) * 100;
+        console.log(
+          `Compressed ${file.name} by ${compressionRatio.toFixed(2)}% (${
+            originalBuffer.length
+          } → ${compressedBuffer.length} bytes)`
+        );
+
         return {
-          buffer: Buffer.from(buffer),
+          buffer: compressedBuffer,
           originalname: file.name,
           mimetype: file.type,
-          size: file.size,
+          size: compressedBuffer.length,
         } as CustomFile;
       })
     );

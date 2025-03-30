@@ -83,6 +83,7 @@ export default function BlogClient() {
                   alt={blog.title}
                   fill
                   className='object-cover transition-all hover:scale-105'
+                  priority
                 />
               </AspectRatio>
               <div className='p-6'>

@@ -140,6 +140,7 @@ export default function ClientBlogDetail() {
               alt={blog?.title || "Blog post"}
               fill
               className='object-cover'
+              priority
             />
           </AspectRatio>
         )}
