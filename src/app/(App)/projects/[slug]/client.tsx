@@ -9,7 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GithubIcon, Globe } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
+import MarkdownRenderer from "@/components/ui/markdown-renderer";
+import { SocialShareList } from "@/components/ui/social-share";
 
 export default function ClientProjectDetail() {
   const { slug } = useParams();
@@ -90,6 +91,14 @@ export default function ClientProjectDetail() {
     <div className='container py-8 space-y-8'>
       <div className='space-y-4'>
         <h1 className='text-4xl font-bold'>{project?.title}</h1>
+
+        <SocialShareList
+          url={`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${project?.slug}`}
+          title={project?.title || ""}
+          className='right-1 my-2 md:my-0'
+          description={project?.excerpt || ""}
+          media={project?.featuredImage || ""}
+        />
         <p className='text-xl text-muted-foreground'>{project?.excerpt}</p>
       </div>
 
@@ -111,9 +120,7 @@ export default function ClientProjectDetail() {
         <div className='md:col-span-2 space-y-6'>
           <h2 className='text-2xl font-semibold'>Project Details</h2>
           <div className='prose max-w-none dark:prose-invert'>
-            {project?.content && (
-              <ReactMarkdown>{project.content}</ReactMarkdown>
-            )}
+            {project?.content && <MarkdownRenderer content={project.content} />}
           </div>
         </div>
 

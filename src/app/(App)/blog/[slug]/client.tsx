@@ -10,8 +10,8 @@ import { AdBanner } from "@/components/ads/AdBanner";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-
+import MarkdownRenderer from "@/components/ui/markdown-renderer";
+import { SocialShareList } from "@/components/ui/social-share";
 // const AD_DISPLAY_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
 const AD_DISPLAY_INTERVAL = 2 * 1000; // 2 seconds in milliseconds
 
@@ -109,16 +109,25 @@ export default function ClientBlogDetail() {
       <div className='container py-8 space-y-8 max-w-4xl mx-auto'>
         <div className='space-y-4'>
           <h1 className='text-4xl font-bold'>{blog?.title}</h1>
-          {blog?.publishedAt && (
-            <p className='text-muted-foreground'>
-              Published on{" "}
-              {new Date(blog.publishedAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-          )}
+          <div className='flex items-center justify-between flex-wrap'>
+            {blog?.publishedAt && (
+              <p className='text-muted-foreground'>
+                Published on{" "}
+                {new Date(blog.publishedAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            )}
+            <SocialShareList
+              url={`${process.env.NEXT_PUBLIC_BASE_URL}/blog/${blog?.slug}`}
+              title={blog?.title || ""}
+              className='left-1 my-2 md:my-0'
+              description={blog?.excerpt || ""}
+              media={blog?.featuredImage || ""}
+            />
+          </div>
         </div>
 
         {blog?.featuredImage && (
@@ -136,7 +145,7 @@ export default function ClientBlogDetail() {
         )}
 
         <div className='prose max-w-none dark:prose-invert'>
-          {blog?.content && <ReactMarkdown>{blog.content}</ReactMarkdown>}
+          {blog?.content && <MarkdownRenderer content={blog.content} />}
         </div>
 
         <Button

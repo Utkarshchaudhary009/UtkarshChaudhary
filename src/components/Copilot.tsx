@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, X, Trash2, MessageSquare } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import MarkdownRenderer from "@/components/ui/markdown-renderer";
 
 type Message = {
   id: string;
@@ -308,7 +308,7 @@ const Copilot = () => {
                             }`}
                           >
                             <div className='whitespace-pre-wrap'>
-                              <ReactMarkdown>{message.content}</ReactMarkdown>
+                              <MarkdownRenderer content={message.content} />
                             </div>
                             <div
                               className={`text-xs mt-1 ${

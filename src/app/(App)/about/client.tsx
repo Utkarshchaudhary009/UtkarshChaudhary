@@ -4,10 +4,34 @@ import { useEffect, useState } from "react";
 import { personalDetailsSchema } from "@/lib/types"; // Assuming your schema is in this file
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link"; // Or your preferred Link component
 import { Skeleton } from "@/components/ui/skeleton";
+import MarkdownRenderer from "@/components/ui/markdown-renderer";
+import {
+  Link as LucideLinkIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  Instagram as InstagramIcon,
+  Linkedin as LinkedinIcon,
+  Github as GithubIcon,
+} from "lucide-react";
 
+const getSocialIcon = (platform: string) => {
+  switch (platform.toLowerCase()) {
+    case "facebook" || "meta" || "fb":
+      return <FacebookIcon className='h-4 w-4' />;
+    case "twitter" || "x" || "tw":
+      return <TwitterIcon className='h-4 w-4' />;
+    case "instagram" || "insta":
+      return <InstagramIcon className='h-4 w-4' />;
+    case "linkedin" || "in":
+      return <LinkedinIcon className='h-4 w-4' />;
+    case "github" || "gh":
+      return <GithubIcon className='h-4 w-4' />;
+    default:
+      return <LucideLinkIcon className='h-4 w-4' />;
+  }
+};
 // Define the type for the data we'll fetch
 type PersonalDetails = z.infer<typeof personalDetailsSchema>;
 
@@ -24,7 +48,7 @@ export default function AboutClient() {
           cache: "force-cache",
           next: {
             revalidate: 3600,
-          }
+          },
         }); // Replace with your actual API endpoint
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -34,7 +58,7 @@ export default function AboutClient() {
         setPersonalDetails(data as PersonalDetails);
         setLoading(false);
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : 'An unknown error occurred');
+        setError(e instanceof Error ? e.message : "An unknown error occurred");
         setLoading(false);
       }
     };
@@ -47,46 +71,46 @@ export default function AboutClient() {
       <div className='container mx-auto py-10'>
         <Card>
           <CardHeader>
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-1/4 mb-1" />
-            <Skeleton className="h-4 w-1/3 mb-1" />
-            <Skeleton className="h-16 w-full mt-2 mb-1" />
-            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className='h-8 w-3/4 mb-2' />
+            <Skeleton className='h-4 w-1/4 mb-1' />
+            <Skeleton className='h-4 w-1/3 mb-1' />
+            <Skeleton className='h-16 w-full mt-2 mb-1' />
+            <Skeleton className='h-4 w-1/2' />
           </CardHeader>
           <CardContent className='space-y-4'>
             <div>
               <h3 className='text-lg font-semibold mb-2'>Work Experience</h3>
-              <div className="space-y-3">
+              <div className='space-y-3'>
                 <div>
-                  <Skeleton className="h-5 w-1/3 mb-1" />
-                  <Skeleton className="h-4 w-1/2 mb-1" />
-                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className='h-5 w-1/3 mb-1' />
+                  <Skeleton className='h-4 w-1/2 mb-1' />
+                  <Skeleton className='h-10 w-full' />
                 </div>
                 <div>
-                  <Skeleton className="h-5 w-1/3 mb-1" />
-                  <Skeleton className="h-4 w-1/2 mb-1" />
-                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className='h-5 w-1/3 mb-1' />
+                  <Skeleton className='h-4 w-1/2 mb-1' />
+                  <Skeleton className='h-10 w-full' />
                 </div>
               </div>
             </div>
 
             <div>
               <h3 className='text-lg font-semibold mb-2'>Stories</h3>
-              <div className="space-y-3">
+              <div className='space-y-3'>
                 <Card>
                   <CardHeader>
-                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className='h-5 w-1/2' />
                   </CardHeader>
                   <CardContent>
-                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className='h-20 w-full' />
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader>
-                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className='h-5 w-1/2' />
                   </CardHeader>
                   <CardContent>
-                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className='h-20 w-full' />
                   </CardContent>
                 </Card>
               </div>
@@ -95,9 +119,9 @@ export default function AboutClient() {
             <div>
               <h3 className='text-lg font-semibold mb-2'>Social Links</h3>
               <div className='flex flex-wrap gap-2'>
-                <Skeleton className="h-8 w-24 rounded-full" />
-                <Skeleton className="h-8 w-32 rounded-full" />
-                <Skeleton className="h-8 w-28 rounded-full" />
+                <Skeleton className='h-8 w-24 rounded-full' />
+                <Skeleton className='h-8 w-32 rounded-full' />
+                <Skeleton className='h-8 w-28 rounded-full' />
               </div>
             </div>
           </CardContent>
@@ -132,6 +156,26 @@ export default function AboutClient() {
         </CardHeader>
         <CardContent className='space-y-4'>
           <div>
+            <h3 className='text-lg font-semibold mb-2'>Social Links</h3>
+            {personalDetails.socialLinks.length > 0 ? (
+              <div className='flex flex-wrap gap-2'>
+                {personalDetails.socialLinks.map((link) => (
+                  <Link
+                    key={link.url}
+                    href={link.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors'
+                  >
+                    {getSocialIcon(link.platform)} {link.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className='text-muted-foreground'>No social links added.</p>
+            )}
+          </div>
+          <div>
             <h3 className='text-lg font-semibold mb-2'>Work Experience</h3>
             {personalDetails.work.length > 0 ? (
               <ul className='list-disc pl-5'>
@@ -162,7 +206,7 @@ export default function AboutClient() {
                       <CardTitle>{story.heading}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p>{story.content}</p>
+                      <MarkdownRenderer content={story.content} />
                     </CardContent>
                   </Card>
                 ))}
@@ -171,29 +215,8 @@ export default function AboutClient() {
               <p className='text-muted-foreground'>No stories added.</p>
             )}
           </div>
-
-          <div>
-            <h3 className='text-lg font-semibold mb-2'>Social Links</h3>
-            {personalDetails.socialLinks.length > 0 ? (
-              <div className='flex flex-wrap gap-2'>
-                {personalDetails.socialLinks.map((link) => (
-                  <Badge key={link.url}>
-                    <Link
-                      href={link.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                    >
-                      {link.name} ({link.platform})
-                    </Link>
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className='text-muted-foreground'>No social links added.</p>
-            )}
-          </div>
         </CardContent>
       </Card>
     </div>
   );
-} 
+}

@@ -2,7 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import ClientProjectDetail from "./client";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -10,7 +10,7 @@ type Props = {
 async function getProjectData(slug: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${slug}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects?slug=${slug}`,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       }
@@ -32,7 +32,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   // Get the project data
-  const project = await getProjectData(params.slug);
+  const project = await getProjectData((await params).slug);
 
   // Get parent metadata (from layout)
   const previousImages = (await parent).openGraph?.images || [];

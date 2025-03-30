@@ -10,7 +10,7 @@ type Props = {
 async function getBlogData(slug: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/blogs/${slug}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/blogs?slug=${slug}`,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       }
