@@ -7,8 +7,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link"; // Or your preferred Link component
 import { Skeleton } from "@/components/ui/skeleton";
+import { Metadata } from "next";
 // Define the type for the data we'll fetch
 type PersonalDetails = z.infer<typeof personalDetailsSchema>;
+export const metadata: Metadata = {
+  title:"Blog",
+  openGraph: {
+    images: [
+      {
+        url: "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1743308983/uploads/sm8msfmlsujjnh7yizuv.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+};
 
 export default function UserPage() {
   const [personalDetails, setPersonalDetails] =

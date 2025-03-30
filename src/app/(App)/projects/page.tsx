@@ -9,7 +9,21 @@ import Link from "next/link";
 import { IProject } from "@/lib/types";
 import { useProjects } from "@/lib/api/services/projectService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title:"Projects",
+  description: "Check out my projects  and share your feedback through contact page",
+  openGraph: {
+    images: [
+      {
+        url: "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1743308983/uploads/sm8msfmlsujjnh7yizuv.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+};
 export default function ClientProjects() {
   // Use TanStack Query to fetch projects
   const { data, isLoading, error } = useProjects();
