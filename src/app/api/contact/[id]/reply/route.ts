@@ -42,7 +42,7 @@ export async function POST(
     console.log(html);
     // Send the reply email
     await resend.emails.send({
-      from: process.env.FROM_REPLY_EMAIL || "reply@utkarshchaudhary.space",
+      from: `Utkarsh Chaudhary <${process.env.FROM_REPLY_EMAIL || "reply@utkarshchaudhary.space"}>`,
       to: contact.email,
       subject: `Re: ${contact.subject}`,
       html: html,

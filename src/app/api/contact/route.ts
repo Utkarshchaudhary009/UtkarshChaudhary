@@ -21,8 +21,9 @@ export async function POST(request: Request) {
     const contact = await Contact.create(validatedData);
 
     // Send email notification
-    const fromEmail =
-      process.env.FROM_OUR_EMAIL || "hello@utkarshchaudhary.space";
+    const fromEmail = `Utkarsh Chaudhary <${
+      process.env.FROM_OUR_EMAIL || "hello@utkarshchaudhary.space"
+    }>`;
     const toEmail = "utkarshchaudhary426@gmail.com";
 
     // Validate the 'from' email address

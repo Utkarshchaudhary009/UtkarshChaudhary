@@ -7,8 +7,9 @@ import { checkRole } from "@/utils/roles";
 import marketingEmailTemplate from "@/components/Mail/marketingEmailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL =
-  process.env.FROM_UPDATE_EMAIL || "updates@utkarshchaudhary.space";
+const FROM_EMAIL = `Utkarsh Chaudhary <${
+  process.env.FROM_UPDATE_EMAIL || "updates@utkarshchaudhary.space"
+}>`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -98,7 +99,8 @@ export async function POST(request: NextRequest) {
       
       INSTRUCTIONS:
       - Return a JSON object with these properties: greeting, mainContent, cta, closing
-      - greeting: A warm, personalized greeting that can work with any recipient's name (max 1 sentence)
+      - greeting: A warm greeting .
+      - use \${name} as a placeholder for the recipient's name. like "Hi \${name}, hope you're having a great day!".
       - mainContent: 2-3 paragraphs highlighting the key points and benefits (150-200 words)
       - cta: A compelling call-to-action sentence
       - closing: A friendly sign-off message (max 1 sentence)
@@ -124,9 +126,18 @@ export async function POST(request: NextRequest) {
 
     // Send emails
     const emailPromises = recipients.map(async (recipient) => {
+      // Replace ${name} placeholder with actual recipient name or fallback to "there"
+      const personalizedGreeting = emailContent.greeting.replace(
+        "${name}",
+        recipient.name || "there"
+      );
+
       const html = marketingEmailTemplate({
-        greeting: emailContent.greeting,
-        mainContent: emailContent.mainContent,
+        greeting: personalizedGreeting,
+        mainContent: emailContent.mainContent.replace(
+          "${name}",
+          recipient.name || "there"
+        ),
         cta: emailContent.cta,
         ctaUrl: `${process.env.NEXT_PUBLIC_BASE_URL}${contentUrl}`,
         ctaText: `View the ${contentType}`,
