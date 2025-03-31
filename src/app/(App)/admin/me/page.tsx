@@ -56,7 +56,7 @@ export default function AdminMePage() {
       age: 0,
       work: [],
       stories: [],
-      title:"",
+      title: "",
       bio: "",
       email: "",
       location: "",
@@ -334,11 +334,11 @@ export default function AdminMePage() {
                     name='title'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Biography</FormLabel>
+                        <FormLabel>Current Job Title</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder='Tell us about current job title...'
-                            className='min-h-32'
+                            className='min-h-12'
                             {...field}
                           />
                         </FormControl>

@@ -203,9 +203,7 @@ export default function AboutClient() {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className='text-muted-foreground'>No work experience added.</p>
-            )}
+            ) : null}
           </div>
 
           <div>

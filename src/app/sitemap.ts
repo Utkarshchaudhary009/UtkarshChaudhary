@@ -1,7 +1,9 @@
 import { MetadataRoute } from "next";
-import { IBlog, IProject } from "@/lib/types";
-
-// Define interfaces for blog and project types
+import { IBlog, IProject, SitemapEntry } from "@/lib/types";
+import fs from "fs";
+import path from "path";
+// Config file path
+const configPath = path.join(process.cwd(), "src/config/sitemap-config.json");
 
 // Function to dynamically fetch blog posts
 async function fetchBlogPosts(): Promise<IBlog[]> {
@@ -47,52 +49,88 @@ async function fetchProjects(): Promise<IProject[]> {
   }
 }
 
+// Function to get custom sitemap entries
+function getCustomSitemapEntries(): Array<{
+  url: string;
+  lastModified?: Date;
+  changeFrequency?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+  priority?: number;
+}> {
+  try {
+    // Check if config file exists
+    if (!fs.existsSync(configPath)) {
+      // Return default entries if file doesn't exist
+      return [
+        {
+          url: "/",
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 1.0,
+        },
+        {
+          url: "/home",
+          lastModified: new Date(),
+          changeFrequency: "daily",
+          priority: 0.9,
+        },
+        {
+          url: "/about",
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.8,
+        },
+        {
+          url: "/contact",
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.8,
+        },
+        {
+          url: "/blog",
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.9,
+        },
+        {
+          url: "/projects",
+          lastModified: new Date(),
+          changeFrequency: "monthly",
+          priority: 0.9,
+        },
+      ];
+    }
+
+    // Read config file
+    const configData = fs.readFileSync(configPath, "utf8");
+    const config = JSON.parse(configData);
+
+    // Map the entries to the expected format
+    return (config.entries || []).map((entry: SitemapEntry) => ({
+      url: entry.url,
+      lastModified: entry.lastmod ? new Date(entry.lastmod) : new Date(),
+      changeFrequency: entry.changefreq,
+      priority: entry.priority,
+    }));
+  } catch (error) {
+    console.error("Error reading sitemap configuration:", error);
+    return [];
+  }
+}
+
 // Domain configuration
 const DOMAIN =
   process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.space";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Initialize with static routes
-  const staticRoutes = [
-    {
-      url: `${DOMAIN}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 1.0,
-    },
-    {
-      url: `${DOMAIN}/home`,
-      lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${DOMAIN}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${DOMAIN}/contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    },
-    {
-      url: `${DOMAIN}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.9,
-    },
-    {
-      url: `${DOMAIN}/projects`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.9,
-    },
-    // Auth routes are typically not included in sitemaps as they're for user authentication
-    // and not meant to be indexed by search engines
-  ];
+  // Get custom entries from configuration
+  const customEntries = getCustomSitemapEntries();
 
   // Fetch dynamic blog posts
   const blogPosts = await fetchBlogPosts();
@@ -112,6 +150,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Convert custom entries to absolute URLs
+  const processedCustomEntries = customEntries.map((entry) => {
+    // If the URL is already absolute, use it as is
+    if (entry.url.startsWith("http")) {
+      return entry;
+    }
+
+    // Otherwise, prefix with the domain
+    return {
+      ...entry,
+      url: `${DOMAIN}${entry.url.startsWith("/") ? "" : "/"}${entry.url}`,
+    };
+  });
+
   // Combine all routes
-  return [...staticRoutes, ...blogRoutes, ...projectRoutes];
+  return [...processedCustomEntries, ...blogRoutes, ...projectRoutes];
 }

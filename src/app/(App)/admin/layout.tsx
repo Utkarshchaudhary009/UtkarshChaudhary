@@ -10,6 +10,7 @@ const adminNavItems = [
   { name: "About Me", path: "/admin/me" },
   { name: "Ad's", path: "/admin/ads" },
   { name: "Marketing Mails", path: "/admin/marketing" },
+  { name: "SEO", path: "/admin/seo" },
 ];
 
 export default function AdminLayout({

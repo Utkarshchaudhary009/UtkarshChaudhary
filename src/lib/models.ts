@@ -6,6 +6,7 @@ import {
   IPersonalDetails,
   IAd,
   IMarketingMail,
+  ISEO,
 } from "./types";
 
 const DEFAULT_IMG =
@@ -181,12 +182,21 @@ const BlogSchema = new mongoose.Schema<IBlog>({
 });
 
 // SEO Metadata Schema
-const SEOSchema = new mongoose.Schema({
+const SEOSchema = new mongoose.Schema<ISEO>({
   pagePath: { type: String, required: true, unique: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
   keywords: [{ type: String }],
   robots: { type: String, default: "index, follow" },
+  openGraph: {
+    title: { type: String },
+    description: { type: String },
+    images: [
+      {
+        url: { type: String },
+      },
+    ],
+  },
   lastModified: { type: Date, default: Date.now },
 });
 
@@ -279,7 +289,8 @@ export const Project =
 
 export const Blog =
   mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
-export const SEO = mongoose.models.SEO || mongoose.model("SEO", SEOSchema);
+export const SEO =
+  mongoose.models.SEO || mongoose.model<ISEO>("SEO", SEOSchema);
 export const Sitemap =
   mongoose.models.Sitemap || mongoose.model("Sitemap", SitemapSchema);
 

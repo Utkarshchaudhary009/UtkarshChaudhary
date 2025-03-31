@@ -1,11 +1,16 @@
 import { ContactForm } from "@/components/contact-form";
 import { Metadata } from "next";
+import { generateMetadata } from "@/lib/seoUtils";
 
-
-export const metadata: Metadata = {
-  title:"Contact Me",
-  description: "Get in touch with me for any queries or collaboration opportunities.",
+// Define fallback metadata
+const fallbackMetadata: Metadata = {
+  title: "Contact Me",
+  description:
+    "Get in touch with me for any queries or collaboration opportunities.",
   openGraph: {
+    title: "Contact Me | Utkarsh Chaudhary",
+    description:
+      "Get in touch with me for any queries or collaboration opportunities.",
     images: [
       {
         url: "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1743308983/uploads/sm8msfmlsujjnh7yizuv.jpg",
@@ -15,10 +20,19 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+// Generate metadata using our utility function
+export async function generateMetadataFn(): Promise<Metadata> {
+  return generateMetadata("/contact", fallbackMetadata);
+}
+
+// Export metadata for Next.js
+export const metadata = generateMetadataFn();
+
 export default function ContactPage() {
   return (
-    <div className="container max-w-xl py-10 lg:mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Get in Touch</h1>
+    <div className='container max-w-xl py-10 lg:mx-auto'>
+      <h1 className='text-3xl font-bold mb-8'>Get in Touch</h1>
       <ContactForm />
     </div>
   );

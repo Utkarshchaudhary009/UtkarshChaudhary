@@ -1,21 +1,21 @@
 interface MarketingEmailProps {
-  name: string;
   greeting: string;
   mainContent: string;
   cta: string;
   ctaUrl: string;
   ctaText: string;
   closing: string;
+  subscriberId: string;
 }
 
 export default function marketingEmailTemplate({
-  name,
   greeting,
   mainContent,
   cta,
   ctaUrl,
   ctaText,
   closing,
+  subscriberId,
 }: MarketingEmailProps) {
   // Convert mainContent paragraphs to HTML
   const formattedContent = mainContent
@@ -23,6 +23,11 @@ export default function marketingEmailTemplate({
     .filter((para) => para.trim() !== "")
     .map((para) => `<p style="margin: 12px 0; line-height: 1.5;">${para}</p>`)
     .join("");
+
+  // Generate unsubscribe URL
+  const unsubscribeUrl = `${
+    process.env.NEXT_PUBLIC_BASE_URL || ""
+  }/unsubscribe/${subscriberId}`;
 
   return `
     <!DOCTYPE html>
@@ -66,9 +71,6 @@ export default function marketingEmailTemplate({
               <!-- Body -->
               <tr>
                 <td style="padding: 30px;">
-                  <p style="margin: 0 0 16px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #333333; font-size: 16px; line-height: 1.5;">
-                    Hi ${name},
-                  </p>
                   <p style="margin: 12px 0 20px; font-family: 'Helvetica Neue', Arial, sans-serif; color: #333333; font-size: 16px; line-height: 1.5;">
                     ${greeting}
                   </p>
@@ -104,7 +106,7 @@ export default function marketingEmailTemplate({
                     You're receiving this email because you opted in to marketing communications.
                   </p>
                   <p style="margin: 12px 0 0; font-family: 'Helvetica Neue', Arial, sans-serif; color: #6c757d; font-size: 14px;">
-                    <a href="{{unsubscribe_url}}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe</a>
+                    <a href="${unsubscribeUrl}" style="color: #4f46e5; text-decoration: underline;">Unsubscribe</a>
                   </p>
                 </td>
               </tr>

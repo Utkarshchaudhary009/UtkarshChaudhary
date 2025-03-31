@@ -7,7 +7,8 @@ import { checkRole } from "@/utils/roles";
 import marketingEmailTemplate from "@/components/Mail/marketingEmailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.FROM_UPDATE_EMAIL || "updates@utkarshchaudhary.space";
+const FROM_EMAIL =
+  process.env.FROM_UPDATE_EMAIL || "updates@utkarshchaudhary.space";
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +64,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate email content with Google AI
+    // Get recipients
+    const recipients = await MarketingMail.find({
+      _id: { $in: recipientIds },
+      hasConsented: true,
+    }).lean();
+
+    if (!recipients.length) {
+      return NextResponse.json(
+        { error: "No valid recipients found" },
+        { status: 400 }
+      );
+    }
+
+    // Generate email content with Google AI for a generic recipient
+    // We'll personalize it slightly for each recipient
     const googleApiKey = process.env.GOOGLE_AI_KEY;
     if (!googleApiKey) {
       return NextResponse.json(
@@ -83,7 +98,7 @@ export async function POST(request: NextRequest) {
       
       INSTRUCTIONS:
       - Return a JSON object with these properties: greeting, mainContent, cta, closing
-      - greeting: A warm, personalized greeting (max 1 sentence)
+      - greeting: A warm, personalized greeting that can work with any recipient's name (max 1 sentence)
       - mainContent: 2-3 paragraphs highlighting the key points and benefits (150-200 words)
       - cta: A compelling call-to-action sentence
       - closing: A friendly sign-off message (max 1 sentence)
@@ -107,29 +122,16 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Get recipients
-    const recipients = await MarketingMail.find({
-      _id: { $in: recipientIds },
-      hasConsented: true,
-    }).lean();
-
-    if (!recipients.length) {
-      return NextResponse.json(
-        { error: "No valid recipients found" },
-        { status: 400 }
-      );
-    }
-
     // Send emails
     const emailPromises = recipients.map(async (recipient) => {
       const html = marketingEmailTemplate({
-        name: recipient.name,
         greeting: emailContent.greeting,
         mainContent: emailContent.mainContent,
         cta: emailContent.cta,
-        ctaUrl: `${process.env.NEXT_PUBLIC_APP_URL}${contentUrl}`,
+        ctaUrl: `${process.env.NEXT_PUBLIC_BASE_URL}${contentUrl}`,
         ctaText: `View the ${contentType}`,
         closing: emailContent.closing,
+        subscriberId: recipient?._id?.toString() || "",
       });
 
       return resend.emails.send({
@@ -149,7 +151,10 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error("Error sending marketing emails:", error);
     return NextResponse.json(
-      { error: "Failed to send marketing emails", details: error instanceof Error ? error.message : String(error) },
+      {
+        error: "Failed to send marketing emails",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

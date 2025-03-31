@@ -128,6 +128,18 @@ export interface IMarketingMail {
   createdAt: Date;
 }
 
+// SEO Schema
+export interface ISEO {
+  _id?: string;
+  pagePath: string;
+  title: string;
+  description: string;
+  keywords?: string[];
+  robots?: string;
+  openGraph?: IOpenGraph;
+  lastModified: Date;
+}
+
 // Zod Schemas
 export const OpenGraphSchema = z.object({
   title: z.string().optional(),
@@ -321,3 +333,48 @@ export const MarketingMailSchema = z.object({
   hasConsented: z.boolean(),
   createdAt: z.date().default(() => new Date()),
 });
+
+// Add SEO Zod Schema
+export const SEOMetadataSchema = z.object({
+  _id: z.string().optional(),
+  pagePath: z.string().min(1, "Page path is required"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z
+    .string()
+    .min(50, "Description must be at least 50 characters")
+    .max(160, "Description must not exceed 160 characters"),
+  keywords: z.array(z.string()).optional(),
+  robots: z.string().default("index, follow"),
+  openGraph: OpenGraphSchema.optional(),
+  lastModified: z.date().default(() => new Date()),
+});
+
+export const seoFormSchema = z.object({
+  pagePath: z.string().min(1, "Page path is required"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z
+    .string()
+    .min(50, "Description must be at least 50 characters")
+    .max(160, "Description must not exceed 160 characters"),
+  keywords: z.string().optional(),
+  robots: z.string().default("index, follow"),
+  ogTitle: z.string().optional(),
+  ogDescription: z.string().optional(),
+  ogImage: z.string().optional(),
+});
+
+export interface SitemapEntry {
+  id?: string;
+  url: string;
+  changefreq:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+  priority: number;
+  lastmod?: string;
+}
+

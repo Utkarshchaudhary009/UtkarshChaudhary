@@ -1,4 +1,6 @@
 import { MetadataRoute } from "next";
+import fs from "fs";
+import path from "path";
 
 /**
  * Generates the robots.txt file for the website
@@ -6,12 +8,13 @@ import { MetadataRoute } from "next";
  * @see https://developers.google.com/search/docs/advanced/robots/create-robots-txt
  */
 export default function robots(): MetadataRoute.Robots {
-  // Domain configuration - using the same domain as in sitemap.ts
+  // Config file path
+  const configPath = path.join(process.cwd(), "src/config/robots-config.json");
+
+  // Default configuration
   const DOMAIN =
     process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.space";
-
-  return {
-    // Define rules for all search engine crawlers
+  const defaultConfig = {
     rules: [
       {
         userAgent: "*",
@@ -28,9 +31,27 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    // Link to the sitemap
     sitemap: `${DOMAIN}/sitemap.xml`,
-    // Set the canonical host
     host: DOMAIN,
   };
+
+  try {
+    // Check if config file exists
+    if (fs.existsSync(configPath)) {
+      // Read config file
+      const configData = fs.readFileSync(configPath, "utf8");
+      const config = JSON.parse(configData);
+
+      return {
+        rules: config.rules,
+        sitemap: config.sitemap,
+        host: config.host,
+      };
+    }
+  } catch (error) {
+    console.error("Error reading robots.txt configuration:", error);
+  }
+
+  // Return default configuration if file doesn't exist or there's an error
+  return defaultConfig;
 }
