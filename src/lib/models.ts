@@ -68,12 +68,6 @@ const ProjectSchema = new mongoose.Schema<IProject>({
   featured: { type: Boolean, default: false },
   aiGenerated: { type: Boolean, default: false },
   markdown: { type: Boolean, default: true },
-  seo: {
-    metaTitle: { type: String },
-    metaDescription: { type: String },
-    keywords: [{ type: String }],
-    structuredData: { type: mongoose.Schema.Types.Mixed },
-  },
   embeddings: [{ type: Number }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -248,19 +242,12 @@ const validateMetaDescription = (text: string) => {
   return text && text.length >= 10 && text.length <= 160;
 };
 
+// ProjectSchema validation middleware (no SEO validation)
 ProjectSchema.pre("validate", function (next) {
-  if (
-    this.seo?.metaDescription &&
-    !validateMetaDescription(this.seo.metaDescription)
-  ) {
-    this.invalidate(
-      "seo.metaDescription",
-      "Meta description must be between 10-160 characters"
-    );
-  }
   next();
 });
 
+// BlogSchema validation middleware
 BlogSchema.pre("validate", function (next) {
   if (
     this.seo?.metaDescription &&

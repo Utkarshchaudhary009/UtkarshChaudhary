@@ -33,7 +33,6 @@ export interface IProject {
   aiGenerated: boolean;
   markdown?: boolean;
   featured?: boolean;
-  seo?: ISEO;
   embeddings?: number[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -175,21 +174,6 @@ export const ProjectSchema = z.object({
   aiGenerated: z.boolean().default(false),
   markdown: z.boolean().default(true),
   featured: z.boolean().default(false),
-  seo: z
-    .object({
-      metaTitle: z
-        .string()
-        .min(3, "Meta title must be at least 3 characters")
-        .optional(),
-      metaDescription: z
-        .string()
-        .min(50, "Meta description must be at least 50 characters")
-        .max(160, "Meta description must not exceed 160 characters")
-        .optional(),
-      keywords: z.array(z.string()).optional(),
-      structuredData: z.record(z.unknown()).optional(),
-    })
-    .optional(),
   embeddings: z.array(z.number()).optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

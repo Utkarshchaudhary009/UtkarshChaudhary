@@ -113,15 +113,6 @@ export async function POST(request: Request) {
       // Validate data with Zod
       const validatedData = ProjectRequestSchema.parse(body);
 
-      // Generate SEO metadata if not provided
-      if (!validatedData.seo) {
-        validatedData.seo = {
-          metaTitle: validatedData.title,
-          metaDescription: validatedData.description.slice(0, 160),
-          keywords: [...validatedData.technologies, validatedData.category],
-        };
-      }
-
       // Check for duplicate slug
       const existingProject = await Project.findOne({
         slug: validatedData.slug,

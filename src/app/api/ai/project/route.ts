@@ -3,24 +3,15 @@ import { GoogleGenAI } from "@google/genai";
 import { ProjectRequestSchema } from "@/lib/types";
 
 async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
-  const prompt = `Expert Project Developer Generator\n\n Data: ${idea}.
-    "\n\n"
-  )}\n\nPlease generate a comprehensive and detailed project description that includes the following elements:\n- A concise and professional title that captures the essence of the project\n- Detailed project description that clearly explains the concept\n- A technical breakdown including appropriate technologies\n- A concise excerpt that summarizes the main points of the project\n\nThe output should be formatted as JSON, containing fields that match the project schema format. Please adhere to the following schema(note - FOLLOW THE SCHEMA ALWAYS): 
-  
-  title: string.MIN(10).max(25),
-  slug: string.MIN(20).max(35),
-  content: string.min(100).max(1000),
-  description: string.min(50).max(150),
-  excerpt: string.max(130),
+  const prompt = `Generate a detailed project idea (in JSON format) about "${idea}". Include:
+  title: string,
+  content: string (1000-1500 characters, with some markdown formatting),
+  description: string (200-250 characters),
+  excerpt: string (less than 160 characters),
   technologies: string[] (at least 3 to 5 relevant technologies),
   category: string,
   status: "planned",
-  markdown: true,
-  seo: {
-    metaTitle: string.min(10).max(60),
-    metaDescription: string.min(50).max(130),
-    keywords: string[] (4-7 relevant keywords)
-  }
+  markdown: true
   `;
 
   try {
@@ -87,14 +78,6 @@ export async function GET(request: NextRequest) {
       markdown: true,
       featured: false,
       aiGenerated: true,
-      seo: {
-        metaTitle: projectData.seo?.metaTitle || projectData.title,
-        metaDescription:
-          projectData.seo?.metaDescription ||
-          projectData.description?.substring(0, 157) ||
-          "",
-        keywords: projectData.seo?.keywords || projectData.technologies || [],
-      },
     };
 
     ProjectRequestSchema.parse(fullProject);

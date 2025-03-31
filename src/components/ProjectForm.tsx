@@ -80,11 +80,6 @@ const ProjectForm = ({
       endDate: initialData?.endDate || "",
       markdown: initialData?.markdown ?? true,
       featured: initialData?.featured || false,
-      seo: {
-        metaTitle: initialData?.seo?.metaTitle || "",
-        metaDescription: initialData?.seo?.metaDescription || "",
-        keywords: initialData?.seo?.keywords || [],
-      },
     }),
     [initialData]
   );
@@ -94,14 +89,10 @@ const ProjectForm = ({
     defaultValues.technologies
   );
   const [gallery, setGallery] = useState<string[]>(defaultValues.gallery);
-  const [keywords, setKeywords] = useState<string[]>(
-    defaultValues.seo.keywords
-  );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [newTechnology, setNewTechnology] = useState("");
-  const [newKeyword, setNewKeyword] = useState("");
   const [userEditedFields, setUserEditedFields] = useState<
     Record<string, boolean>
   >({});
@@ -185,7 +176,7 @@ const ProjectForm = ({
           // Handle form fields
           Object.entries(parsedData).forEach(([key, value]) => {
             console.log(`Setting value for key: ${key}, value: ${value}`); // Track change
-            if (key !== "technologies" && key !== "gallery" && key !== "seo") {
+            if (key !== "technologies" && key !== "gallery") {
               // Handle date fields specifically to ensure proper format
               if (key === "startDate" || key === "endDate") {
                 if (value) {
@@ -229,26 +220,6 @@ const ProjectForm = ({
           ) {
             setGallery(parsedData.gallery);
           }
-
-          // Handle SEO fields, especially keywords array
-          if (parsedData.seo) {
-            if (parsedData.seo.metaTitle) {
-              setValue("seo.metaTitle", parsedData.seo.metaTitle);
-            }
-            if (parsedData.seo.metaDescription) {
-              setValue("seo.metaDescription", parsedData.seo.metaDescription);
-            }
-            if (
-              Array.isArray(parsedData.seo.keywords) &&
-              parsedData.seo.keywords.length > 0
-            ) {
-              setKeywords(parsedData.seo.keywords);
-              console.log(
-                "Setting keywords from localStorage:",
-                parsedData.seo.keywords
-              );
-            }
-          }
         }
       } catch (error) {
         console.error("Error loading form data from localStorage:", error);
@@ -259,7 +230,6 @@ const ProjectForm = ({
   // Save form data to localStorage when it changes
   useEffect(() => {
     if (typeof window !== "undefined") {
-      console.log("keywords to save:", keywords);
       const formData = watch();
       const dataToSave = {
         ...formData,
@@ -271,14 +241,6 @@ const ProjectForm = ({
         startDate: formData.startDate || undefined,
         endDate: formData.endDate || undefined,
         aiGenerated: false,
-        seo: {
-          ...formData.seo,
-          metaTitle: formData.seo?.metaTitle || formData.title,
-          metaDescription:
-            formData.seo?.metaDescription ||
-            formData.description?.slice(0, 160),
-          keywords: keywords,
-        },
       };
       console.log("Data to save:", dataToSave);
       // Use different keys for new and existing projects
@@ -288,7 +250,7 @@ const ProjectForm = ({
 
       localStorage.setItem(storageKey, JSON.stringify(dataToSave));
     }
-  }, [watch, technologies, gallery, keywords, initialData]);
+  }, [watch, technologies, gallery, initialData]);
 
   // Auto-generate slug when title changes if slug hasn't been manually edited
   useEffect(() => {
@@ -311,31 +273,6 @@ const ProjectForm = ({
       setValue("excerpt", truncatedDescription, { shouldDirty: true });
     }
   }, [description, setValue, userEditedFields.excerpt]);
-
-  // Auto-generate SEO fields if they haven't been manually edited
-  useEffect(() => {
-    if (!userEditedFields["seo.metaTitle"] && title) {
-      setValue("seo.metaTitle", title, { shouldDirty: true });
-    }
-
-    if (!userEditedFields["seo.metaDescription"] && description) {
-      const truncatedDescription =
-        description.length > 160
-          ? description.substring(0, 157) + "..."
-          : description;
-      setValue("seo.metaDescription", truncatedDescription, {
-        shouldDirty: true,
-      });
-    }
-
-    if (
-      !userEditedFields["seo.keywords"] &&
-      technologies.length > 0 &&
-      keywords.length === 0
-    ) {
-      setKeywords([...technologies]);
-    }
-  }, [title, description, technologies, keywords, setValue, userEditedFields]);
 
   // Mark field as user edited
   const markFieldAsEdited = (fieldName: string) => {
@@ -377,7 +314,6 @@ const ProjectForm = ({
     async (formData: ProjectFormData) => {
       console.log("Form submission data:", formData);
       console.log("Current technologies:", technologies);
-      console.log("Current keywords:", keywords);
 
       // Full validation before submission
       const isValid = await trigger();
@@ -437,14 +373,6 @@ const ProjectForm = ({
           startDate: validatedData.startDate || undefined,
           endDate: validatedData.endDate || undefined,
           aiGenerated: false,
-          seo: {
-            ...validatedData.seo,
-            metaTitle: validatedData.seo?.metaTitle || validatedData.title,
-            metaDescription:
-              validatedData.seo?.metaDescription ||
-              validatedData.description?.slice(0, 160),
-            keywords: keywords,
-          },
         };
 
         if (initialData?._id) {
@@ -527,7 +455,6 @@ const ProjectForm = ({
     [
       technologies,
       gallery,
-      keywords,
       initialData,
       updateProjectMutation,
       createProjectMutation,
@@ -599,12 +526,6 @@ const ProjectForm = ({
       setTechnologies(updatedTechnologies);
       setNewTechnology("");
       setHasUnsavedChanges(true);
-
-      // Auto-update keywords if the user hasn't manually edited them
-      if (!userEditedFields["seo.keywords"] && keywords.length === 0) {
-        console.log("Auto-updating keywords based on technologies");
-        setKeywords(updatedTechnologies);
-      }
     }
   };
 
@@ -617,28 +538,6 @@ const ProjectForm = ({
   const handleRemoveGalleryImage = (url: string) => {
     setGallery((prev) => prev.filter((u) => u !== url));
     setHasUnsavedChanges(true);
-  };
-
-  // Keyword management
-  const handleAddKeyword = () => {
-    if (newKeyword && !keywords.includes(newKeyword)) {
-      const updatedKeywords = [...keywords, newKeyword];
-      console.log("Adding keyword, new list:", updatedKeywords);
-      setKeywords(updatedKeywords);
-      setNewKeyword("");
-      setHasUnsavedChanges(true);
-      markFieldAsEdited("seo.keywords");
-    }
-  };
-
-  const handleRemoveKeyword = (keyword: string) => {
-    setKeywords((prev) => prev.filter((k) => k !== keyword));
-    setHasUnsavedChanges(true);
-    markFieldAsEdited("seo.keywords");
-    console.log(
-      "Keywords after removing:",
-      keywords.filter((k) => k !== keyword)
-    ); // Add this line
   };
 
   // Slug generation
@@ -1021,80 +920,6 @@ const ProjectForm = ({
             className='rounded border-gray-300'
           />
           <Label htmlFor='markdown'>Use Markdown</Label>
-        </div>
-      </div>
-
-      {/* SEO Settings */}
-      <div className='space-y-4'>
-        <h3 className='text-lg font-semibold'>SEO Settings</h3>
-        <div className='space-y-2'>
-          <Label htmlFor='seo.metaTitle'>Meta Title</Label>
-          <Input
-            id='seo.metaTitle'
-            {...register("seo.metaTitle")}
-            placeholder='Leave blank to use project title'
-            onFocus={() => markFieldAsEdited("seo.metaTitle")}
-            onBlur={(e) => checkEmptyField("seo.metaTitle", e.target.value)}
-          />
-        </div>
-
-        <div className='space-y-2'>
-          <Label htmlFor='seo.metaDescription'>Meta Description</Label>
-          <Textarea
-            id='seo.metaDescription'
-            {...register("seo.metaDescription", {
-              required: "Meta description is required",
-            })}
-            placeholder='Leave blank to use project description'
-            maxLength={160}
-            onFocus={() => markFieldAsEdited("seo.metaDescription")}
-            onBlur={(e) =>
-              checkEmptyField("seo.metaDescription", e.target.value)
-            }
-          />
-
-          <span className='absolute bottom-9 right-2 text-xs text-muted-foreground'>
-            {watch("seo.metaDescription")?.length || 0}/160
-          </span>
-          {errors.seo?.metaDescription && (
-            <p className='text-sm text-red-500'>
-              {errors.seo.metaDescription.message}
-            </p>
-          )}
-        </div>
-
-        <div className='space-y-2'>
-          <Label>Keywords</Label>
-          <div className='flex gap-2'>
-            <Input
-              value={newKeyword}
-              onChange={(e) => setNewKeyword(e.target.value)}
-              placeholder='Add keyword'
-            />
-            <Button
-              type='button'
-              onClick={handleAddKeyword}
-            >
-              Add
-            </Button>
-          </div>
-          <div className='flex flex-wrap gap-2 mt-2'>
-            {keywords.map((keyword) => (
-              <div
-                key={keyword}
-                className='bg-secondary text-secondary-foreground px-2 py-1 rounded-md flex items-center gap-2'
-              >
-                {keyword}
-                <button
-                  type='button'
-                  onClick={() => handleRemoveKeyword(keyword)}
-                  className='text-secondary-foreground/50 hover:text-secondary-foreground'
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
