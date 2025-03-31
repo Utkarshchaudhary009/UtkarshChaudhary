@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
-import { IProject, IBlog, IContact, IPersonalDetails, IAd } from "./types";
+import {
+  IProject,
+  IBlog,
+  IContact,
+  IPersonalDetails,
+  IAd,
+  IMarketingMail,
+} from "./types";
 
 const DEFAULT_IMG =
   "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1742598419/uploads/d9eqgzesei4wsgbb6mko.png";
@@ -257,6 +264,15 @@ BlogSchema.pre("validate", function (next) {
   next();
 });
 
+// MarketingMail Schema
+const MarketingMailSchema = new mongoose.Schema<IMarketingMail>({
+  clerkId: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  hasConsented: { type: Boolean, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
 // Export models
 export const Project =
   mongoose.models.Project || mongoose.model<IProject>("Project", ProjectSchema);
@@ -275,3 +291,7 @@ export const Contact =
 
 // Create or use existing model
 export const AdModel = mongoose.models.Ad || mongoose.model("Ad", AdSchema);
+
+export const MarketingMail =
+  mongoose.models.MarketingMail ||
+  mongoose.model<IMarketingMail>("MarketingMail", MarketingMailSchema);

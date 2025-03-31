@@ -118,6 +118,16 @@ export interface IAd {
   created_at: Date;
 }
 
+// Marketing Mail Schema
+export interface IMarketingMail {
+  _id?: string;
+  clerkId: string;
+  name: string;
+  email: string;
+  hasConsented: boolean;
+  createdAt: Date;
+}
+
 // Zod Schemas
 export const OpenGraphSchema = z.object({
   title: z.string().optional(),
@@ -301,4 +311,13 @@ export const BlogRequestSchema = z.object({
     .optional(),
   publishedAt: z.string().optional(),
   isPublished: z.boolean(),
+});
+
+export const MarketingMailSchema = z.object({
+  _id: z.string().optional(),
+  clerkId: z.string(),
+  name: z.string(),
+  email: z.string().email("Invalid email address"),
+  hasConsented: z.boolean(),
+  createdAt: z.date().default(() => new Date()),
 });

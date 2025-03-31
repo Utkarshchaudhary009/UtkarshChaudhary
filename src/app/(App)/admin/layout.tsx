@@ -9,6 +9,7 @@ const adminNavItems = [
   { name: "Projects", path: "/admin/projects" },
   { name: "About Me", path: "/admin/me" },
   { name: "Ad's", path: "/admin/ads" },
+  { name: "Marketing Mails", path: "/admin/marketing" },
 ];
 
 export default function AdminLayout({
@@ -18,27 +19,30 @@ export default function AdminLayout({
 }) {
   return (
     <>
-      <div className="min-h-screen flex flex-col">
+      <div className='min-h-screen flex flex-col'>
         {/* Hero Section */}
-        <section className="bg-secondary/20 py-12">
-          <div className="container flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <section className='bg-secondary/20 py-12'>
+          <div className='container flex items-center justify-between'>
+            <h1 className='text-3xl font-bold'>Admin Dashboard</h1>
           </div>
         </section>
 
         {/* Admin Navigation Bar */}
-        <nav className="bg-muted py-4">
-          <div className="container flex space-x-4">
+        <nav className='bg-muted py-2 md:py-4'>
+          <div className='container flex flex-wrap gap-1 md:gap-2'>
             {adminNavItems.map((item) => (
-              <Link key={item.path} href={item.path}>
-                <Button variant="ghost">{item.name}</Button>
+              <Link
+                key={item.path}
+                href={item.path}
+              >
+                <Button variant='ghost'>{item.name}</Button>
               </Link>
             ))}
           </div>
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 container py-8">{children}</main>
+        <main className='flex-1 container py-8'>{children}</main>
       </div>
     </>
   );
