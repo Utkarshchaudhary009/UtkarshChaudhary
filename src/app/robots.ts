@@ -8,7 +8,7 @@ import { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   // Domain configuration - using the same domain as in sitemap.ts
   const DOMAIN =
-    process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.space";
 
   return {
     // Define rules for all search engine crawlers

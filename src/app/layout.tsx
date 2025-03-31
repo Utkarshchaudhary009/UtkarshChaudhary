@@ -25,7 +25,7 @@ const AUTHOR_NAME = "Utkarsh Chaudhary";
 const APP_DESCRIPTION =
   "This website showcases my work and projects that delivers high quality content. I also write blogs on my learnings and experiences.";
 
-const APP_URL = "https://utkarshchaudhary.vercel.app";
+const APP_URL = "https://utkarshchaudhary.space";
 
 export const metadata: Metadata = {
   applicationName: APP_TITLE.default,

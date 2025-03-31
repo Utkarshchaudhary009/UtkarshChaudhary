@@ -90,7 +90,7 @@ export default function MarketingMailConsent() {
   if (!isSignedIn || !showConsent) return null;
 
   return (
-    <div className='fixed inset-x-0 bottom-0 z-50 p-4 md:p-0'>
+    <div className='fixed inset-x-0 bottom-4 z-50 p-4 md:p-0'>
       <div className='mx-auto max-w-screen-lg'>
         <div className='relative overflow-hidden rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800 border border-primary/20'>
           <button

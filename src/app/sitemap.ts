@@ -49,7 +49,7 @@ async function fetchProjects(): Promise<IProject[]> {
 
 // Domain configuration
 const DOMAIN =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.vercel.app";
+  process.env.NEXT_PUBLIC_BASE_URL || "https://utkarshchaudhary.space";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Initialize with static routes
