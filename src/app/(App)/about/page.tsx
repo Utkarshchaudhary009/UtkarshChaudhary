@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import AboutClient from "./client";
+import { generateMetadata as getSEOMetadata } from "@/lib/seoUtils";
 
-export const metadata: Metadata = {
+// Define fallback metadata
+const fallbackMetadata: Metadata = {
   title: "About Me | Utkarsh Chaudhary",
   description:
     "Learn more about Utkarsh Chaudhary, my background, work experience, and personal stories.",
@@ -29,6 +31,11 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+// Generate metadata using our utility function
+export async function generateMetadata(): Promise<Metadata> {
+  return getSEOMetadata("/about", fallbackMetadata);
+}
 
 export default function AboutPage() {
   return <AboutClient />;

@@ -1,12 +1,16 @@
 import { Metadata } from "next";
 import BlogClient from "./client";
+import { generateMetadata as getSEOMetadata } from "@/lib/seoUtils";
 
-export const metadata: Metadata = {
+// Define fallback metadata
+const fallbackMetadata: Metadata = {
   title: "Blog | Utkarsh Chaudhary",
-  description: "Latest insights, tutorials, and updates from our team on technology and development.",
+  description:
+    "Latest insights, tutorials, and updates from our team on technology and development.",
   openGraph: {
     title: "Blog | Utkarsh Chaudhary",
-    description: "Latest insights, tutorials, and updates from our team on technology and development.",
+    description:
+      "Latest insights, tutorials, and updates from our team on technology and development.",
     type: "website",
     images: [
       {
@@ -20,10 +24,18 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blog | Utkarsh Chaudhary",
-    description: "Latest insights, tutorials, and updates from our team on technology and development.",
-    images: ["https://res.cloudinary.com/dgdfxsuoh/image/upload/v1743308983/uploads/sm8msfmlsujjnh7yizuv.jpg"],
+    description:
+      "Latest insights, tutorials, and updates from our team on technology and development.",
+    images: [
+      "https://res.cloudinary.com/dgdfxsuoh/image/upload/v1743308983/uploads/sm8msfmlsujjnh7yizuv.jpg",
+    ],
   },
 };
+
+// Generate metadata using our utility function
+export async function generateMetadata(): Promise<Metadata> {
+  return getSEOMetadata("/blog", fallbackMetadata);
+}
 
 export default function BlogPage() {
   return <BlogClient />;

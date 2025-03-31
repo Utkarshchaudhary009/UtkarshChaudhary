@@ -1,6 +1,6 @@
 import { ContactForm } from "@/components/contact-form";
 import { Metadata } from "next";
-import { generateMetadata } from "@/lib/seoUtils";
+import { generateMetadata as getSEOMetadata } from "@/lib/seoUtils";
 
 // Define fallback metadata
 const fallbackMetadata: Metadata = {
@@ -21,13 +21,10 @@ const fallbackMetadata: Metadata = {
   },
 };
 
-// Generate metadata using our utility function
-export async function generateMetadataFn(): Promise<Metadata> {
-  return generateMetadata("/contact", fallbackMetadata);
+// Generate metadata using our utility function (must follow Next.js naming)
+export async function generateMetadata(): Promise<Metadata> {
+  return getSEOMetadata("/contact", fallbackMetadata);
 }
-
-// Export metadata for Next.js
-export const metadata = generateMetadataFn();
 
 export default function ContactPage() {
   return (
