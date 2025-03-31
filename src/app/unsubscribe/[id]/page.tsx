@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Loader2, CheckCircle, AlertCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,28 +17,25 @@ import Link from "next/link";
 export default function UnsubscribePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [resubscribed, setResubscribed] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
-
+  const { id } = use(params);
   // Process unsubscribe on page load
   useEffect(() => {
     const handleUnsubscribe = async () => {
       try {
-        if (!params.id) {
+        if (!id) {
           throw new Error("Invalid unsubscribe link");
         }
 
-        const response = await fetch(
-          `/api/marketing-mail/unsubscribe/${params.id}`,
-          {
-            method: "POST",
-          }
-        );
+        const response = await fetch(`/api/marketing-mail/unsubscribe/${id}`, {
+          method: "POST",
+        });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -58,19 +55,16 @@ export default function UnsubscribePage({
     };
 
     handleUnsubscribe();
-  }, [params.id]);
+  }, [id]);
 
   // Handle resubscribe
   const handleResubscribe = async () => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `/api/marketing-mail/resubscribe/${params.id}`,
-        {
-          method: "POST",
-        }
-      );
+      const response = await fetch(`/api/marketing-mail/resubscribe/${id}`, {
+        method: "POST",
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
