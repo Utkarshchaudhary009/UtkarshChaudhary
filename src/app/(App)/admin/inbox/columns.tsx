@@ -8,9 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<IContact>[] = [
   {
@@ -78,6 +79,25 @@ export const columns: ColumnDef<IContact>[] = [
     cell: ({ row }) => {
       const contact = row.original;
 
+      const handleDelete = async () => {
+        try {
+          const response = await fetch(`/api/contact?id=${contact._id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to delete contact");
+          }
+
+          toast.success("Contact deleted successfully");
+          // Trigger a refresh of the table
+          window.location.reload();
+        } catch (error) {
+          toast.error("Failed to delete contact");
+          console.error("Delete error:", error);
+        }
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -113,6 +133,13 @@ export const columns: ColumnDef<IContact>[] = [
               }}
             >
               {contact.status === "replied" ? "View Reply" : "Reply"}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleDelete}
+              className='text-red-600 focus:text-red-600'
+            >
+              <Trash2 className='mr-2 h-4 w-4' />
+              
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

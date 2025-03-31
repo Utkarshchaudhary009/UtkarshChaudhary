@@ -121,3 +121,39 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { message: "Contact ID is required" },
+        { status: 400 }
+      );
+    }
+
+    await connectDB();
+    const deletedContact = await Contact.findByIdAndDelete(id);
+
+    if (!deletedContact) {
+      return NextResponse.json(
+        { message: "Contact not found" },
+        { status: 404 }
+      );
+    }
+
+    revalidatePath("/admin/inbox");
+    return NextResponse.json(
+      { message: "Contact deleted successfully" },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Delete Contact Error:", err);
+    return NextResponse.json(
+      { message: "Failed to delete contact" },
+      { status: 500 }
+    );
+  }
+}
