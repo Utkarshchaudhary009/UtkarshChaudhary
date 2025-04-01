@@ -1,8 +1,8 @@
-import { checkRoleClerk } from "@/utils/roles";
+import { checkRoleSupabase } from "@/utils/roles";
 import { Navbar } from "./Navbar";
 
 export default async function NavbarServer() {
-  const isAdmin = await checkRoleClerk("admin");
+  const isAdmin = await checkRoleSupabase("admin");
   console.log(` isAdmin:${isAdmin}`);
   return <Navbar isAdmin={isAdmin} />;
 }

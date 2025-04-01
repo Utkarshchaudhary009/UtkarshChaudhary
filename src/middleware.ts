@@ -1,7 +1,7 @@
 // Middleware for Clerk authentication
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase/server";
+import { getCurrentUserData } from "./lib/auth";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -24,15 +24,16 @@ export default clerkMiddleware(async (auth, req) => {
   if (isAdminRoute(req) && userId) {
     // Check if admin in Supabase
     try {
-      const { supabase } = createServerClient();
-      const { data, error } = await supabase
-        .from("users")
-        .select("is_admin, is_banned")
-        .eq("clerk_id", userId)
-        .single();
-      
-      // Redirect if not admin or banned
-      if (error || !data || !data.is_admin || data.is_banned) {
+      const data= await getCurrentUserData()
+     
+      // Redirect if banned
+      if (data && data.is_banned) {
+        const url = new URL("/trash/ban", req.url);
+        return NextResponse.redirect(url);
+      }
+
+      // Redirect if not admin
+      if (!data || !data.is_admin) {
         const url = new URL("/", req.url);
         return NextResponse.redirect(url);
       }
@@ -40,6 +41,19 @@ export default clerkMiddleware(async (auth, req) => {
       console.error("Error checking admin status in middleware:", error);
       const url = new URL("/", req.url);
       return NextResponse.redirect(url);
+    }
+  }
+
+  // Check if user is banned for all protected routes
+  if (!isPublicRoute(req) && userId) {
+    try {
+      const data = await getCurrentUserData();
+      if (data && data.is_banned) {
+        const url = new URL("/trash/ban", req.url);
+        return NextResponse.redirect(url);
+      }
+    } catch (error) {
+      console.error("Error checking ban status in middleware:", error);
     }
   }
 
