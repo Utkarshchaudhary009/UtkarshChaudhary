@@ -1,5 +1,5 @@
 // In src/lib/storage.ts
-import { createClient } from "@/lib/supabase/client";
+import { createAdminClient } from "@/lib/supabase/client";
 
 /**
  * Creates a Supabase storage bucket if it doesn't already exist
@@ -20,7 +20,7 @@ export async function createBucketIfNotExists(
   }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // First check if bucket already exists
     const { data: buckets, error: listError } =

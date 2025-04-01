@@ -5,6 +5,7 @@ import type { Database } from "@/types/database.types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseServiceRoleKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || "";
 
 export const supabase = createBrowserClient<Database>(
   supabaseUrl,
@@ -14,6 +15,10 @@ export const supabase = createBrowserClient<Database>(
 // Export createClient for use in hooks
 export const createClient = () => {
   return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
+};
+
+export const createAdminClient = () => {
+  return createBrowserClient<Database>(supabaseUrl, supabaseServiceRoleKey);
 };
 
 // Type for user data in Supabase
