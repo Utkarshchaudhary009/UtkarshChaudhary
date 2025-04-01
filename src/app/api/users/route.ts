@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
@@ -94,7 +94,7 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = await createClient();
+    const supabaseAdmin = await createAdminClient();
 
     // Fetch user details from Clerk
     const clerkUser = await currentUser();
@@ -111,7 +111,7 @@ export async function POST() {
     };
 
     // Upsert user data to Supabase
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("users")
       .upsert(userData, {
         onConflict: "clerk_id",
