@@ -1,7 +1,7 @@
 // Middleware for Clerk authentication
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { getCurrentUserData } from "./lib/auth";
+import { getCurrentUserData } from "@/utils/auth";
 
 const isPublicRoute = createRouteMatcher([
   "/",

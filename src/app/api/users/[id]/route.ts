@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
@@ -13,7 +13,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { supabase } = createServerClient();
+    const supabase = await createClient();
 
     // Requesting user's own data or admin check
     if ((await params).id !== userId) {
@@ -59,7 +59,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { supabase } = createServerClient();
+    const supabase = await createClient();
 
     // Check if admin
     const { data: adminCheck } = await supabase

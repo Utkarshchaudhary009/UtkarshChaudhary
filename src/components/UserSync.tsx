@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { syncUserToSupabase } from "@/lib/auth";
+import { syncUserToSupabase } from "@/utils/auth";
 
 export default function UserSync() {
   const { userId, isLoaded, isSignedIn } = useAuth();
