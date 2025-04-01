@@ -70,6 +70,19 @@ export default function Footer() {
             ) : (
               <p>Information not available.</p>
             )}
+            <p className='text-xs opacity-70 md:hidden'>
+              <span className='font-medium'>
+                Interested in advertising on this website?{" "}
+                <a
+                  href='https://utkarshchaudhary.space/contact'
+                  className='text-primary hover:underline transition-colors'
+                >
+                  Contact me
+                </a>{" "}
+                for partnership opportunities
+              </span>
+              .
+            </p>
           </div>
 
           {/* Middle Section: Quick Links */}
@@ -137,7 +150,21 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
+        <div className='flex justify-center items-center hidden md:block'>
+          <p className='text-xs opacity-70 md:hidden'>
+            <span className='font-medium'>
+              Interested in advertising on this website?{" "}
+              <a
+                href='https://utkarshchaudhary.space/contact'
+                className='text-primary hover:underline transition-colors'
+              >
+                Contact me
+              </a>{" "}
+              for partnership opportunities
+            </span>
+            .
+          </p>
+        </div>
         {/* Bottom Section: Copyright */}
         <div className='pt-6 border-t border-border/30 text-center'>
           <p className='text-xs opacity-70'>

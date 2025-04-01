@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { XCircle } from "lucide-react";
+import { XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -127,7 +127,11 @@ export default function MarketingMailConsent() {
                 disabled={isLoading}
                 className='w-full sm:w-auto bg-primary text-primary-foreground'
               >
-                Yes, keep me in the loop
+                {isLoading ? (
+                  <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                ) : (
+                  "Yes, keep me in the loop"
+                )}
               </Button>
             </div>
           </div>

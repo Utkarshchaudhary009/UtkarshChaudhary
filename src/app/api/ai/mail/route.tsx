@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
         IMPORTANT INSTRUCTIONS:
         - Provide ONLY the main message content without any formatting or HTML tags
-        - DO NOT include any greetings (like "Dear", "Hi", "Hello")
+        - Start with proper greeting.
         - DO NOT include any sign-offs (like "Regards", "Thanks", "Sincerely")
         - DO NOT include any signatures or contact information
         - DO NOT include any date, reference numbers, or subject lines

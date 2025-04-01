@@ -93,6 +93,7 @@ export interface IPersonalDetails {
   bio: string;
   title?: string;
   profileImage?: string;
+  resumePdf?: string;
   work: IJob[];
   email: string;
   location: string;
@@ -244,6 +245,7 @@ export const personalDetailsSchema = z.object({
   age: z.number().min(1, { message: "Age is required" }),
   title: z.string().optional(),
   profileImage: z.string().optional(),
+  resumePdf: z.string().optional(),
   work: z.array(jobSchema),
   stories: z.array(storySchema),
   bio: z.string().min(1, { message: "Bio is required" }),
@@ -361,4 +363,3 @@ export interface SitemapEntry {
   priority: number;
   lastmod?: string;
 }
-

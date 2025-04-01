@@ -14,7 +14,11 @@ import {
   Instagram as InstagramIcon,
   Linkedin as LinkedinIcon,
   Github as GithubIcon,
+  FileText,
+  Download,
+  ExternalLink,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const getSocialIcon = (platform: string) => {
   const lowercasePlatform = platform.toLowerCase();
@@ -90,6 +94,10 @@ export default function AboutClient() {
             <Skeleton className='h-4 w-1/2' />
           </CardHeader>
           <CardContent className='space-y-4'>
+            <div>
+              <Skeleton className='h-10 w-40' />
+            </div>
+
             <div>
               <h3 className='text-lg font-semibold mb-2'>Work Experience</h3>
               <div className='space-y-3'>
@@ -167,6 +175,48 @@ export default function AboutClient() {
           </p>
         </CardHeader>
         <CardContent className='space-y-4'>
+          {personalDetails.resumePdf && (
+            <div className='border rounded-lg p-4 bg-muted/20'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                  <FileText className='h-5 w-5 text-primary' />
+                  <span className='font-medium'>Resume</span>
+                </div>
+                <div className='flex gap-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    asChild
+                  >
+                    <a
+                      href={personalDetails.resumePdf}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-1'
+                    >
+                      <ExternalLink className='h-4 w-4' />
+                      View
+                    </a>
+                  </Button>
+                  <Button
+                    variant='default'
+                    size='sm'
+                    asChild
+                  >
+                    <a
+                      href={personalDetails.resumePdf}
+                      download='resume.pdf'
+                      className='flex items-center gap-1'
+                    >
+                      <Download className='h-4 w-4' />
+                      Download
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div>
             <h3 className='text-lg font-semibold mb-2'>Social Links</h3>
             {personalDetails.socialLinks.length > 0 ? (

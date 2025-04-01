@@ -7,30 +7,26 @@ export default function usersMail(username: string, message: string): string {
     <link
       rel="preload"
       as="image"
-      href="https://react-email-demo-fuig9rgt9-resend.vercel.app/static/yelp-logo.png"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="https://react-email-demo-fuig9rgt9-resend.vercel.app/static/yelp-header.png"
-    />
-    <link
-      rel="preload"
-      as="image"
-      href="https://react-email-demo-fuig9rgt9-resend.vercel.app/static/yelp-footer.png"
+      href="https://utkarshchaudhary.space/icons/utkarsh.svg"
     />
     <meta
       content="text/html; charset=UTF-8"
       http-equiv="Content-Type"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="x-apple-disable-message-reformatting" />
     <!--$-->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
   </head>
   <body
     style="
-      background-color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      background-color: #f9fafb;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
     "
   >
     <div
@@ -43,9 +39,9 @@ export default function usersMail(username: string, message: string): string {
         max-width: 0;
       "
     >
-      Utkarsh Chaudhary
+      Message from Utkarsh Chaudhary
       <div>
-         ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿
+         ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏ ‌​‍‎‏
       </div>
     </div>
     <table
@@ -55,7 +51,7 @@ export default function usersMail(username: string, message: string): string {
       cellpadding="0"
       cellspacing="0"
       role="presentation"
-      style="max-width: 37.5em"
+      style="max-width: 600px; margin: 0 auto;"
     >
       <tbody>
         <tr style="width: 100%">
@@ -67,25 +63,17 @@ export default function usersMail(username: string, message: string): string {
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="padding: 30px 20px"
+              style="padding: 30px 20px 15px"
             >
               <tbody>
                 <tr>
-                  <td>
-                    <div style="text-align: center; padding: 20px">
-                      <h3
-                        style="
-                          font-size: 36px;
-                          font-family: 'Segoe UI', Tahoma, Geneva, Verdana,
-                            sans-serif;
-                          font-weight: 400;
-                          color: #333;
-                          margin: 0;
-                        "
-                      >
-                        Utkarsh Chaudhary
-                      </h3>
-                    </div>
+                  <td style="text-align: center;">
+                    <img
+                      src="https://utkarshchaudhary.space/icons/utkarsh.svg"
+                      alt="Utkarsh Chaudhary Logo"
+                      width="120"
+                      style="display: inline-block;"
+                    />
                   </td>
                 </tr>
               </tbody>
@@ -98,9 +86,11 @@ export default function usersMail(username: string, message: string): string {
               cellspacing="0"
               role="presentation"
               style="
-                border: 1px solid rgb(0, 0, 0, 0.1);
-                border-radius: 3px;
+                background-color: #ffffff;
+                border-radius: 12px;
                 overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                margin-bottom: 24px;
               "
             >
               <tbody>
@@ -116,57 +106,13 @@ export default function usersMail(username: string, message: string): string {
                     >
                       <tbody style="width: 100%">
                         <tr style="width: 100%">
-                          <!-- <img
-                            alt="Yelp header illustration"
-                            src="header logo"
-                            style="display:block;outline:none;border:none;text-decoration:none;max-width:100%"
-                            width="620" /> -->
-                        </tr>
-                      </tbody>
-                    </table>
-                    <table
-                      align="center"
-                      width="100%"
-                      border="0"
-                      cellpadding="0"
-                      cellspacing="0"
-                      role="presentation"
-                      style="padding: 20px; padding-bottom: 0"
-                    >
-                      <tbody style="width: 100%">
-                        <tr style="width: 100%">
-                          <td data-id="__react-email-column">
-                            <h1
-                              style="
-                                font-size: 28px;
-                                font-weight: bold;
-                                text-align: center;
-                              "
-                            >
-                              Hi
-                              <!-- -->${username}<!-- -->,
-                            </h1>
-                            <h2
-                              style="
-                                font-size: 22px;
-                                font-weight: bold;
-                                text-align: center;
-                              "
-                            >
-                              Thank you for reaching out to us. We truly value
-                              your message and appreciate your efforts.
-                            </h2>
-
-                            <p
-                              style="
-                                font-size: 15px;
-                                line-height: 24px;
-                                margin-bottom: 16px;
-                                margin-top: -5px;
-                              "
-                            >
-                              ${message} <br>Warm regards, <br><b>Utkarsh chaudhary <b>
-                            </p>
+                          <td style="background: linear-gradient(135deg, #4F46E5, #7C3AED); padding: 40px 0; text-align: center;">
+                            <img
+                              alt="Utkarsh Chaudhary"
+                              src="https://utkarshchaudhary.space/icons/utkarsh.svg"
+                              style="display: inline-block; width: 80px; height: auto;"
+                            />
+                            <h2 style="color: white; font-weight: 600; margin: 16px 0 0; font-size: 24px;">Utkarsh Chaudhary</h2>
                           </td>
                         </tr>
                       </tbody>
@@ -178,15 +124,43 @@ export default function usersMail(username: string, message: string): string {
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="padding: 20px; padding-top: 0"
+                      style="padding: 32px 40px 20px"
                     >
                       <tbody style="width: 100%">
                         <tr style="width: 100%">
-                          <td
-                            colspan="2"
-                            data-id="__react-email-column"
-                            style="text-align: center"
-                          ></td>
+                          <td data-id="__react-email-column">
+                            <h1
+                              style="
+                                font-size: 24px;
+                                font-weight: 600;
+                                color: #111827;
+                                margin-top: 0;
+                                margin-bottom: 24px;
+                              "
+                            >
+                              Hello ${username},
+                            </h1>
+
+                            <div
+                              style="
+                                font-size: 16px;
+                                line-height: 1.6;
+                                color: #374151;
+                                margin-bottom: 24px;
+                              "
+                            >
+                              ${message}
+                            </div>
+                            
+                            <div style="margin-top: 32px; border-top: 1px solid #E5E7EB; padding-top: 24px;">
+                              <p style="margin: 0; color: #4B5563; font-size: 15px;">
+                                Warm regards,
+                              </p>
+                              <p style="margin: 8px 0 0; font-weight: 600; color: #111827; font-size: 16px;">
+                                Utkarsh Chaudhary
+                              </p>
+                            </div>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -201,40 +175,38 @@ export default function usersMail(username: string, message: string): string {
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="padding: 45px 0 0 0"
+              style="padding: 0 20px 40px"
             >
               <tbody>
                 <tr>
-                  <td>
-                    <img
-                      alt="Yelp footer decoration"
-                      src="https://react-email-demo-fuig9rgt9-resend.vercel.app/static/yelp-footer.png"
+                  <td style="text-align: center;">
+                    <a href="https://utkarshchaudhary.space/" style="display: inline-block; text-decoration: none; color: #4F46E5; font-weight: 500; font-size: 14px; margin-bottom: 12px;">Visit Our Website</a>
+                    <div style="margin-top: 8px;">
+                      <a href="https://twitter.com/" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" width="24" height="24" alt="Twitter" style="opacity: 0.7;" />
+                      </a>
+                      <a href="https://linkedin.com/" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="24" height="24" alt="LinkedIn" style="opacity: 0.7;" />
+                      </a>
+                      <a href="https://instagram.com/" style="display: inline-block; margin: 0 8px; text-decoration: none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" width="24" height="24" alt="Instagram" style="opacity: 0.7;" />
+                      </a>
+                    </div>
+                    <p
                       style="
-                        display: block;
-                        outline: none;
-                        border: none;
-                        text-decoration: none;
-                        max-width: 100%;
+                        font-size: 12px;
+                        line-height: 1.5;
+                        margin-top: 24px;
+                        color: #6B7280;
                       "
-                      width="620"
-                    />
+                    >
+                      © ${new Date().getFullYear()} Utkarsh Chaudhary. All rights reserved.<br/>
+                      <a href="https://utkarshchaudhary.space/" style="color: #6B7280; text-decoration: underline;">utkarshchaudhary.space</a>
+                    </p>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <p
-              style="
-                font-size: 12px;
-                line-height: 24px;
-                margin-bottom: 16px;
-                margin-top: 16px;
-                text-align: center;
-                color: rgb(0, 0, 0, 0.7);
-              "
-            >
-              © 2025 All rights reserved | Utkarsh Chaudhary, INDIA |
-              www.yelp.com
-            </p>
           </td>
         </tr>
       </tbody>

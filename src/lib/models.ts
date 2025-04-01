@@ -20,6 +20,7 @@ const PersonalDetailsSchema = new mongoose.Schema<IPersonalDetails>({
   bio: { type: String, required: true },
   title: { type: String },
   profileImage: { type: String },
+  resumePdf: { type: String },
   work: [
     {
       title: { type: String, required: true },

@@ -22,6 +22,10 @@
 /build
 /dist
 
+# service worker
+public/sw*
+public/sw-worker*
+
 # misc
 .DS_Store
 *.pem
@@ -75,3 +79,5 @@ public/uploads/
 *.tmp
 erors.txt
 .env.local
+temp/SEO.md
+.gitignore

@@ -32,11 +32,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
-import { Loader2, Plus, Trash, X } from "lucide-react";
+import { Loader2, Plus, Trash, X, FileText } from "lucide-react";
+import FileUpload from "@/components/FileUpload";
 
 // Define the form schema using zod
 const formSchema = personalDetailsSchema.extend({
   profileImage: z.string().optional(),
+  resumePdf: z.string().optional(),
 });
 type FormValues = z.infer<typeof formSchema>;
 
@@ -62,6 +64,7 @@ export default function AdminMePage() {
       location: "",
       socialLinks: [],
       profileImage: "",
+      resumePdf: "",
     },
   });
 
@@ -96,6 +99,14 @@ export default function AdminMePage() {
       toast.error("Error uploading image");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // Handle resume upload (using FileUpload component)
+  const handleResumeUpload = (urls: string[]) => {
+    if (urls.length > 0) {
+      form.setValue("resumePdf", urls[0]);
+      toast.success("Resume uploaded successfully");
     }
   };
 
@@ -135,6 +146,7 @@ export default function AdminMePage() {
   }
 
   const watchProfileImage = form.watch("profileImage");
+  const watchResumePdf = form.watch("resumePdf");
 
   return (
     <div className='space-y-6 max-w-4xl mx-auto pb-12'>
@@ -345,6 +357,43 @@ export default function AdminMePage() {
                       </FormItem>
                     )}
                   />
+
+                  {/* Resume Upload */}
+                  <div className='space-y-4'>
+                    <FormLabel>Resume PDF</FormLabel>
+                    <div className='flex flex-col gap-4'>
+                      <FileUpload
+                        bucketName='resume'
+                        path='pdf'
+                        allowedMimeTypes={["application/pdf"]}
+                        maxFiles={1}
+                        maxFileSize={5 * 1024 * 1024} // 5MB limit
+                        setFileUrls={handleResumeUpload}
+                        className='mb-2'
+                      />
+
+                      {watchResumePdf && (
+                        <div className='flex items-center justify-between p-3 border rounded-md bg-muted/20'>
+                          <div className='flex items-center gap-2'>
+                            <FileText className='h-5 w-5 text-primary' />
+                            <span className='text-sm font-medium'>
+                              Resume uploaded
+                            </span>
+                          </div>
+                          <Button
+                            type='button'
+                            variant='ghost'
+                            size='sm'
+                            onClick={() => form.setValue("resumePdf", "")}
+                            className='h-8 w-8 p-0'
+                          >
+                            <X className='h-4 w-4' />
+                            <span className='sr-only'>Remove resume</span>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import { MarketingMail, Project, Blog } from "@/lib/models";
 import { Resend } from "resend";
 import { GoogleGenAI } from "@google/genai";
-import { checkRole } from "@/utils/roles";
+import { checkRoleClerk } from "@/utils/roles";
 import marketingEmailTemplate from "@/components/Mail/marketingEmailTemplate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -14,7 +14,7 @@ const FROM_EMAIL = `Utkarsh Chaudhary <${
 export async function POST(request: NextRequest) {
   try {
     // Check admin permissions
-    const isAdmin = await checkRole("admin");
+    const isAdmin = await checkRoleClerk("admin");
     if (!isAdmin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

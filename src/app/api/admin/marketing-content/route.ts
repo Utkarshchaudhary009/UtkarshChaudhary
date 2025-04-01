@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Blog, Project } from "@/lib/models";
-import { checkRole } from "@/utils/roles";
+import { checkRoleClerk } from "@/utils/roles";
 
 // Cache duration in seconds (1 day)
 const CACHE_DURATION = 86400;
 
 export async function GET(request: NextRequest) {
   try {
-    const isAdmin = await checkRole("admin");
+    const isAdmin = await checkRoleClerk("admin");
     if (!isAdmin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
