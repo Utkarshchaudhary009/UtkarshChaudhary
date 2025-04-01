@@ -14,6 +14,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/blogs(.*)",
   "/api/projects(.*)",
   "/api/ai/chatbot(.*)",
+  "/api/users",
 ]);
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
@@ -46,7 +47,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Check if user is banned for all protected routes
   if (!isPublicRoute(req) && userId) {
-    
+
     try {
       const data = await getCurrentUserData();
       if (data && data.is_banned) {
