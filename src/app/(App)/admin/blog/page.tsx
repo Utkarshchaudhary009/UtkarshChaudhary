@@ -172,7 +172,10 @@ export default function AdminBlogPage() {
             onOpenChange={setIsAIDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant='outline'>AI Blog Generator</Button>
+              <Button variant='outline'>
+                <span className='hidden md:block'>AI Blog Generator</span>
+                <span className='block md:hidden'>AI</span>
+              </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[425px]'>
               <DialogHeader>
@@ -204,7 +207,7 @@ export default function AdminBlogPage() {
             <DialogTrigger asChild>
               <Button>
                 <PlusIcon className='mr-2 h-4 w-4' />
-                New Blog Post
+                <span className='hidden md:block'>New Blog Post</span>
               </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[625px]'>

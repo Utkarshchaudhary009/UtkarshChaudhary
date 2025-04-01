@@ -241,7 +241,8 @@ export default function SEOAdminPage() {
       <div className='flex justify-between items-center'>
         <h1 className='text-2xl font-bold'>SEO Management</h1>
         <Button onClick={() => openFormDialog()}>
-          <Plus className='mr-2 h-4 w-4' /> Add SEO Entry
+          <Plus className='mr-2 h-4 w-4' />
+          <span className='hidden md:block'>Add SEO Entry</span>
         </Button>
       </div>
 

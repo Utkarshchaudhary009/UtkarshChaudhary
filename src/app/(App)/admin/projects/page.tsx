@@ -192,7 +192,10 @@ export default function AdminProjectsPage() {
             onOpenChange={setIsAIDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant='outline'>AI Project Generator</Button>
+              <Button variant='outline'>
+                <span className='hidden md:block'>AI Project Generator</span>
+                <span className='block md:hidden'>AI</span>
+              </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[425px]'>
               <DialogHeader>
@@ -227,7 +230,10 @@ export default function AdminProjectsPage() {
             </Button>
             <DialogContent className='sm:max-w-[625px]'>
               <DialogHeader>
-                <DialogTitle>Create New Project</DialogTitle>
+                <DialogTitle>
+                  <span className='hidden md:block'>Create New Project</span>
+                  <span className='block md:hidden'>+</span>
+                </DialogTitle>
                 <DialogDescription>
                   Fill in the project details below.
                 </DialogDescription>
@@ -236,7 +242,9 @@ export default function AdminProjectsPage() {
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
                 onClose={handleCreateDialogClose}
-                initialData={aiData as (ProjectFormData & { _id?: string }) | undefined}
+                initialData={
+                  aiData as (ProjectFormData & { _id?: string }) | undefined
+                }
               />
             </DialogContent>
           </Dialog>
@@ -256,7 +264,11 @@ export default function AdminProjectsPage() {
             </DialogDescription>
           </DialogHeader>
           <ProjectForm
-            initialData={selectedProject as (ProjectFormData & { _id?: string }) | undefined}
+            initialData={
+              selectedProject as
+                | (ProjectFormData & { _id?: string })
+                | undefined
+            }
             open={isEditDialogOpen}
             onOpenChange={setIsEditDialogOpen}
             onClose={handleEditDialogClose}

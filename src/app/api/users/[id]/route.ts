@@ -1,6 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { checkRoleClerk } from "@/utils/roles";
 
 // GET a single user
 export async function GET(
@@ -13,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Requesting user's own data or admin check
     if ((await params).id !== userId) {
@@ -59,16 +60,12 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Check if admin
-    const { data: adminCheck } = await supabase
-      .from("users")
-      .select("is_admin")
-      .eq("clerk_id", userId)
-      .single();
+    const adminCheck = await checkRoleClerk("admin");
 
-    if (!adminCheck?.is_admin) {
+    if (!adminCheck) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
