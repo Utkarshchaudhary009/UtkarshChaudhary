@@ -1,7 +1,7 @@
 // Middleware for Clerk authentication
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { getCurrentUserData } from "@/utils/auth";
+import { createAdminClient } from "@/lib/supabase/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -22,65 +22,47 @@ const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
 
-  // Protect admin routes with Supabase role check
-  if (isAdminRoute(req) && userId) {
-    // Check if admin in Supabase
+  // Only check user data if logged in
+  if (userId) {
     try {
-      const data = await getCurrentUserData();
-
-      // Redirect if banned
-      if (data && data.is_banned) {
-        const url = new URL("/trash/ban", req.url);
-        return NextResponse.redirect(url);
-      }
-
-      // Redirect if not admin
-      if (!data || !data.is_admin) {
-        const url = new URL("/", req.url);
-        return NextResponse.redirect(url);
-      }
-    } catch (error) {
-      console.error("Error checking admin status in middleware:", error);
-      const url = new URL("/", req.url);
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // Check if user is banned for all protected routes
-  if (!isPublicRoute(req) && userId) {
-    try {
-      // Import directly in middleware to avoid circular dependency
-      const { createAdminClient } = await import("@/lib/supabase/server");
+      // Get admin client outside the function
       const supabase = await createAdminClient();
 
-      // Direct database query instead of using getCurrentUserData
+      // Direct database query
       const { data: userData, error } = await supabase
         .from("users")
         .select("is_admin, is_banned")
         .eq("clerk_id", userId)
         .single();
 
+      // Handle errors for logging
       if (error) {
         console.error("Supabase error in middleware:", error);
-        // Continue to auth protection
-      } else if (userData) {
-        // Handle banned users
-        if (userData.is_banned) {
-          const url = new URL("/trash/ban", req.url);
-          return NextResponse.redirect(url);
-        }
+      }
 
-        // Handle non-admin users trying to access admin routes
-        if (isAdminRoute(req) && !userData.is_admin) {
-          const url = new URL("/", req.url);
-          return NextResponse.redirect(url);
-        }
+      // Check if user is banned
+      if (userData?.is_banned) {
+        const url = new URL("/trash/ban", req.url);
+        return NextResponse.redirect(url);
+      }
+
+      // Check admin routes
+      if (isAdminRoute(req) && !userData?.is_admin) {
+        const url = new URL("/", req.url);
+        return NextResponse.redirect(url);
       }
     } catch (error) {
-      console.error("Error checking ban status in middleware:", error);
+      console.error("Error in middleware:", error);
+
+      // If error occurs on admin route, redirect to safety
+      if (isAdminRoute(req)) {
+        const url = new URL("/", req.url);
+        return NextResponse.redirect(url);
+      }
     }
   }
 
+  // Handle auth protection
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
@@ -89,11 +71,3 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
-// Middleware for Clerk authentication
-// import { clerkMiddleware } from '@clerk/nextjs/server'
-
-// export default clerkMiddleware()
-
-// export const config = {
-//   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
-// }

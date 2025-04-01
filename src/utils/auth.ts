@@ -1,7 +1,7 @@
 import "server-only";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import type { UserData } from "@/lib/supabase/client";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 
 // Function to save current user details to Supabase
 export async function syncUserToSupabase() {
@@ -10,7 +10,7 @@ export async function syncUserToSupabase() {
     const user = await currentUser();
 
     if (!user) return null;
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Get existing user data first (for admin status preservation)
     const { data: existingUser } = await supabase
@@ -59,8 +59,8 @@ export async function syncUserToSupabase() {
   }
 }
 
- async function debugAuthSession() {
-  const supabase = await createClient();
+async function debugAuthSession() {
+  const supabase = await createAdminClient();
   const { data, error } = await supabase.auth.getSession();
   console.log("Session:", data.session || "No session");
   console.log("Session error:", error || "No error");
@@ -72,8 +72,12 @@ export async function getCurrentUserData() {
     const { userId } = await auth();
     console.log("user id at auth.ts: ", userId);
     if (!userId) return null;
-    debugAuthSession()
-    const supabase = await createClient();
+    
+    debugAuthSession();
+    const supabase = await createAdminClient();
+    
+    console.log("Querying for clerk_id:", userId);
+    
     const { data, error } = await supabase
       .from("users")
       .select("*")

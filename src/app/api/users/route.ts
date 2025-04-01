@@ -1,9 +1,9 @@
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 // Add this to your debugging code
 async function debugAuthSession() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase.auth.getSession();
   console.log("Session:", data.session || "No session");
   console.log("Session error:", error || "No error");
@@ -18,16 +18,16 @@ export async function GET(request: NextRequest) {
     }
     debugAuthSession();
 
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Check if admin
-    const { data: adminCheck, error: adminError } = await supabase
+    const { data: adminCheck } = await supabase
       .from("users")
       .select("is_admin")
       .eq("clerk_id", userId)
       .single();
 
-    if (!adminCheck?.is_admin || adminError) {
+    if (!adminCheck?.is_admin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -101,24 +101,42 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabaseAdmin = await createAdminClient();
+    const supabase = await createAdminClient();
 
     // Fetch user details from Clerk
     const clerkUser = await currentUser();
 
+    if (!clerkUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Get existing user data first (for admin status preservation)
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("is_admin, is_banned")
+      .eq("clerk_id", clerkUser.id)
+      .single();
+
     // Prepare user data for Supabase
     const userData = {
-      clerk_id: clerkUser?.id || null,
-      first_name: clerkUser?.firstName || null,
-      last_name: clerkUser?.lastName || null,
-      email: clerkUser?.emailAddresses[0]?.emailAddress || null,
-      profile_image_url: clerkUser?.imageUrl || null,
-      public_metadata: clerkUser?.publicMetadata || null,
+      clerk_id: clerkUser.id,
+      first_name: clerkUser.firstName || null,
+      last_name: clerkUser.lastName || null,
+      email: clerkUser.emailAddresses[0]?.emailAddress || null,
+      profile_image_url: clerkUser.imageUrl || null,
+      public_metadata: clerkUser.publicMetadata || null,
       updated_at: new Date().toISOString(),
+      // Preserve admin and banned status if user exists
+      ...(existingUser
+        ? {
+            is_admin: existingUser.is_admin,
+            is_banned: existingUser.is_banned,
+          }
+        : {}),
     };
 
     // Upsert user data to Supabase
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from("users")
       .upsert(userData, {
         onConflict: "clerk_id",
