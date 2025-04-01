@@ -16,6 +16,7 @@ import {
   Globe,
   Layers,
   Inbox,
+  User,
 } from "lucide-react";
 
 export default function AdminNav() {
@@ -58,6 +59,12 @@ export default function AdminNav() {
       icon: <Globe className='h-8 w-8' />,
       href: "/admin/seo",
     },
+      {
+      title: "About Me",
+      description: "Manage your about me page",
+      icon: <User className='h-8 w-8' />,
+      href: "/admin/me",
+    }
   ];
 
   return (

@@ -132,7 +132,7 @@ export default function RootLayout({
               {/* Defer non-critical UI elements */}
               <MarketingMailConsent />
               <Toaster position='top-right' />
-              <div className='mx-2 md:mx-10'>{children}</div>
+              <div>{children}</div>
             </TanstackProvider>
           </ThemeProvider>
 

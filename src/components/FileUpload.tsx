@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-
+import { createBucketIfNotExists } from "@/utils/bucket";
 // Helper function to format file sizes
 const formatBytes = (
   bytes: number,
@@ -44,7 +44,7 @@ interface FileUploadProps {
 }
 
 export default function FileUpload({
-  bucketName = "default",
+  bucketName = "files",
   path = "",
   allowedMimeTypes = [],
   maxFiles = 5,
@@ -64,7 +64,13 @@ export default function FileUpload({
     process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
   );
-
+  useEffect(() => {
+    createBucketIfNotExists(bucketName, {
+      public: setFileUrls ? true : false,
+      fileSizeLimit: maxFileSize,
+      allowedMimeTypes: allowedMimeTypes,
+    });
+  }, [bucketName, maxFileSize, allowedMimeTypes, setFileUrls]);
   // Reset success state when files change
   useEffect(() => {
     if (files.length === 0) {
@@ -79,7 +85,6 @@ export default function FileUpload({
     setLoading(true);
     setErrors([]);
     setSuccesses([]);
-
     const uploadPromises = files.map(async (file) => {
       try {
         // Compress image before uploading (if it's an image)
