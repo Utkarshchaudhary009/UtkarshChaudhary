@@ -24,9 +24,11 @@ export type UserData = {
   last_name: string | null;
   email: string | null;
   profile_image_url: string | null;
-  public_metadata: any | null;
   is_admin: boolean;
   is_banned: boolean;
   created_at: string;
   updated_at: string;
+  public_metadata: {
+    role: string;
+  };
 };

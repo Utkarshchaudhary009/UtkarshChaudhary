@@ -19,13 +19,13 @@ const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
-  
+
   // Protect admin routes with Supabase role check
   if (isAdminRoute(req) && userId) {
     // Check if admin in Supabase
     try {
-      const data= await getCurrentUserData()
-     
+      const data = await getCurrentUserData();
+
       // Redirect if banned
       if (data && data.is_banned) {
         const url = new URL("/trash/ban", req.url);

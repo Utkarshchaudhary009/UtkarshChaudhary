@@ -1,5 +1,5 @@
+import "server-only";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabase/client";
 import type { UserData } from "@/lib/supabase/client";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,6 +23,7 @@ export async function syncUserToSupabase() {
     };
 
     // Upsert user data to Supabase
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("users")
       .upsert(userData, {
@@ -48,6 +49,7 @@ export async function syncUserToSupabase() {
 export async function getCurrentUserData() {
   try {
     const { userId } = await auth();
+    console.log("user id at auth.ts: ", userId);
     if (!userId) return null;
 
     const supabase = await createClient();
