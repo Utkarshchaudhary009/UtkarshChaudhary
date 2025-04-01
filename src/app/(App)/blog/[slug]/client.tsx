@@ -98,7 +98,12 @@ export default function ClientBlogDetail() {
           asChild
           className='mt-4'
         >
-          <Link href='/blog'>Back to Blog</Link>
+          <Link
+            href='/blog'
+            aria-label='Back to Blog'
+          >
+            Back to Blog
+          </Link>
         </Button>
       </div>
     );
@@ -153,7 +158,7 @@ export default function ClientBlogDetail() {
           variant='outline'
           asChild
         >
-          <Link href='/blog'>Back to Blog</Link>
+          <Link href='/blog' aria-label='Back to Blog'>Back to Blog</Link>
         </Button>
       </div>
 

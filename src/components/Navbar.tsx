@@ -103,7 +103,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" aria-label="Home" className="flex items-center space-x-2">
             <span className="font-bold text-lg bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
               Utkarsh Chaudhary
             </span>
@@ -171,9 +171,13 @@ export function Navbar({ isAdmin }: NavbarProps) {
             side="left" 
             className="w-[280px] sm:w-[350px] flex flex-col overflow-y-auto border-r"
           >
-            <div className="py-6 flex justify-center">
-              <Link href="/" onClick={() => setIsOpen(false)}>
-                <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+            <div className='py-6 flex justify-center'>
+              <Link
+                href='/'
+                aria-label='Home'
+                onClick={() => setIsOpen(false)}
+              >
+                <span className='font-bold text-xl bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent'>
                   Utkarsh Chaudhary
                 </span>
               </Link>

@@ -44,13 +44,13 @@ const HeroSection = memo(({ personalDetails, isLoading }: any) => {
             </p>
             <div className='flex flex-wrap gap-3'>
               <Button asChild>
-                <Link href='/projects'>View Projects</Link>
+                <Link href='/projects' aria-label='View Projects'>View Projects</Link>
               </Button>
               <Button
                 variant='outline'
                 asChild
               >
-                <Link href='/contact'>Contact Me</Link>
+                <Link href='/contact' aria-label='Contact Me'>Contact Me</Link>
               </Button>
             </div>
           </>
@@ -119,7 +119,7 @@ const ProjectCard = memo(({ project }: { project: any }) => {
       </CardContent>
       <CardFooter className='mt-auto'>
         <Button asChild>
-          <Link href={`/projects/${project.slug}`}>View Details</Link>
+          <Link href={`/projects/${project.slug}`} aria-label={project.title}>View Details</Link>
         </Button>
       </CardFooter>
     </Card>
@@ -161,7 +161,7 @@ const BlogCard = memo(({ blog }: { blog: IBlog }) => {
       </CardContent>
       <CardFooter className='mt-auto'>
         <Button asChild>
-          <Link href={`/blog/${blog.slug}`}>Read More</Link>
+          <Link href={`/blog/${blog.slug}`} aria-label={blog.title}>Read More</Link>
         </Button>
       </CardFooter>
     </Card>
@@ -215,7 +215,7 @@ function HomePage() {
             variant='outline'
             asChild
           >
-            <Link href='/projects'>View All</Link>
+            <Link href='/projects' aria-label='View All projects'>View All</Link>
           </Button>
         </div>
 
@@ -256,7 +256,7 @@ function HomePage() {
             variant='outline'
             asChild
           >
-            <Link href='/blog'>View All</Link>
+            <Link href='/blog' aria-label='View All blogs'>View All</Link>
           </Button>
         </div>
 

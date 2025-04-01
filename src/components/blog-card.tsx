@@ -6,28 +6,33 @@ import Image from "next/image";
 
 export function BlogCard({ blog }: { blog: IBlog }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className='overflow-hidden'>
       {blog.featuredImage && (
-        <div className="relative h-48 w-full">
+        <div className='relative h-48 w-full'>
           <Image
             src={blog.featuredImage}
             alt={blog.title}
             fill
-            className="object-cover"
+            className='object-cover'
           />
         </div>
       )}
       <CardHeader>
-        <Link href={`/blog/${blog.slug}`}>
-          <h2 className="text-2xl font-bold hover:text-primary">{blog.title}</h2>
+        <Link
+          href={`/blog/${blog.slug}`}
+          aria-label={blog.title}
+        >
+          <h2 className='text-2xl font-bold hover:text-primary'>
+            {blog.title}
+          </h2>
         </Link>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground">{blog.excerpt}</p>
+        <p className='text-muted-foreground'>{blog.excerpt}</p>
       </CardContent>
       <CardFooter>
         {blog.publishedAt && (
-          <p className="text-sm text-muted-foreground">
+          <p className='text-sm text-muted-foreground'>
             Published on {formatDate(blog.publishedAt)}
           </p>
         )}

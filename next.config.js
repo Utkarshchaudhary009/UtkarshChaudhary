@@ -97,8 +97,6 @@ module.exports = async (phase) => {
         ],
       },
     ],
-    // Minimize output bundle size
-    swcMinify: true,
     // Optimize output
     output: "standalone",
     // Add modern JavaScript optimizations
@@ -110,8 +108,6 @@ module.exports = async (phase) => {
         "date-fns",
         "@radix-ui/react-icons",
       ],
-      // Enable partial prerendering for faster initial paint
-      ppr: true,
     },
   };
 

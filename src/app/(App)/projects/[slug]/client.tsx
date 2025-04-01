@@ -81,7 +81,12 @@ export default function ClientProjectDetail() {
           asChild
           className='mt-4'
         >
-          <Link href='/projects'>Back to Projects</Link>
+          <Link
+            href='/projects'
+            aria-label='Back to Projects'
+          >
+            Back to Projects
+          </Link>
         </Button>
       </div>
     );
@@ -195,7 +200,12 @@ export default function ClientProjectDetail() {
         variant='outline'
         asChild
       >
-        <Link href='/projects'>Back to Projects</Link>
+        <Link
+          href='/projects'
+          aria-label='Back to Projects'
+        >
+          Back to Projects
+        </Link>
       </Button>
     </div>
   );

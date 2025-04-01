@@ -104,7 +104,9 @@ export default function BlogClient() {
             </CardContent>
             <CardFooter className='p-6 pt-0'>
               <Button asChild>
-                <Link href={`/blog/${blog.slug}`}>Read More</Link>
+                <Link href={`/blog/${blog.slug}`} aria-label={blog.title}>
+                  Read More
+                </Link>
               </Button>
             </CardFooter>
           </Card>
