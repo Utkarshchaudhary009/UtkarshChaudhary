@@ -10,8 +10,16 @@ export async function syncUserToSupabase() {
     const user = await currentUser();
 
     if (!user) return null;
+    const supabase = await createClient();
 
-    // Prepare user data for Supabase
+    // Get existing user data first (for admin status preservation)
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("is_admin, is_banned")
+      .eq("clerk_id", user.id)
+      .single();
+
+    // Prepare user data, preserving admin/banned status
     const userData = {
       clerk_id: user.id,
       first_name: user.firstName,
@@ -19,11 +27,17 @@ export async function syncUserToSupabase() {
       email: user.emailAddresses[0]?.emailAddress || null,
       profile_image_url: user.imageUrl,
       public_metadata: user.publicMetadata,
+      // Preserve admin and banned status if user exists
+      ...(existingUser
+        ? {
+            is_admin: existingUser.is_admin,
+            is_banned: existingUser.is_banned,
+          }
+        : {}),
       updated_at: new Date().toISOString(),
     };
 
     // Upsert user data to Supabase
-    const supabase = await createClient();
     const { data, error } = await supabase
       .from("users")
       .upsert(userData, {
