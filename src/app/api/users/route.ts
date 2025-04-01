@@ -1,7 +1,13 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
-
+// Add this to your debugging code
+export async function debugAuthSession() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getSession();
+  console.log("Session:", data.session || "No session");
+  console.log("Session error:", error || "No error");
+}
 // GET users (admin only)
 export async function GET(request: NextRequest) {
   try {
@@ -10,6 +16,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    debugAuthSession();
 
     const supabase = await createClient();
 

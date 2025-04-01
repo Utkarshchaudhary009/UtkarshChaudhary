@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/ai/chatbot(.*)",
   "/api/users",
 ]);
+
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {

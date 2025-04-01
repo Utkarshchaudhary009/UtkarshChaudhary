@@ -59,19 +59,26 @@ export async function syncUserToSupabase() {
   }
 }
 
+ async function debugAuthSession() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getSession();
+  console.log("Session:", data.session || "No session");
+  console.log("Session error:", error || "No error");
+}
+
 // Get the current user data from Supabase
 export async function getCurrentUserData() {
   try {
     const { userId } = await auth();
     console.log("user id at auth.ts: ", userId);
     if (!userId) return null;
-
+    debugAuthSession()
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("clerk_id", userId)
-      // .single();
+      .single();
 
     console.log("data at auth.ts: ", data);
 
@@ -80,7 +87,7 @@ export async function getCurrentUserData() {
       return null;
     }
 
-    return data[0] as UserData;
+    return data as UserData;
   } catch (error) {
     console.error("Error in getCurrentUserData:", error);
     return null;
