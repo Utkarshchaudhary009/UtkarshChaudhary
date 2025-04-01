@@ -2,7 +2,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 // Add this to your debugging code
-export async function debugAuthSession() {
+async function debugAuthSession() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getSession();
   console.log("Session:", data.session || "No session");
