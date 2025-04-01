@@ -71,14 +71,16 @@ export async function getCurrentUserData() {
       .from("users")
       .select("*")
       .eq("clerk_id", userId)
-      .single();
+      // .single();
+
+    console.log("data at auth.ts: ", data);
 
     if (error || !data) {
       console.error("Error fetching user data:", error);
       return null;
     }
 
-    return data as UserData;
+    return data[0] as UserData;
   } catch (error) {
     console.error("Error in getCurrentUserData:", error);
     return null;
