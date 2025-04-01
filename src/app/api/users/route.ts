@@ -94,7 +94,7 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const supabase = createServerClient();
+    const { supabase } = createServerClient();
 
     // Fetch user details from Clerk
     const clerkUser = await currentUser();

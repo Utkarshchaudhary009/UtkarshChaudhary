@@ -24,7 +24,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isAdminRoute(req) && userId) {
     // Check if admin in Supabase
     try {
-      const supabase = createServerClient();
+      const { supabase } = createServerClient();
       const { data, error } = await supabase
         .from("users")
         .select("is_admin, is_banned")

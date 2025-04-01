@@ -6,15 +6,21 @@ import TanstackProvider from "@/lib/tanstack/provider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "sonner";
 import MarketingMailConsent from "@/components/MarketingMailConsent";
+import Script from "next/script";
 
+// Optimize font loading with display swap
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const APP_TITLE = {
@@ -78,6 +84,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -91,6 +100,25 @@ export default function RootLayout({
         lang='en'
         suppressHydrationWarning
       >
+        <head>
+          {/* Preconnect to critical domains */}
+          <link
+            rel='preconnect'
+            href='https://res.cloudinary.com'
+            crossOrigin='anonymous'
+          />
+          <link
+            rel='dns-prefetch'
+            href='https://res.cloudinary.com'
+          />
+
+          {/* Preload critical CSS */}
+          <link
+            rel='preload'
+            href='/styles/critical.css'
+            as='style'
+          />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -101,11 +129,18 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TanstackProvider>
+              {/* Defer non-critical UI elements */}
               <MarketingMailConsent />
               <Toaster position='top-right' />
               <div className='mx-2 md:mx-10'>{children}</div>
             </TanstackProvider>
           </ThemeProvider>
+
+          {/* Defer analytics script loading */}
+          <Script
+            src='/scripts/analytics.js'
+            strategy='lazyOnload'
+          />
         </body>
       </html>
     </ClerkProvider>

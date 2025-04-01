@@ -12,6 +12,7 @@ module.exports = async (phase) => {
       // Disable ESLint during production builds
       ignoreDuringBuilds: true,
     },
+    // Optimize image handling
     images: {
       remotePatterns: [
         {
@@ -27,7 +28,18 @@ module.exports = async (phase) => {
           pathname: "/images/**",
         },
       ],
+      // Add modern format support
+      formats: ["image/avif", "image/webp"],
+      // Speed up image optimization
+      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+      minimumCacheTTL: 60,
     },
+    // Enable gzip compression
+    compress: true,
+    // Enable React server components
+    reactStrictMode: true,
+    // Add custom headers for security and caching
     headers: async () => [
       {
         source: "/(.*)",
@@ -43,6 +55,31 @@ module.exports = async (phase) => {
           {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
+          },
+          // Add browser cache control
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, must-revalidate",
+          },
+        ],
+      },
+      // Cache static assets longer
+      {
+        source: "/static/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // Cache cloudinary images longer
+      {
+        source: "/_next/image(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=31536000",
           },
         ],
       },
@@ -60,6 +97,22 @@ module.exports = async (phase) => {
         ],
       },
     ],
+    // Minimize output bundle size
+    swcMinify: true,
+    // Optimize output
+    output: "standalone",
+    // Add modern JavaScript optimizations
+    experimental: {
+      optimizeCss: true,
+      optimizePackageImports: [
+        "lucide-react",
+        "framer-motion",
+        "date-fns",
+        "@radix-ui/react-icons",
+      ],
+      // Enable partial prerendering for faster initial paint
+      ppr: true,
+    },
   };
 
   if (phase === PHASE_DEVELOPMENT_SERVER || phase === PHASE_PRODUCTION_BUILD) {
@@ -67,6 +120,53 @@ module.exports = async (phase) => {
       swSrc: "src/service-worker/app-worker.ts",
       swDest: "public/sw.js",
       reloadOnOnline: true,
+      // Add runtime caching strategies
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/res\.cloudinary\.com\/.*$/i,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "image-cache",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:js|css)$/i,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "static-resources",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 24 * 60 * 60 * 7, // 7 days
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/i,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "images",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 24 * 60 * 60 * 30, // 30 days
+            },
+          },
+        },
+        {
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/css/i,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "google-fonts-stylesheets",
+            expiration: {
+              maxEntries: 5,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+            },
+          },
+        },
+      ],
     });
     return withSerwist(nextConfig);
   }

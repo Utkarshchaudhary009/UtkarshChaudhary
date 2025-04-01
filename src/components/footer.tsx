@@ -12,6 +12,7 @@ import {
   Linkedin as LinkedinIcon,
   Github as GithubIcon,
 } from "lucide-react";
+import { memo } from "react";
 
 const quickLinks = [
   { name: "Home", path: "/home" },
@@ -38,8 +39,48 @@ const getSocialIcon = (platform: string) => {
   }
 };
 
-export default function Footer() {
-  // Using TanStack Query instead of useState and useEffect
+// Memoize components that don't need frequent re-rendering
+const QuickLinksSection = memo(function QuickLinksSection() {
+  return (
+    <div className='md:col-span-3'>
+      <h4 className='font-semibold text-foreground mb-4'>Quick Links</h4>
+      <ul className='space-y-2'>
+        {quickLinks.map((link) => (
+          <motion.li
+            className='list-image-none'
+            key={link.name}
+            whileHover={{ x: 3 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Link
+              href={link.path}
+              className='hover:text-primary transition-colors duration-200 flex items-center'
+            >
+              <span className='h-1 w-1 bg-primary rounded-full mr-2 opacity-70'></span>
+              {link.name}
+            </Link>
+          </motion.li>
+        ))}
+      </ul>
+    </div>
+  );
+});
+
+// Optimize copyright section
+const CopyrightSection = memo(function CopyrightSection() {
+  return (
+    <div className='pt-6 border-t border-border/30 text-center'>
+      <p className='text-xs opacity-70'>
+        © {new Date().getFullYear()}{" "}
+        <span className='font-medium'>Utkarsh Chaudhary</span>. All rights
+        reserved.
+      </p>
+    </div>
+  );
+});
+
+function Footer() {
+  // Using TanStack Query without passing parameters - staleTime is already defined in the hook
   const { data: personalDetails, isLoading } = usePersonalDetails();
 
   return (
@@ -85,28 +126,8 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Middle Section: Quick Links */}
-          <div className='md:col-span-3'>
-            <h4 className='font-semibold text-foreground mb-4'>Quick Links</h4>
-            <ul className='space-y-2'>
-              {quickLinks.map((link) => (
-                <motion.li
-                  className='list-image-none'
-                  key={link.name}
-                  whileHover={{ x: 3 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
-                  <Link
-                    href={link.path}
-                    className='hover:text-primary transition-colors duration-200 flex items-center'
-                  >
-                    <span className='h-1 w-1 bg-primary rounded-full mr-2 opacity-70'></span>
-                    {link.name}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
+          {/* Middle Section: Quick Links - Now Memoized */}
+          <QuickLinksSection />
 
           {/* Right Section: Follow Me and Social Links */}
           <div className='md:col-span-4'>
@@ -165,15 +186,11 @@ export default function Footer() {
             .
           </p>
         </div>
-        {/* Bottom Section: Copyright */}
-        <div className='pt-6 border-t border-border/30 text-center'>
-          <p className='text-xs opacity-70'>
-            © {new Date().getFullYear()}{" "}
-            <span className='font-medium'>Utkarsh Chaudhary</span>. All rights
-            reserved.
-          </p>
-        </div>
+        {/* Bottom Section: Copyright - Now Memoized */}
+        <CopyrightSection />
       </div>
     </footer>
   );
 }
+
+export default memo(Footer);
