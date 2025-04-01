@@ -21,13 +21,13 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Check if admin
-    const { data: adminCheck } = await supabase
+    const { data: adminCheck, error: adminError } = await supabase
       .from("users")
       .select("is_admin")
       .eq("clerk_id", userId)
       .single();
 
-    if (!adminCheck?.is_admin) {
+    if (!adminCheck?.is_admin || adminError) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

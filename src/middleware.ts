@@ -48,12 +48,33 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Check if user is banned for all protected routes
   if (!isPublicRoute(req) && userId) {
-
     try {
-      const data = await getCurrentUserData();
-      if (data && data.is_banned) {
-        const url = new URL("/trash/ban", req.url);
-        return NextResponse.redirect(url);
+      // Import directly in middleware to avoid circular dependency
+      const { createAdminClient } = await import("@/lib/supabase/server");
+      const supabase = await createAdminClient();
+
+      // Direct database query instead of using getCurrentUserData
+      const { data: userData, error } = await supabase
+        .from("users")
+        .select("is_admin, is_banned")
+        .eq("clerk_id", userId)
+        .single();
+
+      if (error) {
+        console.error("Supabase error in middleware:", error);
+        // Continue to auth protection
+      } else if (userData) {
+        // Handle banned users
+        if (userData.is_banned) {
+          const url = new URL("/trash/ban", req.url);
+          return NextResponse.redirect(url);
+        }
+
+        // Handle non-admin users trying to access admin routes
+        if (isAdminRoute(req) && !userData.is_admin) {
+          const url = new URL("/", req.url);
+          return NextResponse.redirect(url);
+        }
       }
     } catch (error) {
       console.error("Error checking ban status in middleware:", error);
