@@ -1,19 +1,19 @@
 "use client";
 
-import { createClient as supabaseCreateClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "@/types/database.types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-export const supabase = supabaseCreateClient<Database>(
+export const supabase = createBrowserClient<Database>(
   supabaseUrl,
   supabaseAnonKey
 );
 
 // Export createClient for use in hooks
 export const createClient = () => {
-  return supabaseCreateClient<Database>(supabaseUrl, supabaseAnonKey);
+  return createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
 };
 
 // Type for user data in Supabase
