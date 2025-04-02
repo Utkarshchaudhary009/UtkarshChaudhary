@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 import { useDropzone } from "react-dropzone";
 import {
   CheckCircle,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { createBucketIfNotExists } from "@/utils/bucket";
+
 // Helper function to format file sizes
 const formatBytes = (
   bytes: number,
@@ -31,6 +31,12 @@ const formatBytes = (
     : Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
+
+// Define file type
+interface FileWithPreview extends File {
+  preview?: string | null;
+  errors: Array<{ message: string }>;
+}
 
 // Define component props
 interface FileUploadProps {
@@ -53,24 +59,55 @@ export default function FileUpload({
   className,
 }: FileUploadProps) {
   // State management
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ name: string; message: string }[]>([]);
   const [successes, setSuccesses] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [bucketError, setBucketError] = useState<string | null>(null);
+  const [bucketLoading, setBucketLoading] = useState(true);
 
-  // Initialize Supabase client (ensure environment variables are set)
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-  );
+  // Initialize Supabase client
+  const supabase = createClient();
+
+  // Initialize bucket
   useEffect(() => {
-    createBucketIfNotExists(bucketName, {
-      public: setFileUrls ? true : false,
-      fileSizeLimit: maxFileSize,
-      allowedMimeTypes: allowedMimeTypes,
-    });
+    const initBucket = async () => {
+      try {
+        setBucketLoading(true);
+        // Create the bucket using API endpoint
+        const response = await fetch("/api/storage/bucket", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bucketName,
+            isPublic: setFileUrls ? true : false,
+            fileSizeLimit: maxFileSize,
+            allowedMimeTypes: allowedMimeTypes.length
+              ? allowedMimeTypes
+              : undefined,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error("Error creating bucket:", error);
+          setBucketError(error.error || "Failed to create storage bucket");
+        }
+
+        setBucketLoading(false);
+      } catch (error) {
+        console.error("Error initializing bucket:", error);
+        setBucketError("Failed to initialize storage");
+        setBucketLoading(false);
+      }
+    };
+
+    initBucket();
   }, [bucketName, maxFileSize, allowedMimeTypes, setFileUrls]);
+
   // Reset success state when files change
   useEffect(() => {
     if (files.length === 0) {
@@ -87,18 +124,15 @@ export default function FileUpload({
     setSuccesses([]);
     const uploadPromises = files.map(async (file) => {
       try {
-        // Compress image before uploading (if it's an image)
-        const fileToUpload = file;
-
         // Generate unique file path to prevent overwrites
         const uniqueFilePath = `${path ? `${path}/` : ""}${Date.now()}-${
           file.name
         }`;
 
         // Upload to Supabase
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
           .from(bucketName)
-          .upload(uniqueFilePath, fileToUpload, {
+          .upload(uniqueFilePath, file, {
             cacheControl: "3600",
             upsert: false,
           });
@@ -175,7 +209,7 @@ export default function FileUpload({
           preview: null,
         }));
 
-        setFiles([...newFiles, ...rejectedWithErrors]);
+        setFiles([...newFiles, ...rejectedWithErrors] as FileWithPreview[]);
       },
     });
 
@@ -203,6 +237,31 @@ export default function FileUpload({
     files.some((file) => file.errors.length !== 0);
 
   const exceedMaxFiles = files.length > maxFiles;
+
+  // Show loading state while bucket is being initialized
+  if (bucketLoading) {
+    return (
+      <div className={cn("w-full", className)}>
+        <div className='border-2 border-dashed rounded-lg p-4 md:p-6 text-center bg-card/50 border-muted'>
+          <Loader2 className='animate-spin h-8 w-8 mx-auto text-muted-foreground mb-2' />
+          <p className='text-muted-foreground'>Initializing storage...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if bucket creation failed
+  if (bucketError) {
+    return (
+      <div className={cn("w-full", className)}>
+        <div className='border-2 border-destructive rounded-lg p-4 text-center'>
+          <AlertCircle className='mx-auto h-8 w-8 text-destructive mb-2' />
+          <p className='text-destructive font-medium'>Storage Error</p>
+          <p className='text-sm text-muted-foreground mt-1'>{bucketError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("w-full", className)}>
