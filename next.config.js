@@ -163,15 +163,6 @@ module.exports = async (phase) => {
         "date-fns",
         "@radix-ui/react-icons",
       ],
-      // Enable modern bundling features
-      serverComponentsExternalPackages: [],
-      serverActions: true,
-      // Improve streaming and static optimizations
-      ppr: true,
-      // Use memory cache for faster builds
-      turbotrace: {
-        memoryLimit: 4000,
-      },
     },
   };
 
