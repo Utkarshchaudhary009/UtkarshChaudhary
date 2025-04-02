@@ -29,7 +29,7 @@ const APP_TITLE = {
 };
 const AUTHOR_NAME = "Utkarsh Chaudhary";
 const APP_DESCRIPTION =
-  "This website showcases my work and projects that delivers high quality content. I also write blogs on my learnings and experiences.";
+  "This website showcases my work and Portfolios that delivers high quality content. I also write blogs on my learnings and experiences.";
 
 const APP_URL = "https://utkarshchaudhary.space";
 
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     "Software Engineer",
     "Web Developer",
     "Blog",
-    "Projects",
+    "Portfolios",
   ],
   authors: [{ name: AUTHOR_NAME, url: APP_URL }],
   robots: {
@@ -107,7 +107,7 @@ export default function RootLayout({
             strategy='beforeInteractive'
           /> */}
 
-           {/* Preconnect to critical domains */}
+          {/* Preconnect to critical domains */}
           {/* <link
             rel='preconnect'
             href='https://res.cloudinary.com'
@@ -116,7 +116,7 @@ export default function RootLayout({
           <link
             rel='dns-prefetch'
             href='https://res.cloudinary.com'
-          /> */} 
+          /> */}
           {/* <link
             rel='preconnect'
             href='https://fonts.googleapis.com'
@@ -156,8 +156,6 @@ export default function RootLayout({
               </div>
             </TanstackProvider>
           </ThemeProvider>
-
-         
         </body>
       </html>
     </ClerkProvider>

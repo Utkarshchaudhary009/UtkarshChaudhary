@@ -57,8 +57,8 @@ export async function GET() {
             priority: 0.9,
           },
           {
-            id: "projects",
-            url: "/projects",
+            id: "Portfolios",
+            url: "/Portfolios",
             changefreq: "monthly",
             priority: 0.9,
           },

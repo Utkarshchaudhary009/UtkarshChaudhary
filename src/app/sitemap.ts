@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { IBlog, IProject, SitemapEntry } from "@/lib/types";
+import { IBlog, IPortfolio, SitemapEntry } from "@/lib/types";
 import fs from "fs";
 import path from "path";
 // Config file path
@@ -28,12 +28,12 @@ async function fetchBlogPosts(): Promise<IBlog[]> {
   }
 }
 
-// Function to dynamically fetch projects
-async function fetchProjects(): Promise<IProject[]> {
+// Function to dynamically fetch Portfolios
+async function fetchPortfolios(): Promise<IPortfolio[]> {
   try {
     // This would typically be a database or API call
     const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + "/api/projects",
+      process.env.NEXT_PUBLIC_BASE_URL + "/api/Portfolios",
       {
         next: { revalidate: 3600 }, // Revalidate every hour
       }
@@ -42,9 +42,9 @@ async function fetchProjects(): Promise<IProject[]> {
     if (!response.ok) return [];
 
     const data = await response.json();
-    return data.projects || [];
+    return data.Portfolios || [];
   } catch (error) {
-    console.error("Error fetching projects for sitemap:", error);
+    console.error("Error fetching Portfolios for sitemap:", error);
     return [];
   }
 }
@@ -99,7 +99,7 @@ function getCustomSitemapEntries(): Array<{
           priority: 0.9,
         },
         {
-          url: "/projects",
+          url: "/Portfolios",
           lastModified: new Date(),
           changeFrequency: "monthly",
           priority: 0.9,
@@ -141,11 +141,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Fetch dynamic projects
-  const projects = await fetchProjects();
-  const projectRoutes = (projects || []).map((project: IProject) => ({
-    url: `${DOMAIN}/projects/${project.slug}`,
-    lastModified: project.updatedAt ? new Date(project.updatedAt) : new Date(),
+  // Fetch dynamic Portfolios
+  const Portfolios = await fetchPortfolios();
+  const PortfolioRoutes = (Portfolios || []).map((Portfolio: IPortfolio) => ({
+    url: `${DOMAIN}/Portfolios/${Portfolio.slug}`,
+    lastModified: Portfolio.updatedAt
+      ? new Date(Portfolio.updatedAt)
+      : new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
@@ -165,5 +167,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Combine all routes
-  return [...processedCustomEntries, ...blogRoutes, ...projectRoutes];
+  return [...processedCustomEntries, ...blogRoutes, ...PortfolioRoutes];
 }

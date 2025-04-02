@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectRequestSchema } from "@/lib/types";
+import { PortfolioRequestSchema } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,9 +20,9 @@ import { toast } from "sonner";
 import { Loader2, X } from "lucide-react";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
-  useCreateProject,
-  useUpdateProject,
-} from "@/lib/api/services/projectService";
+  useCreatePortfolio,
+  useUpdatePortfolio,
+} from "@/lib/api/services/PortfolioService";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 
@@ -38,23 +38,23 @@ interface ApiError {
   };
 }
 
-type ProjectFormData = z.infer<typeof ProjectRequestSchema>;
+type PortfolioFormData = z.infer<typeof PortfolioRequestSchema>;
 
-interface ProjectFormProps {
-  initialData?: Partial<ProjectFormData>;
+interface PortfolioFormProps {
+  initialData?: Partial<PortfolioFormData>;
   onClose?: () => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-const LOCAL_STORAGE_KEY_NEW = "projectFormData_new";
-const LOCAL_STORAGE_KEY = "projectFormData";
+const LOCAL_STORAGE_KEY_NEW = "PortfolioFormData_new";
+const LOCAL_STORAGE_KEY = "PortfolioFormData";
 
-const ProjectForm = ({
+const PortfolioForm = ({
   initialData,
   onClose,
   onOpenChange,
   open,
-}: ProjectFormProps) => {
+}: PortfolioFormProps) => {
   // Debug the open state
   useEffect(() => {
     console.log("Form open state:", open);
@@ -106,8 +106,8 @@ const ProjectForm = ({
     watch,
     reset,
     trigger,
-  } = useForm<ProjectFormData>({
-    resolver: zodResolver(ProjectRequestSchema),
+  } = useForm<PortfolioFormData>({
+    resolver: zodResolver(PortfolioRequestSchema),
     defaultValues,
     mode: "onChange",
   });
@@ -136,20 +136,20 @@ const ProjectForm = ({
   const featuredImage = watch("featuredImage");
 
   // Memoize mutation hooks
-  const createProjectMutation = useCreateProject();
-  const updateProjectMutation = useUpdateProject();
+  const createPortfolioMutation = useCreatePortfolio();
+  const updatePortfolioMutation = useUpdatePortfolio();
 
   // Debug mutation status
   useEffect(() => {
     console.log("Create mutation status:", {
-      isPending: createProjectMutation.isPending,
-      isError: createProjectMutation.isError,
-      error: createProjectMutation.error,
+      isPending: createPortfolioMutation.isPending,
+      isError: createPortfolioMutation.isError,
+      error: createPortfolioMutation.error,
     });
   }, [
-    createProjectMutation.isPending,
-    createProjectMutation.isError,
-    createProjectMutation.error,
+    createPortfolioMutation.isPending,
+    createPortfolioMutation.isError,
+    createPortfolioMutation.error,
   ]);
 
   // Load saved form data from localStorage on initial render
@@ -160,11 +160,11 @@ const ProjectForm = ({
         let storageKey = "";
 
         if (initialData?._id) {
-          // Existing project: Load from specific key
+          // Existing Portfolio: Load from specific key
           storageKey = `${LOCAL_STORAGE_KEY}_${initialData._id}`;
           savedData = localStorage.getItem(storageKey);
         } else {
-          // New project: Load from new project key
+          // New Portfolio: Load from new Portfolio key
           storageKey = LOCAL_STORAGE_KEY_NEW;
           savedData = localStorage.getItem(storageKey);
         }
@@ -185,17 +185,17 @@ const ProjectForm = ({
                   if (!isNaN(date.getTime())) {
                     const formattedDate = date.toISOString().split("T")[0];
                     setValue(
-                      key as keyof ProjectFormData,
+                      key as keyof PortfolioFormData,
                       formattedDate as string
                     );
                     console.log(`Formatted date for ${key}: ${formattedDate}`); // Track change
                   }
                 } else {
-                  setValue(key as keyof ProjectFormData, "" as string);
+                  setValue(key as keyof PortfolioFormData, "" as string);
                   console.log(`Cleared value for ${key}`); // Track change
                 }
               } else {
-                setValue(key as keyof ProjectFormData, value as string);
+                setValue(key as keyof PortfolioFormData, value as string);
                 console.log(`Set value for ${key}: ${value}`); // Track change
               }
             }
@@ -243,7 +243,7 @@ const ProjectForm = ({
         aiGenerated: false,
       };
       console.log("Data to save:", dataToSave);
-      // Use different keys for new and existing projects
+      // Use different keys for new and existing Portfolios
       const storageKey = initialData?._id
         ? `${LOCAL_STORAGE_KEY}_${initialData._id}`
         : LOCAL_STORAGE_KEY_NEW;
@@ -298,7 +298,7 @@ const ProjectForm = ({
           setHasUnsavedChanges(false);
           onOpenChange(newOpen);
           reset();
-          // Clear localStorage for new projects when closing without saving
+          // Clear localStorage for new Portfolios when closing without saving
           if (!initialData?._id) {
             localStorage.removeItem(LOCAL_STORAGE_KEY_NEW);
           }
@@ -311,7 +311,7 @@ const ProjectForm = ({
   );
 
   const onSubmit = useCallback(
-    async (formData: ProjectFormData) => {
+    async (formData: PortfolioFormData) => {
       console.log("Form submission data:", formData);
       console.log("Current technologies:", technologies);
 
@@ -332,7 +332,7 @@ const ProjectForm = ({
           return;
         }
 
-        // Check if slug is unique for new projects
+        // Check if slug is unique for new Portfolios
         if (!initialData?._id) {
           const isSlugValid = await validateSlug();
           if (!isSlugValid) {
@@ -352,7 +352,7 @@ const ProjectForm = ({
           "status",
         ];
         for (const field of requiredFields) {
-          if (!formData[field as keyof ProjectFormData]) {
+          if (!formData[field as keyof PortfolioFormData]) {
             toast.error(`${field} is required`);
             setIsSaving(false);
             return;
@@ -360,7 +360,7 @@ const ProjectForm = ({
         }
 
         // Validate with schema first
-        const validatedData = ProjectRequestSchema.parse(formData);
+        const validatedData = PortfolioRequestSchema.parse(formData);
 
         // Prepare the data with proper types
         const completeData = {
@@ -376,24 +376,24 @@ const ProjectForm = ({
         };
 
         if (initialData?._id) {
-          await updateProjectMutation.mutateAsync({
+          await updatePortfolioMutation.mutateAsync({
             id: initialData._id,
             data: completeData,
           });
-          toast.success("Project updated successfully");
+          toast.success("Portfolio updated successfully");
 
-          // Clear localStorage for this specific project
+          // Clear localStorage for this specific Portfolio
           localStorage.removeItem(`${LOCAL_STORAGE_KEY}_${initialData._id}`);
         } else {
-          console.log("Creating new project with data:", completeData);
+          console.log("Creating new Portfolio with data:", completeData);
           try {
-            const result = await createProjectMutation.mutateAsync(
+            const result = await createPortfolioMutation.mutateAsync(
               completeData
             );
-            console.log("Create project result:", result);
-            toast.success("Project created successfully");
+            console.log("Create Portfolio result:", result);
+            toast.success("Portfolio created successfully");
 
-            // Clear general localStorage for new projects
+            // Clear general localStorage for new Portfolios
             localStorage.removeItem(LOCAL_STORAGE_KEY_NEW);
           } catch (mutationError: unknown) {
             console.error("Mutation error details:", mutationError);
@@ -406,7 +406,7 @@ const ProjectForm = ({
               error?.message?.includes("dup key: { slug:")
             ) {
               toast.error(
-                "A project with this slug already exists. Please choose a different slug."
+                "A Portfolio with this slug already exists. Please choose a different slug."
               );
               setIsSaving(false);
               return; // Return early to prevent the form from closing
@@ -432,7 +432,7 @@ const ProjectForm = ({
         onClose?.();
       } catch (error) {
         console.error("Form submission error:", error);
-        let errorMessage = "An error occurred while saving the project";
+        let errorMessage = "An error occurred while saving the Portfolio";
 
         // Check if it's a response error with a message
         if (error instanceof Error) {
@@ -456,8 +456,8 @@ const ProjectForm = ({
       technologies,
       gallery,
       initialData,
-      updateProjectMutation,
-      createProjectMutation,
+      updatePortfolioMutation,
+      createPortfolioMutation,
       reset,
       onClose,
       trigger,
@@ -555,12 +555,12 @@ const ProjectForm = ({
     if (!currentSlug || initialData?.slug === currentSlug) return true;
 
     try {
-      // Check if a project with this slug already exists
-      const response = await fetch(`/api/projects?slug=${currentSlug}`);
+      // Check if a Portfolio with this slug already exists
+      const response = await fetch(`/api/Portfolios?slug=${currentSlug}`);
       const data = await response.json();
 
-      // If the API returns a project, the slug is already in use
-      if (response.ok && data.projects && data.projects.length > 0) {
+      // If the API returns a Portfolio, the slug is already in use
+      if (response.ok && data.Portfolios && data.Portfolios.length > 0) {
         toast.error(
           "This slug is already in use. Please choose a different one."
         );
@@ -934,20 +934,20 @@ const ProjectForm = ({
         <Button
           type='submit'
           disabled={
-            createProjectMutation.isPending ||
-            updateProjectMutation.isPending ||
+            createPortfolioMutation.isPending ||
+            updatePortfolioMutation.isPending ||
             isSaving
           }
         >
-          {createProjectMutation.isPending ||
-          updateProjectMutation.isPending ||
+          {createPortfolioMutation.isPending ||
+          updatePortfolioMutation.isPending ||
           isSaving ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
               {initialData?._id ? "Updating..." : "Creating..."}
             </>
           ) : (
-            <>{initialData?._id ? "Update" : "Create"} Project</>
+            <>{initialData?._id ? "Update" : "Create"} Portfolio</>
           )}
         </Button>
       </DialogFooter>
@@ -955,4 +955,4 @@ const ProjectForm = ({
   );
 };
 
-export default ProjectForm;
+export default PortfolioForm;

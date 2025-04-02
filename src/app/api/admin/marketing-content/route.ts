@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { Blog, Project } from "@/lib/models";
+import { Blog, Portfolio } from "@/lib/models";
 import { checkRoleClerk } from "@/utils/roles";
 
 // Cache duration in seconds (1 day)
@@ -14,13 +14,13 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const contentType = searchParams.get("type") || "all"; // 'blog', 'project', or 'all'
+    const contentType = searchParams.get("type") || "all"; // 'blog', 'Portfolio', or 'all'
     const limit = parseInt(searchParams.get("limit") || "5");
 
     await connectDB();
 
     let blogs = [];
-    let projects = [];
+    let Portfolios = [];
 
     // Fetch data based on content type
     if (contentType === "all" || contentType === "blog") {
@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
         .select("_id title slug excerpt publishedAt");
     }
 
-    if (contentType === "all" || contentType === "project") {
-      projects = await Project.find({
+    if (contentType === "all" || contentType === "Portfolio") {
+      Portfolios = await Portfolio.find({
         status: { $in: ["in-progress", "completed"] },
       })
         .sort({ updatedAt: -1 })
@@ -50,12 +50,12 @@ export async function GET(request: NextRequest) {
         excerpt: blog.excerpt,
         date: blog.publishedAt,
       })),
-      projects: projects.map((project) => ({
-        _id: project._id,
-        title: project.title,
-        slug: project.slug,
-        description: project.description,
-        date: project.updatedAt,
+      Portfolios: Portfolios.map((Portfolio) => ({
+        _id: Portfolio._id,
+        title: Portfolio.title,
+        slug: Portfolio.slug,
+        description: Portfolio.description,
+        date: Portfolio.updatedAt,
       })),
     };
 

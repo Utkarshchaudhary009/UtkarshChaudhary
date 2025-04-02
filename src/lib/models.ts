@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {
-  IProject,
+  IPortfolio,
   IBlog,
   IContact,
   IPersonalDetails,
@@ -46,8 +46,8 @@ const PersonalDetailsSchema = new mongoose.Schema<IPersonalDetails>({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Project Schema
-const ProjectSchema = new mongoose.Schema<IProject>({
+// Portfolio Schema
+const PortfolioSchema = new mongoose.Schema<IPortfolio>({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
   content: { type: String, required: true },
@@ -76,8 +76,8 @@ const ProjectSchema = new mongoose.Schema<IProject>({
 
 // request body example
 
-// Add enhanced utility methods to ProjectSchema
-ProjectSchema.methods.generateStructuredData = function () {
+// Add enhanced utility methods to PortfolioSchema
+PortfolioSchema.methods.generateStructuredData = function () {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -208,11 +208,11 @@ const SitemapSchema = new mongoose.Schema({
 });
 
 // Add indexes for performance
-ProjectSchema.index({ slug: 1, createdAt: -1 });
+PortfolioSchema.index({ slug: 1, createdAt: -1 });
 BlogSchema.index({ publishedAt: -1, isPublished: 1 });
 
 // Add slug generation middleware
-ProjectSchema.pre("save", function (next) {
+PortfolioSchema.pre("save", function (next) {
   if (!this.slug) {
     this.slug = this.title
       .toLowerCase()
@@ -235,7 +235,7 @@ BlogSchema.pre("save", function (next) {
 });
 
 // Enable strict schema validation
-ProjectSchema.set("validateBeforeSave", true);
+PortfolioSchema.set("validateBeforeSave", true);
 BlogSchema.set("validateBeforeSave", true);
 
 // Add validation middleware for SEO metadata
@@ -243,8 +243,8 @@ const validateMetaDescription = (text: string) => {
   return text && text.length >= 10 && text.length <= 160;
 };
 
-// ProjectSchema validation middleware (no SEO validation)
-ProjectSchema.pre("validate", function (next) {
+// PortfolioSchema validation middleware (no SEO validation)
+PortfolioSchema.pre("validate", function (next) {
   next();
 });
 
@@ -272,8 +272,9 @@ const MarketingMailSchema = new mongoose.Schema<IMarketingMail>({
 });
 
 // Export models
-export const Project =
-  mongoose.models.Project || mongoose.model<IProject>("Project", ProjectSchema);
+export const Portfolio =
+  mongoose.models.Portfolio ||
+  mongoose.model<IPortfolio>("Portfolio", PortfolioSchema);
 
 export const Blog =
   mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);

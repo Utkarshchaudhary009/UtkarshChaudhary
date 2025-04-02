@@ -1,11 +1,11 @@
 import { Metadata, ResolvingMetadata } from "next";
-import ClientProjectDetail from "./client";
+import ClientPortfolioDetail from "./client";
 
-// Function to fetch project data for metadata
-async function getProjectData(slug: string) {
+// Function to fetch Portfolio data for metadata
+async function getPortfolioData(slug: string) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects?slug=${slug}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/Portfolios?slug=${slug}`,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       }
@@ -14,9 +14,9 @@ async function getProjectData(slug: string) {
     if (!response.ok) return null;
 
     const data = await response.json();
-    return data.projects?.[0] || null;
+    return data.Portfolios?.[0] || null;
   } catch (error) {
-    console.error("Error fetching project data for metadata:", error);
+    console.error("Error fetching Portfolio data for metadata:", error);
     return null;
   }
 }
@@ -30,40 +30,41 @@ export async function generateMetadata(
   },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Get the project data
-  const project = await getProjectData((await params).slug);
+  // Get the Portfolio data
+  const Portfolio = await getPortfolioData((await params).slug);
 
   // Get parent metadata (from layout)
   const previousImages = (await parent).openGraph?.images || [];
-  const previousTitle = (await parent).title || "Projects";
+  const previousTitle = (await parent).title || "Portfolios";
 
-  // Default metadata if project not found
-  if (!project) {
+  // Default metadata if Portfolio not found
+  if (!Portfolio) {
     return {
-      title: `Project Not Found | ${previousTitle}`,
-      description: "The requested project could not be found.",
+      title: `Portfolio Not Found | ${previousTitle}`,
+      description: "The requested Portfolio could not be found.",
     };
   }
 
-  // Build metadata based on project content
+  // Build metadata based on Portfolio content
   return {
-    title: `${project.title} | Projects`,
+    title: `${Portfolio.title} | Portfolios`,
     description:
-      project.excerpt || `Learn more about my project: ${project.title}`,
-    keywords: project.technologies?.join(", ") || "",
+      Portfolio.excerpt || `Learn more about my Portfolio: ${Portfolio.title}`,
+    keywords: Portfolio.technologies?.join(", ") || "",
     openGraph: {
-      title: project.title,
+      title: Portfolio.title,
       description:
-        project.excerpt || `Learn more about my project: ${project.title}`,
+        Portfolio.excerpt ||
+        `Learn more about my Portfolio: ${Portfolio.title}`,
       type: "website",
-      url: project.liveUrl || undefined,
-      images: project.featuredImage
+      url: Portfolio.liveUrl || undefined,
+      images: Portfolio.featuredImage
         ? [
             {
-              url: project.featuredImage,
+              url: Portfolio.featuredImage,
               width: 1200,
               height: 630,
-              alt: project.title,
+              alt: Portfolio.title,
             },
             ...previousImages,
           ]
@@ -71,15 +72,16 @@ export async function generateMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title: project.title,
+      title: Portfolio.title,
       description:
-        project.excerpt || `Learn more about my project: ${project.title}`,
-      images: project.featuredImage ? [project.featuredImage] : undefined,
+        Portfolio.excerpt ||
+        `Learn more about my Portfolio: ${Portfolio.title}`,
+      images: Portfolio.featuredImage ? [Portfolio.featuredImage] : undefined,
     },
   };
 }
 
 // Server Component that renders the Client Component
-export default function ProjectPage() {
-  return <ClientProjectDetail />;
+export default function PortfolioPage() {
+  return <ClientPortfolioDetail />;
 }

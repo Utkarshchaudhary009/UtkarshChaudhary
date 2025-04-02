@@ -38,7 +38,7 @@ const customRuntimeCaching = [
   },
   // Cache page content more aggressively
   {
-    urlPattern: /\/(blog|projects|about|contact)(\/.*)?$/,
+    urlPattern: /\/(blog|Portfolios|about|contact)(\/.*)?$/,
     handler: "NetworkFirst",
     options: {
       cacheName: "page-cache",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useProject } from "@/lib/api/services/projectService";
+import { usePortfolio } from "@/lib/api/services/PortfolioService";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,11 +12,11 @@ import Link from "next/link";
 import MarkdownRenderer from "@/components/ui/markdown-renderer";
 import { SocialShareList } from "@/components/ui/social-share";
 
-export default function ClientProjectDetail() {
+export default function ClientPortfolioDetail() {
   const { slug } = useParams();
-  // Use TanStack Query to fetch the project
-  const { data, isLoading, error } = useProject(slug as string);
-  const project = data?.projects?.[0] || null;
+  // Use TanStack Query to fetch the Portfolio
+  const { data, isLoading, error } = usePortfolio(slug as string);
+  const Portfolio = data?.Portfolios?.[0] || null;
 
   if (isLoading) {
     return (
@@ -75,17 +75,17 @@ export default function ClientProjectDetail() {
       <div className='container py-8'>
         <h1 className='text-2xl font-bold mb-4'>Error</h1>
         <p className='text-red-500'>
-          Failed to load project. Please try again later.
+          Failed to load Portfolio. Please try again later.
         </p>
         <Button
           asChild
           className='mt-4'
         >
           <Link
-            href='/projects'
-            aria-label='Back to Projects'
+            href='/Portfolios'
+            aria-label='Back to Portfolios'
           >
-            Back to Projects
+            Back to Portfolios
           </Link>
         </Button>
       </div>
@@ -95,26 +95,26 @@ export default function ClientProjectDetail() {
   return (
     <div className='container py-8 space-y-8'>
       <div className='space-y-4'>
-        <h1 className='text-4xl font-bold'>{project?.title}</h1>
+        <h1 className='text-4xl font-bold'>{Portfolio?.title}</h1>
 
         <SocialShareList
-          url={`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${project?.slug}`}
-          title={project?.title || ""}
+          url={`${process.env.NEXT_PUBLIC_BASE_URL}/Portfolios/${Portfolio?.slug}`}
+          title={Portfolio?.title || ""}
           className='right-1 my-2 md:my-0'
-          description={project?.excerpt || ""}
-          media={project?.featuredImage || ""}
+          description={Portfolio?.excerpt || ""}
+          media={Portfolio?.featuredImage || ""}
         />
-        <p className='text-xl text-muted-foreground'>{project?.excerpt}</p>
+        <p className='text-xl text-muted-foreground'>{Portfolio?.excerpt}</p>
       </div>
 
-      {project?.featuredImage && (
+      {Portfolio?.featuredImage && (
         <AspectRatio
           ratio={16 / 9}
           className='overflow-hidden rounded-lg'
         >
           <Image
-            src={project.featuredImage}
-            alt={project.title || "Project"}
+            src={Portfolio.featuredImage}
+            alt={Portfolio.title || "Portfolio"}
             fill
             className='object-cover h-3/5 w-3/5'
           />
@@ -123,9 +123,11 @@ export default function ClientProjectDetail() {
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
         <div className='md:col-span-2 space-y-6'>
-          <h2 className='text-2xl font-semibold'>Project Details</h2>
+          <h2 className='text-2xl font-semibold'>Portfolio Details</h2>
           <div className='prose max-w-none dark:prose-invert'>
-            {project?.content && <MarkdownRenderer content={project.content} />}
+            {Portfolio?.content && (
+              <MarkdownRenderer content={Portfolio.content} />
+            )}
           </div>
         </div>
 
@@ -133,7 +135,7 @@ export default function ClientProjectDetail() {
           <div>
             <h3 className='text-xl font-semibold mb-4'>Technologies</h3>
             <div className='flex flex-wrap gap-2'>
-              {project?.technologies?.map((tech: string) => (
+              {Portfolio?.technologies?.map((tech: string) => (
                 <Badge
                   key={tech}
                   variant='secondary'
@@ -146,14 +148,14 @@ export default function ClientProjectDetail() {
 
           <div>
             <h3 className='text-xl font-semibold mb-4'>Links</h3>
-            {project?.githubUrl && (
+            {Portfolio?.githubUrl && (
               <Button
                 variant='outline'
                 className='w-full mb-2'
                 asChild
               >
                 <Link
-                  href={project.githubUrl}
+                  href={Portfolio.githubUrl}
                   target='_blank'
                   rel='noopener noreferrer'
                 >
@@ -162,13 +164,13 @@ export default function ClientProjectDetail() {
                 </Link>
               </Button>
             )}
-            {project?.liveUrl && (
+            {Portfolio?.liveUrl && (
               <Button
                 className='w-full'
                 asChild
               >
                 <Link
-                  href={project.liveUrl}
+                  href={Portfolio.liveUrl}
                   target='_blank'
                   rel='noopener noreferrer'
                 >
@@ -183,14 +185,14 @@ export default function ClientProjectDetail() {
             <h3 className='text-xl font-semibold mb-2'>Status</h3>
             <Badge
               variant={
-                project?.status === "completed"
+                Portfolio?.status === "completed"
                   ? "default"
-                  : project?.status === "in-progress"
+                  : Portfolio?.status === "in-progress"
                   ? "secondary"
                   : "outline"
               }
             >
-              {project?.status}
+              {Portfolio?.status}
             </Badge>
           </div>
         </div>
@@ -201,10 +203,10 @@ export default function ClientProjectDetail() {
         asChild
       >
         <Link
-          href='/projects'
-          aria-label='Back to Projects'
+          href='/Portfolios'
+          aria-label='Back to Portfolios'
         >
-          Back to Projects
+          Back to Portfolios
         </Link>
       </Button>
     </div>

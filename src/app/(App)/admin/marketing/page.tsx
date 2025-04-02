@@ -38,7 +38,7 @@ interface ContentItem {
 
 interface MarketingContent {
   blogs: ContentItem[];
-  projects: ContentItem[];
+  Portfolios: ContentItem[];
 }
 
 interface MarketingMail {
@@ -58,7 +58,7 @@ export default function MarketingPage() {
 
   // Email sending state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [contentType, setContentType] = useState<"blog" | "project">("blog");
+  const [contentType, setContentType] = useState<"blog" | "Portfolio">("blog");
   const [marketingContent, setMarketingContent] =
     useState<MarketingContent | null>(null);
   const [contentLoading, setContentLoading] = useState(false);
@@ -103,7 +103,7 @@ export default function MarketingPage() {
     await fetchMarketingContent();
   };
 
-  // Fetch marketing content (blogs and projects)
+  // Fetch marketing content (blogs and Portfolios)
   const fetchMarketingContent = async () => {
     try {
       setContentLoading(true);
@@ -167,7 +167,7 @@ export default function MarketingPage() {
     }
   };
 
-  // Handle content selection (blog or project)
+  // Handle content selection (blog or Portfolio)
   const selectContent = (item: ContentItem) => {
     setSelectedContent(item);
   };
@@ -247,7 +247,7 @@ export default function MarketingPage() {
           <h1 className='text-2xl font-bold'>Marketing Email Subscribers</h1>
           <p className='text-muted-foreground'>
             Manage subscribers and send updates about new blog posts and
-            projects.
+            Portfolios.
           </p>
         </div>
 
@@ -372,11 +372,11 @@ export default function MarketingPage() {
 
             <Tabs
               defaultValue='blog'
-              onValueChange={(v) => setContentType(v as "blog" | "project")}
+              onValueChange={(v) => setContentType(v as "blog" | "Portfolio")}
             >
               <TabsList className='grid w-full grid-cols-2'>
                 <TabsTrigger value='blog'>Blog Posts</TabsTrigger>
-                <TabsTrigger value='project'>Projects</TabsTrigger>
+                <TabsTrigger value='Portfolio'>Portfolios</TabsTrigger>
               </TabsList>
 
               <div className='mt-4 relative'>
@@ -429,13 +429,13 @@ export default function MarketingPage() {
                 </TabsContent>
 
                 <TabsContent
-                  value='project'
+                  value='Portfolio'
                   className='space-y-2'
                 >
                   {!marketingContent ||
-                  marketingContent.projects.length === 0 ? (
+                  marketingContent.Portfolios.length === 0 ? (
                     <div className='text-center py-8 text-muted-foreground'>
-                      No projects found
+                      No Portfolios found
                       <Button
                         variant='ghost'
                         size='sm'
@@ -448,22 +448,23 @@ export default function MarketingPage() {
                     </div>
                   ) : (
                     <div className='space-y-2 max-h-[300px] overflow-y-auto pr-2'>
-                      {marketingContent.projects.map((project) => (
+                      {marketingContent.Portfolios.map((Portfolio) => (
                         <div
-                          key={project._id}
+                          key={Portfolio._id}
                           className={`p-3 border rounded-md cursor-pointer transition-colors ${
-                            selectedContent?._id === project._id
+                            selectedContent?._id === Portfolio._id
                               ? "border-primary bg-primary/5"
                               : "hover:bg-muted"
                           }`}
-                          onClick={() => selectContent(project)}
+                          onClick={() => selectContent(Portfolio)}
                         >
-                          <div className='font-medium'>{project.title}</div>
+                          <div className='font-medium'>{Portfolio.title}</div>
                           <div className='text-sm text-muted-foreground line-clamp-2 mt-1'>
-                            {project.description || "No description available"}
+                            {Portfolio.description ||
+                              "No description available"}
                           </div>
                           <div className='text-xs text-muted-foreground mt-2'>
-                            {new Date(project.date).toLocaleDateString()}
+                            {new Date(Portfolio.date).toLocaleDateString()}
                           </div>
                         </div>
                       ))}

@@ -3,7 +3,12 @@
 import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Menu, Shield, X } from "lucide-react";
 import {
   SignInButton,
@@ -22,7 +27,7 @@ interface NavbarProps {
 const navItems = [
   { name: "Home", path: "/home" },
   { name: "About", path: "/about" },
-  { name: "Projects", path: "/projects" },
+  { name: "Portfolios", path: "/Portfolios" },
   { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
 ];
@@ -167,7 +172,7 @@ function NavbarComponent({ isAdmin }: NavbarProps) {
           <SheetTrigger
             asChild
             className='block md:hidden'
-            aria-describedby="side bar sheet"
+            aria-describedby='side bar sheet'
           >
             <Button
               variant='ghost'
@@ -175,17 +180,13 @@ function NavbarComponent({ isAdmin }: NavbarProps) {
               className='relative'
               aria-label='Open Menu'
             >
-              {isOpen ? (
-                null
-              ) : (
-                <Menu className='h-5 w-5 container mx-auto' />
-              )}
+              {isOpen ? null : <Menu className='h-5 w-5 container mx-auto' />}
             </Button>
           </SheetTrigger>
           <SheetContent
             side='left'
             className='w-[280px] sm:w-[350px] flex flex-col overflow-y-auto border-r'
-            aria-describedby="side bar sheet"
+            aria-describedby='side bar sheet'
           >
             <div className='py-6 flex justify-center'>
               <Link

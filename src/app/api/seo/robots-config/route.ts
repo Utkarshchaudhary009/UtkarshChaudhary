@@ -38,7 +38,7 @@ export async function GET() {
               "/about/",
               "/contact/",
               "/blog/",
-              "/projects/",
+              "/Portfolios/",
             ],
             disallow: [
               "/api/",

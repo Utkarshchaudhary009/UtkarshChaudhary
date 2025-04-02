@@ -14,7 +14,7 @@ export interface IOpenGraph {
   images?: { url: string }[];
 }
 
-export interface IProject {
+export interface IPortfolio {
   _id?: string;
   title: string;
   slug: string;
@@ -154,7 +154,7 @@ export const SEOSchema = z.object({
   structuredData: z.record(z.string(), z.unknown()).optional(),
 });
 
-export const ProjectSchema = z.object({
+export const PortfolioSchema = z.object({
   _id: z.string().optional(),
   title: z.string().min(3, "Title must be at least 3 characters"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
@@ -180,7 +180,7 @@ export const ProjectSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-export const ProjectRequestSchema = ProjectSchema.omit({
+export const PortfolioRequestSchema = PortfolioSchema.omit({
   aiGenerated: true,
   embeddings: true,
   createdAt: true,
@@ -217,8 +217,11 @@ export type BlogFormData = Omit<IBlog, "_id" | "createdAt" | "updatedAt"> & {
   isPublished: boolean;
 };
 
-// Add ProjectFormData type
-export type ProjectFormData = Omit<IProject, "_id" | "createdAt" | "updatedAt">;
+// Add PortfolioFormData type
+export type PortfolioFormData = Omit<
+  IPortfolio,
+  "_id" | "createdAt" | "updatedAt"
+>;
 
 // Define the Zod schema for the form
 export const jobSchema = z.object({

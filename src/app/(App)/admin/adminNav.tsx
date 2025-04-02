@@ -30,10 +30,10 @@ export default function AdminNav() {
       href: "/admin/users",
     },
     {
-      title: "Projects",
-      description: "Manage your projects and showcase",
+      title: "Portfolios",
+      description: "Manage your Portfolios and showcase",
       icon: <Layers className='h-8 w-8' />,
-      href: "/admin/projects",
+      href: "/admin/Portfolios",
     },
     {
       title: "Blog",
@@ -59,12 +59,12 @@ export default function AdminNav() {
       icon: <Globe className='h-8 w-8' />,
       href: "/admin/seo",
     },
-      {
+    {
       title: "About Me",
       description: "Manage your about me page",
       icon: <User className='h-8 w-8' />,
       href: "/admin/me",
-    }
+    },
   ];
 
   return (

@@ -39,7 +39,7 @@ IMPORTANT RULES:
 7. DON'T use informations just because you have it. undersatand users quey and find key points from informatation from database and tailore a capitivating response.
 8. Our base url is :${
     process.env.NEXT_PUBLIC_BASE_URL
-  }. use it only when required. and othere pages are /home, /about, /contact, /blogs, /blogs/[slug], /projects, /projects/[slug].
+  }. use it only when required. and othere pages are /home, /about, /contact, /blogs, /blogs/[slug], /Portfolios, /Portfolios/[slug].
 chat history: ${chatHistory
     .map((message) => `${message.role}: ${message.content}`)
     .join("\n")}
@@ -81,7 +81,7 @@ async function isToolNeeded(
   chatHistory: Message[],
   genAI: GoogleGenAI
 ): Promise<boolean> {
-  const prompt = `Evaluate the users message to determine if the conversation is straightforward or if it requires the use of database tools.f user is asking any thing about utkarsh chaudhary then use the tool. if user is asking about blogs or projects then use the tool.if user is asking about contact then use the tool.if user is asking about me then use the tool.if it is a simple conversation dont use tool.if user is asking about anything else then dont use the tool.users message: ${userMessage} , chat history: ${chatHistory
+  const prompt = `Evaluate the users message to determine if the conversation is straightforward or if it requires the use of database tools.f user is asking any thing about utkarsh chaudhary then use the tool. if user is asking about blogs or Portfolios then use the tool.if user is asking about contact then use the tool.if user is asking about me then use the tool.if it is a simple conversation dont use tool.if user is asking about anything else then dont use the tool.users message: ${userMessage} , chat history: ${chatHistory
     .map((message) => `${message.role}: ${message.content}`)
     .join(
       "\n"
@@ -109,7 +109,7 @@ async function getTool(
   // List of available tools/services
   const availableTools = [
     "blog",
-    "project",
+    "Portfolio",
     "contact",
     "me",
     "none", // For regular conversation
@@ -126,7 +126,7 @@ chat history: ${chatHistory
 
 Rules:
 - Select "blog" if the user asks about blog posts, articles, or content
-- Select "project" if the user inquires about projects, portfolio items, or work examples
+- Select "Portfolio" if the user inquires about Portfolios, portfolio items, or work examples
 - Select "contact" if the user wants to contact, message, reach out, or run advertisements
 - Select "me" if the user is asking about the owner's personal information, biography, or resume
 - Select "none" if the user is just having a casual conversation or greeting
@@ -166,15 +166,15 @@ async function getInfo(tool: string, userMessage: string): Promise<string> {
         break;
       }
 
-      case "project": {
-        // Fetch projects based on user query
-        const projects = await API(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`
+      case "Portfolio": {
+        // Fetch Portfolios based on user query
+        const Portfolios = await API(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/Portfolios`
         );
 
         response = {
-          message: "Here are some projects that might be relevant:",
-          projects: projects || [],
+          message: "Here are some Portfolios that might be relevant:",
+          Portfolios: Portfolios || [],
         };
         break;
       }

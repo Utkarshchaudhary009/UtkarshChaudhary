@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { ProjectRequestSchema } from "@/lib/types";
+import { PortfolioRequestSchema } from "@/lib/types";
 
-async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
-  const prompt = `Generate a detailed project idea (in JSON format) about "${idea}". Include:
+async function generatePortfolioContent(idea: string, genAI: GoogleGenAI) {
+  const prompt = `Generate a detailed Portfolio idea (in JSON format) about "${idea}". Include:
   title: string,
   content: string (1000-1500 characters, with some markdown formatting),
   description: string (200-250 characters),
@@ -22,11 +22,11 @@ async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
 
     const response =
       result.text?.replace(/^```json\n/, "").replace(/\n```$/, "") || "[]";
-    // console.log(`project content response:`, response);
+    // console.log(`Portfolio content response:`, response);
     return response;
   } catch (error) {
-    console.error("Error generating project content:", error);
-    throw new Error("Failed to parse project JSON");
+    console.error("Error generating Portfolio content:", error);
+    throw new Error("Failed to parse Portfolio JSON");
   }
 }
 
@@ -51,40 +51,41 @@ export async function GET(request: NextRequest) {
   const genAI = new GoogleGenAI({ apiKey: googleApiKey });
 
   try {
-    const partialProject = await generateProjectContent(idea, genAI);
-    // console.log(`partial project:`, partialProject);
-    if (!partialProject) {
+    const partialPortfolio = await generatePortfolioContent(idea, genAI);
+    // console.log(`partial Portfolio:`, partialPortfolio);
+    if (!partialPortfolio) {
       return NextResponse.json(
-        { error: "Failed to generate project" },
+        { error: "Failed to generate Portfolio" },
         { status: 500 }
       );
     }
-    const projectData = JSON.parse(partialProject);
-    const slug = projectData.title
+    const PortfolioData = JSON.parse(partialPortfolio);
+    const slug = PortfolioData.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
-    const fullProject = {
-      title: projectData.title,
-      slug: projectData.slug || slug,
-      content: projectData.content,
-      description: projectData.description,
-      excerpt: projectData.excerpt || projectData.description.substring(0, 157),
+    const fullPortfolio = {
+      title: PortfolioData.title,
+      slug: PortfolioData.slug || slug,
+      content: PortfolioData.content,
+      description: PortfolioData.description,
+      excerpt:
+        PortfolioData.excerpt || PortfolioData.description.substring(0, 157),
       featuredImage: "",
       gallery: [],
-      technologies: projectData.technologies || [],
-      category: projectData.category || "Web Development",
+      technologies: PortfolioData.technologies || [],
+      category: PortfolioData.category || "Web Development",
       status: "planned",
       markdown: true,
       featured: false,
       aiGenerated: true,
     };
 
-    ProjectRequestSchema.parse(fullProject);
-    console.log("full project:", fullProject);
-    return NextResponse.json(fullProject);
+    PortfolioRequestSchema.parse(fullPortfolio);
+    console.log("full Portfolio:", fullPortfolio);
+    return NextResponse.json(fullPortfolio);
   } catch (error: unknown) {
-    console.error("Error generating project:", error);
+    console.error("Error generating Portfolio:", error);
     return NextResponse.json(
       {
         error:

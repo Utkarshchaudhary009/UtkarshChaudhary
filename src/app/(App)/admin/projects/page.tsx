@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import {
-  useProjects,
-  useDeleteProject,
-  useUpdateProject,
-} from "@/lib/api/services/projectService";
-import { IProject, ProjectFormData } from "@/lib/types";
+  usePortfolios,
+  useDeletePortfolio,
+  useUpdatePortfolio,
+} from "@/lib/api/services/PortfolioService";
+import { IPortfolio, PortfolioFormData } from "@/lib/types";
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
-import ProjectForm from "@/components/ProjectForm";
+import PortfolioForm from "@/components/PortfolioForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -48,7 +48,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function AdminProjectsPage() {
+export default function AdminPortfoliosPage() {
   // State declarations - all grouped together
   const [filters, setFilters] = useState({
     status: "all",
@@ -57,28 +57,32 @@ export default function AdminProjectsPage() {
   });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<IProject | null>(null);
+  const [selectedPortfolio, setSelectedPortfolio] = useState<IPortfolio | null>(
+    null
+  );
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [aiData, setAiData] = useState<IProject | null>(null);
+  const [aiData, setAiData] = useState<IPortfolio | null>(null);
   const [idea, setIdea] = useState("");
   const [isAILoading, setIsAILoading] = useState(false);
 
   // Query hooks
-  const { data, isLoading, error } = useProjects(filters);
-  const deleteMutation = useDeleteProject();
-  const updateMutation = useUpdateProject();
+  const { data, isLoading, error } = usePortfolios(filters);
+  const deleteMutation = useDeletePortfolio();
+  const updateMutation = useUpdatePortfolio();
 
   // Extract unique categories and technologies before any conditionals
   const categories = [
     ...new Set(
-      (data?.projects || []).map((p: IProject) => p.category).filter(Boolean)
+      (data?.Portfolios || [])
+        .map((p: IPortfolio) => p.category)
+        .filter(Boolean)
     ),
   ] as string[];
 
   const technologies = [
     ...new Set(
-      (data?.projects || [])
-        .flatMap((p: IProject) => p.technologies || [])
+      (data?.Portfolios || [])
+        .flatMap((p: IPortfolio) => p.technologies || [])
         .filter(Boolean)
     ),
   ] as string[];
@@ -92,31 +96,31 @@ export default function AdminProjectsPage() {
     setIsCreateDialogOpen(false);
   };
 
-  const aiCreation = (project: IProject) => {
-    setAiData(project);
+  const aiCreation = (Portfolio: IPortfolio) => {
+    setAiData(Portfolio);
     setIsCreateDialogOpen(true);
   };
 
-  const fetchAIProject = async () => {
+  const fetchAIPortfolio = async () => {
     if (!idea.trim()) {
-      toast.error("Please enter a project idea");
+      toast.error("Please enter a Portfolio idea");
       return;
     }
 
     setIsAILoading(true);
     try {
       const response = await fetch(
-        `/api/ai/project?idea=${encodeURIComponent(idea)}`
+        `/api/ai/Portfolio?idea=${encodeURIComponent(idea)}`
       );
       if (!response.ok) {
-        throw new Error("Failed to generate project");
+        throw new Error("Failed to generate Portfolio");
       }
       const data = await response.json();
       aiCreation(data);
       setIsAIDialogOpen(false);
     } catch (error) {
-      console.error("Error fetching AI project:", error);
-      toast.error("Failed to generate project");
+      console.error("Error fetching AI Portfolio:", error);
+      toast.error("Failed to generate Portfolio");
     } finally {
       setIsAILoading(false);
     }
@@ -124,40 +128,40 @@ export default function AdminProjectsPage() {
 
   const handleEditDialogClose = () => {
     setIsEditDialogOpen(false);
-    setSelectedProject(null);
+    setSelectedPortfolio(null);
   };
 
-  const handleEdit = (project: IProject) => {
-    setSelectedProject(project);
+  const handleEdit = (Portfolio: IPortfolio) => {
+    setSelectedPortfolio(Portfolio);
     setIsEditDialogOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this project?")) {
+    if (window.confirm("Are you sure you want to delete this Portfolio?")) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
-          toast.success("Project deleted successfully");
+          toast.success("Portfolio deleted successfully");
         },
         onError: (error) => {
-          toast.error("Failed to delete project");
+          toast.error("Failed to delete Portfolio");
           console.error("Delete error:", error);
         },
       });
     }
   };
 
-  const toggleFeatured = (project: IProject) => {
-    if (project._id) {
+  const toggleFeatured = (Portfolio: IPortfolio) => {
+    if (Portfolio._id) {
       updateMutation.mutate(
         {
-          id: project._id,
-          data: { featured: !project.featured },
+          id: Portfolio._id,
+          data: { featured: !Portfolio.featured },
         },
         {
           onSuccess: () => {
             toast.success(
-              `Project ${
-                project.featured ? "removed from" : "marked as"
+              `Portfolio ${
+                Portfolio.featured ? "removed from" : "marked as"
               } featured`
             );
           },
@@ -175,7 +179,7 @@ export default function AdminProjectsPage() {
       <Card className='m-4'>
         <CardContent className='p-6'>
           <div className='text-center text-red-500'>
-            Error loading projects. Please try again later.
+            Error loading Portfolios. Please try again later.
           </div>
         </CardContent>
       </Card>
@@ -185,7 +189,7 @@ export default function AdminProjectsPage() {
   return (
     <div className='p-4 space-y-4'>
       <div className='flex justify-between items-center'>
-        <h1 className='text-2xl font-bold'>Projects</h1>
+        <h1 className='text-2xl font-bold'>Portfolios</h1>
         <div className='flex gap-2'>
           <Dialog
             open={isAIDialogOpen}
@@ -193,25 +197,25 @@ export default function AdminProjectsPage() {
           >
             <DialogTrigger asChild>
               <Button variant='outline'>
-                <span className='hidden md:block'>AI Project Generator</span>
+                <span className='hidden md:block'>AI Portfolio Generator</span>
                 <span className='block md:hidden'>AI</span>
               </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[425px]'>
               <DialogHeader>
-                <DialogTitle>Generate Project with AI</DialogTitle>
+                <DialogTitle>Generate Portfolio with AI</DialogTitle>
                 <DialogDescription>
-                  Enter a project idea to generate a project using AI.
+                  Enter a Portfolio idea to generate a Portfolio using AI.
                 </DialogDescription>
               </DialogHeader>
               <div className='flex flex-col gap-4 py-4'>
                 <Input
-                  placeholder='Enter project idea'
+                  placeholder='Enter Portfolio idea'
                   value={idea}
                   onChange={(e) => setIdea(e.target.value)}
                 />
                 <Button
-                  onClick={fetchAIProject}
+                  onClick={fetchAIPortfolio}
                   disabled={isAILoading}
                 >
                   {isAILoading ? "Generating..." : "Fetch AI Content"}
@@ -226,24 +230,24 @@ export default function AdminProjectsPage() {
           >
             <Button onClick={() => setIsCreateDialogOpen(true)}>
               <PlusIcon className='mr-2 h-4 w-4' />
-              New Project
+              New Portfolio
             </Button>
             <DialogContent className='sm:max-w-[625px]'>
               <DialogHeader>
                 <DialogTitle>
-                  <span className='hidden md:block'>Create New Project</span>
+                  <span className='hidden md:block'>Create New Portfolio</span>
                   <span className='block md:hidden'>+</span>
                 </DialogTitle>
                 <DialogDescription>
-                  Fill in the project details below.
+                  Fill in the Portfolio details below.
                 </DialogDescription>
               </DialogHeader>
-              <ProjectForm
+              <PortfolioForm
                 open={isCreateDialogOpen}
                 onOpenChange={setIsCreateDialogOpen}
                 onClose={handleCreateDialogClose}
                 initialData={
-                  aiData as (ProjectFormData & { _id?: string }) | undefined
+                  aiData as (PortfolioFormData & { _id?: string }) | undefined
                 }
               />
             </DialogContent>
@@ -258,15 +262,15 @@ export default function AdminProjectsPage() {
       >
         <DialogContent className='sm:max-w-[625px]'>
           <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
+            <DialogTitle>Edit Portfolio</DialogTitle>
             <DialogDescription>
-              Update the project details below.
+              Update the Portfolio details below.
             </DialogDescription>
           </DialogHeader>
-          <ProjectForm
+          <PortfolioForm
             initialData={
-              selectedProject as
-                | (ProjectFormData & { _id?: string })
+              selectedPortfolio as
+                | (PortfolioFormData & { _id?: string })
                 | undefined
             }
             open={isEditDialogOpen}
@@ -348,7 +352,7 @@ export default function AdminProjectsPage() {
         </CardContent>
       </Card>
 
-      {/* Projects Table */}
+      {/* Portfolios Table */}
       <Card>
         <CardContent className='p-0'>
           <Table>
@@ -380,45 +384,45 @@ export default function AdminProjectsPage() {
                     </TableRow>
                   ))}
                 </>
-              ) : data?.projects?.length === 0 ? (
+              ) : data?.Portfolios?.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
                     className='text-center'
                   >
-                    No projects found
+                    No Portfolios found
                   </TableCell>
                 </TableRow>
               ) : (
-                data?.projects?.map((project: IProject) => (
-                  <TableRow key={project._id}>
+                data?.Portfolios?.map((Portfolio: IPortfolio) => (
+                  <TableRow key={Portfolio._id}>
                     <TableCell className='font-medium'>
-                      {project.title}
-                      {project.featured && (
+                      {Portfolio.title}
+                      {Portfolio.featured && (
                         <Badge className='ml-2 bg-amber-500 hover:bg-amber-600'>
                           Featured
                         </Badge>
                       )}
-                      {project.aiGenerated && (
+                      {Portfolio.aiGenerated && (
                         <Badge className='ml-2 bg-purple-500 hover:bg-purple-600'>
                           AI Generated
                         </Badge>
                       )}
                     </TableCell>
                     <TableCell className='truncate max-w-[300px]'>
-                      {project.description}
+                      {Portfolio.description}
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant={
-                          project.status === "completed"
+                          Portfolio.status === "completed"
                             ? "default"
-                            : project.status === "in-progress"
+                            : Portfolio.status === "in-progress"
                             ? "secondary"
                             : "outline"
                         }
                       >
-                        {project.status}
+                        {Portfolio.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -433,19 +437,21 @@ export default function AdminProjectsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEdit(project)}>
+                          <DropdownMenuItem
+                            onClick={() => handleEdit(Portfolio)}
+                          >
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => toggleFeatured(project)}
+                            onClick={() => toggleFeatured(Portfolio)}
                           >
-                            {project.featured
+                            {Portfolio.featured
                               ? "Remove from Featured"
                               : "Mark as Featured"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className='text-red-600'
-                            onClick={() => handleDelete(project._id || "")}
+                            onClick={() => handleDelete(Portfolio._id || "")}
                           >
                             Delete
                           </DropdownMenuItem>

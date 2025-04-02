@@ -1,6 +1,6 @@
 // import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { Project } from "@/lib/models";
+import { Portfolio } from "@/lib/models";
 import connectDB from "@/lib/db";
 
 export async function PUT(
@@ -15,24 +15,24 @@ export async function PUT(
     //     { status: 401 }
     //   );
     // }
-    const ProjectId = (await params).id;
+    const PortfolioId = (await params).id;
     await connectDB();
     const body = await request.json();
-    const project = await Project.findByIdAndUpdate(ProjectId, body, {
+    const Portfolio = await Portfolio.findByIdAndUpdate(PortfolioId, body, {
       new: true,
     });
 
-    if (!project) {
+    if (!Portfolio) {
       return NextResponse.json(
-        { message: "Project not found" },
+        { message: "Portfolio not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(project);
+    return NextResponse.json(Portfolio);
   } catch (err: unknown) {
     console.error(
-      "Project PUT Error:",
+      "Portfolio PUT Error:",
       err instanceof Error ? err.message : err
     );
     return NextResponse.json(
@@ -55,21 +55,21 @@ export async function DELETE(
     //   );
     // }
 
-    const ProjectId = (await params).id;
+    const PortfolioId = (await params).id;
     await connectDB();
-    const project = await Project.findByIdAndDelete(ProjectId);
+    const Portfolio = await Portfolio.findByIdAndDelete(PortfolioId);
 
-    if (!project) {
+    if (!Portfolio) {
       return NextResponse.json(
-        { message: "Project not found" },
+        { message: "Portfolio not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: "Project deleted successfully" });
+    return NextResponse.json({ message: "Portfolio deleted successfully" });
   } catch (err: unknown) {
     console.error(
-      "Project DELETE Error:",
+      "Portfolio DELETE Error:",
       err instanceof Error ? err.message : err
     );
     return NextResponse.json(

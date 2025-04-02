@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { MarketingMail, Project, Blog } from "@/lib/models";
+import { MarketingMail, Portfolio, Blog } from "@/lib/models";
 import { Resend } from "resend";
 import { GoogleGenAI } from "@google/genai";
 import { checkRoleClerk } from "@/utils/roles";
@@ -47,17 +47,17 @@ export async function POST(request: NextRequest) {
       contentTitle = blog.title;
       contentDescription = blog.excerpt || "";
       contentUrl = `/blog/${blog.slug}`;
-    } else if (contentType === "project") {
-      const project = await Project.findById(contentId);
-      if (!project) {
+    } else if (contentType === "Portfolio") {
+      const Portfolio = await Portfolio.findById(contentId);
+      if (!Portfolio) {
         return NextResponse.json(
-          { error: "Project not found" },
+          { error: "Portfolio not found" },
           { status: 404 }
         );
       }
-      contentTitle = project.title;
-      contentDescription = project.description || "";
-      contentUrl = `/projects/${project.slug}`;
+      contentTitle = Portfolio.title;
+      contentDescription = Portfolio.description || "";
+      contentUrl = `/Portfolios/${Portfolio.slug}`;
     } else {
       return NextResponse.json(
         { error: "Invalid content type" },

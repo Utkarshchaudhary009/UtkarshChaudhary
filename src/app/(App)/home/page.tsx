@@ -1,6 +1,6 @@
 "use client";
 import { usePersonalDetails } from "@/lib/api/services/meService";
-import { useFeaturedProjects } from "@/lib/api/services/projectService";
+import { useFeaturedPortfolios } from "@/lib/api/services/PortfolioService";
 import { useFeaturedBlogs } from "@/lib/api/services/blogService";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
-import { IBlog, IProject, IPersonalDetails } from "@/lib/types";
+import { IBlog, IPortfolio, IPersonalDetails } from "@/lib/types";
 import { memo, useMemo, Suspense } from "react";
 
 // Memoized components to reduce re-renders
@@ -52,10 +52,10 @@ const HeroSection = memo(
               <div className='flex flex-wrap gap-3'>
                 <Button asChild>
                   <Link
-                    href='/projects'
-                    aria-label='View Projects'
+                    href='/Portfolios'
+                    aria-label='View Portfolios'
                   >
-                    View Projects
+                    View Portfolios
                   </Link>
                 </Button>
                 <Button
@@ -145,31 +145,31 @@ const OptimizedImage = memo(
   }
 );
 
-// Memoized project card to prevent unnecessary re-renders
-const ProjectCard = memo(({ project }: { project: IProject }) => {
+// Memoized Portfolio card to prevent unnecessary re-renders
+const PortfolioCard = memo(({ Portfolio }: { Portfolio: IPortfolio }) => {
   return (
     <Card
-      key={project._id}
+      key={Portfolio._id}
       className='overflow-hidden flex flex-col'
     >
       <div className='relative'>
         <OptimizedImage
-          src={project.featuredImage || "/placeholder-project.jpg"}
-          alt={project.title}
+          src={Portfolio.featuredImage || "/placeholder-Portfolio.jpg"}
+          alt={Portfolio.title}
         />
         <Badge className='absolute top-2 right-2 bg-primary'>Featured</Badge>
       </div>
       <CardHeader>
-        <CardTitle>{project.title}</CardTitle>
+        <CardTitle>{Portfolio.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className='line-clamp-2'>{project.description}</p>
+        <p className='line-clamp-2'>{Portfolio.description}</p>
       </CardContent>
       <CardFooter className='mt-auto'>
         <Button asChild>
           <Link
-            href={`/projects/${project.slug}`}
-            aria-label={project.title}
+            href={`/Portfolios/${Portfolio.slug}`}
+            aria-label={Portfolio.title}
           >
             View Details
           </Link>
@@ -220,17 +220,17 @@ const BlogCard = memo(({ blog }: { blog: IBlog }) => {
 
 // Ensure names are set for React DevTools
 HeroSection.displayName = "HeroSection";
-ProjectCard.displayName = "ProjectCard";
+PortfolioCard.displayName = "PortfolioCard";
 BlogCard.displayName = "BlogCard";
 OptimizedImage.displayName = "OptimizedImage";
 
-// ProjectsSection component to enable code-splitting
-const ProjectsSection = memo(
+// PortfoliosSection component to enable code-splitting
+const PortfoliosSection = memo(
   ({
-    featuredProjects,
+    featuredPortfolios,
     isLoading,
   }: {
-    featuredProjects: IProject[];
+    featuredPortfolios: IPortfolio[];
     isLoading: boolean;
   }) => {
     if (isLoading) {
@@ -248,11 +248,11 @@ const ProjectsSection = memo(
       );
     }
 
-    if (featuredProjects.length === 0) {
+    if (featuredPortfolios.length === 0) {
       return (
         <Card className='p-6 text-center'>
           <p className='text-muted-foreground'>
-            No featured projects available
+            No featured Portfolios available
           </p>
         </Card>
       );
@@ -260,10 +260,10 @@ const ProjectsSection = memo(
 
     return (
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {featuredProjects.map((project) => (
-          <ProjectCard
-            key={project._id}
-            project={project}
+        {featuredPortfolios.map((Portfolio) => (
+          <PortfolioCard
+            key={Portfolio._id}
+            Portfolio={Portfolio}
           />
         ))}
       </div>
@@ -316,7 +316,7 @@ const BlogsSection = memo(
   }
 );
 
-ProjectsSection.displayName = "ProjectsSection";
+PortfoliosSection.displayName = "PortfoliosSection";
 BlogsSection.displayName = "BlogsSection";
 
 function HomePage() {
@@ -324,16 +324,16 @@ function HomePage() {
   const { data: personalDetails, isLoading: isLoadingDetails } =
     usePersonalDetails();
 
-  const { data: featuredProjectsData, isLoading: isLoadingProjects } =
-    useFeaturedProjects();
+  const { data: featuredPortfoliosData, isLoading: isLoadingPortfolios } =
+    useFeaturedPortfolios();
 
   const { data: featuredBlogsData, isLoading: isLoadingBlogs } =
     useFeaturedBlogs();
 
   // Memoize data derivation to avoid recalculations on re-renders
-  const featuredProjects = useMemo(
-    () => featuredProjectsData?.projects || [],
-    [featuredProjectsData]
+  const featuredPortfolios = useMemo(
+    () => featuredPortfoliosData?.Portfolios || [],
+    [featuredPortfoliosData]
   );
 
   // Handle both array and object formats for blogs
@@ -350,17 +350,17 @@ function HomePage() {
         isLoading={isLoadingDetails}
       />
 
-      {/* Featured Projects Section */}
+      {/* Featured Portfolios Section */}
       <section className='space-y-6'>
         <div className='flex justify-between items-center'>
-          <h2 className='text-3xl font-bold'>Featured Projects</h2>
+          <h2 className='text-3xl font-bold'>Featured Portfolios</h2>
           <Button
             variant='outline'
             asChild
           >
             <Link
-              href='/projects'
-              aria-label='View All projects'
+              href='/Portfolios'
+              aria-label='View All Portfolios'
             >
               View All
             </Link>
@@ -379,9 +379,9 @@ function HomePage() {
             </div>
           }
         >
-          <ProjectsSection
-            featuredProjects={featuredProjects}
-            isLoading={isLoadingProjects}
+          <PortfoliosSection
+            featuredPortfolios={featuredPortfolios}
+            isLoading={isLoadingPortfolios}
           />
         </Suspense>
       </section>

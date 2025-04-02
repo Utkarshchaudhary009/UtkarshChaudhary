@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { Project } from "@/lib/models";
+import { Portfolio } from "@/lib/models";
 import connectDB from "@/lib/db";
-import { ProjectRequestSchema } from "@/lib/types";
+import { PortfolioRequestSchema } from "@/lib/types";
 import { z } from "zod";
 // import { auth } from "@clerk/nextjs";
 
@@ -53,25 +53,25 @@ export async function GET(request: Request) {
     sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     // Execute query with pagination
-    const [projects, total] = await Promise.all([
-      Project.find(query)
+    const [Portfolios, total] = await Promise.all([
+      Portfolio.find(query)
         .sort(sort)
         .skip(skip)
         .limit(limit)
         .select("-embeddings"),
-      Project.countDocuments(query),
+      Portfolio.countDocuments(query),
     ]);
 
-    if (slug && projects.length === 0) {
+    if (slug && Portfolios.length === 0) {
       return NextResponse.json(
-        { message: "Project not found" },
+        { message: "Portfolio not found" },
         { status: 404 }
       );
     }
 
     // Return response with pagination metadata
     return NextResponse.json({
-      projects,
+      Portfolios,
       pagination: {
         total,
         page,
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     console.log("eror in server:");
     console.log(err);
     console.error(
-      "Project GET Error:",
+      "Portfolio GET Error:",
       err instanceof Error ? err.message : err
     );
     return NextResponse.json(
@@ -108,32 +108,31 @@ export async function POST(request: Request) {
 
     try {
       // Convert date strings to Date objects before validation
-      
 
       // Validate data with Zod
-      const validatedData = ProjectRequestSchema.parse(body);
+      const validatedData = PortfolioRequestSchema.parse(body);
 
       // Check for duplicate slug
-      const existingProject = await Project.findOne({
+      const existingPortfolio = await Portfolio.findOne({
         slug: validatedData.slug,
       });
-      if (existingProject) {
+      if (existingPortfolio) {
         return NextResponse.json(
           {
-            message: `A project with slug "${validatedData.slug}" already exists`,
+            message: `A Portfolio with slug "${validatedData.slug}" already exists`,
           },
           { status: 409 }
         );
       }
 
-      // Create project
-      const project = await Project.create({
+      // Create Portfolio
+      const Portfolio = await Portfolio.create({
         ...validatedData,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      return NextResponse.json(project, { status: 201 });
+      return NextResponse.json(Portfolio, { status: 201 });
     } catch (err) {
       if (err instanceof z.ZodError) {
         console.log("Validation Error", err.errors);
@@ -154,7 +153,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(
           {
-            message: `A project with this ${field} already exists: "${value}"`,
+            message: `A Portfolio with this ${field} already exists: "${value}"`,
           },
           { status: 409 }
         );
@@ -164,7 +163,7 @@ export async function POST(request: Request) {
     }
   } catch (err: unknown) {
     console.error(
-      "Project POST Error:",
+      "Portfolio POST Error:",
       err instanceof Error ? err.message : err
     );
     return NextResponse.json(

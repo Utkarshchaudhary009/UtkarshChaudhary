@@ -12,7 +12,7 @@ A modern, full-featured portfolio and blog platform built with Next.js 14, featu
 
 ## ✨ Features
 
-- **Dynamic Portfolio** - Showcase your projects with rich media support
+- **Dynamic Portfolio** - Showcase your Portfolios with rich media support
 - **Blog Platform** - Share your insights with a full-featured blog
 - **Admin Dashboard** - Manage content through an intuitive interface
 - **Authentication** - Secure user login with Clerk
@@ -37,7 +37,7 @@ A modern, full-featured portfolio and blog platform built with Next.js 14, featu
 # Clone the repository
 git clone https://github.com/yourusername/portfolio-platform.git
 
-# Navigate to the project
+# Navigate to the Portfolio
 cd portfolio-platform
 
 # Install dependencies
@@ -87,7 +87,7 @@ NEXT_PUBLIC_LANGSMITH_API_KEY=your_langsmith_api_key (Optional)
 # Optional: Analytics, etc.
 ```
 
-## 📂 Project Structure
+## 📂 Portfolio Structure
 
 ```
 src/
@@ -104,7 +104,7 @@ src/
 ## 📱 Pages & Features
 
 - **Home** - Introduction and featured content
-- **Projects** - Portfolio showcasing your work
+- **Portfolios** - Portfolio showcasing your work
 - **Blog** - Articles and content publishing
 - **About** - Professional details and history
 - **Contact** - Get in touch form
@@ -112,7 +112,7 @@ src/
 
 ## 🔒 Authentication
 
-This project uses Clerk for authentication, providing:
+This Portfolio uses Clerk for authentication, providing:
 
 - Secure sign-in/sign-up flows
 - Role-based access control
@@ -123,7 +123,7 @@ This project uses Clerk for authentication, providing:
 
 The admin area allows for:
 
-- Managing portfolio projects
+- Managing portfolio Portfolios
 - Publishing and editing blog posts
 - Viewing and responding to contact messages
 - User management
@@ -138,7 +138,7 @@ Easily customize the platform to match your personal brand:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This Portfolio is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👨‍💻 Author
 
@@ -146,4 +146,4 @@ Created with ❤️ by Utkarsh Chaudhary
 
 ---
 
-⭐ If you find this project useful, please consider giving it a star!
+⭐ If you find this Portfolio useful, please consider giving it a star!

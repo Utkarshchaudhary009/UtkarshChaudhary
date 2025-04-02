@@ -6,13 +6,13 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { IProject } from "@/lib/types";
-import { useProjects } from "@/lib/api/services/projectService";
+import { IPortfolio } from "@/lib/types";
+import { usePortfolios } from "@/lib/api/services/PortfolioService";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ProjectsClient() {
-  // Use TanStack Query to fetch projects
-  const { data, isLoading, error } = useProjects();
+export default function PortfoliosClient() {
+  // Use TanStack Query to fetch Portfolios
+  const { data, isLoading, error } = usePortfolios();
 
   if (isLoading) {
     return (
@@ -55,47 +55,51 @@ export default function ProjectsClient() {
     return (
       <main className='container py-24 space-y-8'>
         <div className='flex flex-col items-center text-center space-y-4'>
-          <h1 className='text-4xl font-bold'>My Projects</h1>
+          <h1 className='text-4xl font-bold'>My Portfolios</h1>
           <p className='text-xl text-red-500'>
-            Error loading projects. Please try again later.
+            Error loading Portfolios. Please try again later.
           </p>
         </div>
       </main>
     );
   }
 
-  const projects = data?.projects || [];
+  const Portfolios = data?.Portfolios || [];
 
   return (
     <main className='container py-24 space-y-8'>
       <div className='flex flex-col items-center text-center space-y-4'>
-        <h1 className='text-4xl font-bold'>My Projects</h1>
+        <h1 className='text-4xl font-bold'>My Portfolios</h1>
         <p className='text-xl text-muted-foreground max-w-2xl'>
-          A collection of projects I{"'"}ve worked on, from web applications to
-          AI experiments
+          A collection of Portfolios I{"'"}ve worked on, from web applications
+          to AI experiments
         </p>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {projects.map((project: IProject) => (
+        {Portfolios.map((Portfolio: IPortfolio) => (
           <Card
-            key={project.slug}
+            key={Portfolio.slug}
             className='overflow-hidden'
           >
             <CardContent className='p-0'>
               <AspectRatio ratio={16 / 9}>
                 <Image
-                  src={project.featuredImage || "/vercel.svg"}
-                  alt={project.title}
+                  src={Portfolio.featuredImage || "/vercel.svg"}
+                  alt={Portfolio.title}
                   fill
                   className='object-cover transition-all hover:scale-105'
                 />
               </AspectRatio>
               <div className='p-6'>
-                <h2 className='text-2xl font-semibold mb-2'>{project.title}</h2>
-                <p className='text-muted-foreground mb-4'>{project.excerpt}</p>
+                <h2 className='text-2xl font-semibold mb-2'>
+                  {Portfolio.title}
+                </h2>
+                <p className='text-muted-foreground mb-4'>
+                  {Portfolio.excerpt}
+                </p>
                 <div className='flex flex-wrap gap-2'>
-                  {project.technologies?.map((tech: string) => (
+                  {Portfolio.technologies?.map((tech: string) => (
                     <Badge
                       key={tech}
                       variant='secondary'
@@ -109,10 +113,10 @@ export default function ProjectsClient() {
             <CardFooter className='p-6 pt-0'>
               <Button asChild>
                 <Link
-                  href={`/projects/${project.slug}`}
-                  aria-label={project.title}
+                  href={`/Portfolios/${Portfolio.slug}`}
+                  aria-label={Portfolio.title}
                 >
-                  View Project
+                  View Portfolio
                 </Link>
               </Button>
             </CardFooter>
