@@ -128,7 +128,7 @@ export default function RootLayout({
           />
 
           {/* Preload critical CSS */}
-          <link
+          {/* <link 
             rel='preload'
             href='/fonts/geist-font.woff2'
             as='font'
