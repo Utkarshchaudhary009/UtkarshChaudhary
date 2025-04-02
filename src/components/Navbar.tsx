@@ -167,6 +167,7 @@ function NavbarComponent({ isAdmin }: NavbarProps) {
           <SheetTrigger
             asChild
             className='block md:hidden'
+            aria-describedby="side bar sheet"
           >
             <Button
               variant='ghost'
@@ -175,15 +176,16 @@ function NavbarComponent({ isAdmin }: NavbarProps) {
               aria-label='Open Menu'
             >
               {isOpen ? (
-                <X className='h-5 w-5' />
+                null
               ) : (
-                <Menu className='h-5 w-5' />
+                <Menu className='h-5 w-5 container mx-auto' />
               )}
             </Button>
           </SheetTrigger>
           <SheetContent
             side='left'
             className='w-[280px] sm:w-[350px] flex flex-col overflow-y-auto border-r'
+            aria-describedby="side bar sheet"
           >
             <div className='py-6 flex justify-center'>
               <Link
