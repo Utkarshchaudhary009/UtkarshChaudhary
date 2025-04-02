@@ -3,7 +3,7 @@
 import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu, Shield, X } from "lucide-react";
 import {
   SignInButton,
@@ -191,9 +191,9 @@ function NavbarComponent({ isAdmin }: NavbarProps) {
                 aria-label='Home'
                 onClick={() => setIsOpen(false)}
               >
-                <span className='font-bold text-xl bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent'>
+                <SheetTitle className='font-bold text-xl bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent'>
                   Utkarsh Chaudhary
-                </span>
+                </SheetTitle>
               </Link>
             </div>
             <nav className='flex flex-col gap-1 flex-1 mt-4'>

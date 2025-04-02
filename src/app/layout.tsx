@@ -117,7 +117,7 @@ export default function RootLayout({
             rel='dns-prefetch'
             href='https://res.cloudinary.com'
           /> */} 
-          <link
+          {/* <link
             rel='preconnect'
             href='https://fonts.googleapis.com'
           />
@@ -134,7 +134,7 @@ export default function RootLayout({
             as='font'
             type='font/woff2'
             crossOrigin='anonymous'
-          />
+          /> */}
         </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
