@@ -6,7 +6,7 @@ import TanstackProvider from "@/lib/tanstack/provider";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "sonner";
 import MarketingMailConsent from "@/components/MarketingMailConsent";
-import Script from "next/script";
+// import Script from "next/script";
 
 // Optimize font loading with display swap
 const geistSans = Geist({
@@ -101,8 +101,14 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <head>
-          {/* Preconnect to critical domains */}
-          <link
+          {/* Critical preload script with highest priority */}
+          {/* <Script
+            src='/scripts/preload.js'
+            strategy='beforeInteractive'
+          /> */}
+
+           {/* Preconnect to critical domains */}
+          {/* <link
             rel='preconnect'
             href='https://res.cloudinary.com'
             crossOrigin='anonymous'
@@ -110,13 +116,24 @@ export default function RootLayout({
           <link
             rel='dns-prefetch'
             href='https://res.cloudinary.com'
+          /> */} 
+          <link
+            rel='preconnect'
+            href='https://fonts.googleapis.com'
+          />
+          <link
+            rel='preconnect'
+            href='https://fonts.gstatic.com'
+            crossOrigin='anonymous'
           />
 
           {/* Preload critical CSS */}
           <link
             rel='preload'
-            href='/styles/critical.css'
-            as='style'
+            href='/fonts/geist-font.woff2'
+            as='font'
+            type='font/woff2'
+            crossOrigin='anonymous'
           />
         </head>
         <body
@@ -129,18 +146,18 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TanstackProvider>
-              {/* Defer non-critical UI elements */}
-              <MarketingMailConsent />
-              <Toaster position='top-right' />
+              {/* Prioritize main content rendering */}
               <div>{children}</div>
+
+              {/* Defer non-critical UI elements */}
+              <div className='mt-auto'>
+                <Toaster position='top-right' />
+                <MarketingMailConsent />
+              </div>
             </TanstackProvider>
           </ThemeProvider>
 
-          {/* Defer analytics script loading */}
-          <Script
-            src='/scripts/analytics.js'
-            strategy='lazyOnload'
-          />
+         
         </body>
       </html>
     </ClerkProvider>

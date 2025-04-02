@@ -19,7 +19,7 @@ const customRuntimeCaching = [
   // Cache SEO API responses for 1 hour
   {
     urlPattern: /\/api\/seo(\/.*)?$/,
-    handler: "NetworkFirst",
+    handler: "StaleWhileRevalidate",
     options: {
       cacheName: "seo-api-cache",
       expiration: {
