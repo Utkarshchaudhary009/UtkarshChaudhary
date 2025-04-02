@@ -363,11 +363,11 @@ export default function AdminMePage() {
                     <FormLabel>Resume PDF</FormLabel>
                     <div className='flex flex-col gap-4'>
                       <FileUpload
-                        bucketName='resume'
+                        bucketName='resume_pdf'
                         path='pdf'
                         allowedMimeTypes={["application/pdf"]}
                         maxFiles={1}
-                        maxFileSize={5 * 1024 * 1024} // 5MB limit
+                        maxFileSize={10 * 1024 * 1024} // 5MB limit
                         setFileUrls={handleResumeUpload}
                         className='mb-2'
                       />
