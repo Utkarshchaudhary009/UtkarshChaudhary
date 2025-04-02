@@ -99,61 +99,6 @@ module.exports = async (phase) => {
     ],
     // Optimize output
     output: "standalone",
-    // Webpack optimization for better performance
-    webpack: (config, { isServer }) => {
-      // Optimize bundle splitting
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: "all",
-          minSize: 10000,
-          maxSize: 250000,
-          cacheGroups: {
-            framework: {
-              name: "framework",
-              test: /[\\/]node_modules[\\/](react|react-dom|next|@next)[\\/]/,
-              priority: 40,
-              chunks: "all",
-              enforce: true,
-            },
-            commons: {
-              name: "commons",
-              minChunks: 2,
-              priority: 20,
-            },
-            vendors: {
-              test: /[\\/]node_modules[\\/]/,
-              name(module) {
-                const packageName = module.context.match(
-                  /[\\/]node_modules[\\/](.*?)([\\/]|$)/
-                )[1];
-                return `npm.${packageName.replace("@", "")}`;
-              },
-              priority: 10,
-              chunks: "async",
-              minChunks: 1,
-            },
-            lib: {
-              test: /[\\/]node_modules[\\/](framer-motion|lucide-react|react-markdown)[\\/]/,
-              name: "lib",
-              priority: 30,
-              chunks: "all",
-            },
-          },
-        },
-        runtimeChunk: { name: "runtime" },
-      };
-
-      // Remove moment.js locales to reduce bundle size
-      if (!isServer) {
-        config.resolve.alias = {
-          ...config.resolve.alias,
-          moment$: "moment/moment.js",
-        };
-      }
-
-      return config;
-    },
     // Add modern JavaScript optimizations
     experimental: {
       optimizeCss: true,
