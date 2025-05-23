@@ -53,10 +53,17 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
   )
 
   useEffect(() => {
-    if (ImgPrompt) {
-      fetchImages()
+    const handler = setTimeout(() => {
+      if (ImgPrompt) {
+        fetchImages()
+      }
+    }, 600) // Wait 600ms after user stops typing
+  
+    return () => {
+      clearTimeout(handler) // Clear timeout if prompt changes again within 600ms
     }
   }, [ImgPrompt, fetchImages])
+  
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image)

@@ -14,34 +14,71 @@ const ai = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY });
 
 async function PromptGenerator(data: any) {
   try {
-    const enhancementPrompt = `you are an image aretist . with years of expertience write the short discription about ${data.prompt || data || "beautiful landscape"
-      } in 10 words. writ the description in quatation marks (" description ")`;
+    // Extract the base prompt, fallback to default if none provided
+    const basePrompt = (typeof data === "string" ? data : data?.prompt) || "beautiful landscape";
 
+    // Construct the enhancement prompt for the AI model
+    const enhancementPrompt = `You are an expert image artist with years of experience. Write a short description in exactly 10 words about "${basePrompt}". Use quotation marks around the description.
+Key Elements of a Good Prompt 
+    1> Subject: What’s the main focus? (person, object, scenery, animal)
+    2> Context & Background: Where is the subject? (urban, nature, indoors, studio, time of day)
+    3> Style: What kind of image? (photo, sketch, painting, digital art, specific art movements)
+    4> Details & Modifiers: Add adjectives, lighting, camera angles, lens types, mood, and quality tags (e.g., photorealistic, HDR, 4K)
+Prompt Structure Example:
+Short prompt:
+“Close-up photo of a woman in her 20s, street photography, muted orange warm tones”
+
+Long prompt:
+“Captivating photo of a woman in her 20s utilizing street photography style. The image looks like a movie still with muted orange warm tones.”
+
+Advanced Tips
+Use photography keywords to guide style: close-up, aerial, macro lens, dramatic lighting
+
+Reference art styles or movements: impressionism, renaissance, pop art
+
+Use materials or shapes: made of cheese, neon tubes in the shape of a bird
+
+Add quality modifiers: 8K, hyper-detailed, cinematic lighting
+
+Set aspect ratios: 1:1 (square), 4:3 (fullscreen), 16:9 (widescreen), 9:16 (portrait vertical)
+
+Example of a fully detailed prompt:
+“A photorealistic 35mm close-up portrait of a woman in her 20s, film noir style, black and white with deep shadows, dramatic lighting, shallow depth of field, cinematic, 4K resolution, 3:4 aspect ratio”
+
+Using Parameterized Prompts for Customization
+Example:
+A {logo_style} logo for a {company_area} company on a solid color background. Include the text {company_name}.
+
+This helps generate tailored images based on user input.
+
+Follow these guidelines to create a detailed and effective prompt.`;
+
+    // Call the AI model to generate content
     const result = await ai.models.generateContent({
       contents: enhancementPrompt,
       model: "gemini-2.0-flash",
     });
-    let generatedPrompt = result.text;
-    if (result.text?.includes(`"`)) {
-      generatedPrompt = generatedPrompt?.split(`"`)[1];
-      if (generatedPrompt?.includes(`"`)) {
-        generatedPrompt = generatedPrompt?.split(`"`)[0];
-      }
-    }
 
-    // Create a concise, image-focused prompt
-    const enhancedPrompt = `Generate an image of ${generatedPrompt?.trim()}, photorealistic, 16:9 aspect ratio`;
+    let generatedText = result.text || "";
 
-    // Skip text generation and go straight to image generation
+    // Extract the description inside quotation marks reliably
+    const quoteMatch = generatedText.match(/"([^"]+)"/);
+    const description = quoteMatch ? quoteMatch[1].trim() : generatedText.trim();
+
+    // Construct the final prompt with style and aspect ratio modifiers
+    const enhancedPrompt = `Generate a photorealistic image of ${description}, 16:9 aspect ratio`;
+
     console.log("Using prompt for image generation:", enhancedPrompt);
     return enhancedPrompt;
   } catch (error) {
     console.error("Error generating enhanced prompt:", error);
-    // Fallback to original prompt with quality enhancements
-    return `${data.prompt || "beautiful landscape"
-      }, 8K resolution, hyper-detailed, photorealistic, cinematic lighting`;
+
+    // Fallback prompt with quality descriptors for graceful degradation
+    const fallbackPrompt = (typeof data === "string" ? data : data?.prompt) || "beautiful landscape";
+    return `${fallbackPrompt}, 8K resolution, hyper-detailed, photorealistic, cinematic lighting`;
   }
 }
+
 
 async function saveImage(imageData: string, filename: string) {
   const tempDir = path.join(process.cwd(), "temp");
