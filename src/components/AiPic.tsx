@@ -4,6 +4,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
 import { RotateCcw, Search, X, ZoomIn, ZoomOut } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
@@ -17,6 +18,7 @@ interface UnsplashImage {
   urls: {
     regular: string
     small: string
+
     thumb: string
   }
   alt_description: string
@@ -30,7 +32,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
   const [debouncedPrompt, setDebouncedPrompt] = useState(prompt)
   const [images, setImages] = useState<UnsplashImage[]>([])
   const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
@@ -165,7 +167,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
   }, [previewImage])
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-1 space-y-4">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -183,7 +185,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
       )}
 
       <div ref={scrollContainerRef} className="relative w-full overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
-        <div className="flex gap-4 min-w-max">
+        <ScrollArea className="flex gap-4 min-w-max w-96 whitespace-nowrap rounded-md border">
           {initialLoading
             ? // Skeleton loaders for initial load
             Array.from({ length: 8 }).map((_, i) => (
@@ -235,7 +237,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
                 <Skeleton className="w-full h-full rounded-md" />
               </div>
             ))}
-        </div>
+        </ScrollArea>
       </div>
 
       {/* Full-screen preview modal */}

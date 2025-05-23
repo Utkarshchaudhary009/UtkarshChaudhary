@@ -3,7 +3,7 @@ const {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
 } = require("next/constants");
-
+// https://images.unsplash.com/photo-1500964757637-c85e8a162699?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NTQ0NTh8MHwxfHNlYXJjaHwxfHxiZWF1dGlmdWwlMjBsYW5kc2NhcGUlMjB3aXRoJTIwbW91bnRhaW58ZW58MHx8fHwxNzQ4MDAyODcxfDA&ixlib=rb-4.1.0&q=80&w=1080
 /** @type {(phase: string, defaultConfig: import("next").NextConfig) => Promise<import("next").NextConfig>} */
 module.exports = async (phase) => {
   /** @type {import("next").NextConfig} */
@@ -37,7 +37,13 @@ module.exports = async (phase) => {
           hostname: "**.supabase.in",
           port: "",
           pathname: "/storage/v1/object/public/**",
-        }
+        },
+        {
+          protocol: "https",
+          hostname: "**.unsplash.com",
+          port: "",
+          pathname: "/photo**",
+        },
       ],
     },
     headers: async () => [
