@@ -115,6 +115,12 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
   }, [debouncedPrompt, page])
 
   const handleImageSelect = (image: UnsplashImage) => {
+    if (setSelectedImage) {
+      setSelectedImage(image.urls.regular)
+    }
+  }
+
+  const handleImagePreview = (image: UnsplashImage) => {
     setPreviewImage(image)
   }
 
@@ -194,6 +200,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
                     key={image.id}
                     className="w-48 h-32 flex-shrink-0 cursor-pointer relative overflow-hidden rounded-md"
                     onClick={() => handleImageSelect(image)}
+                    onDoubleClick={() => handleImagePreview(image)}
                   >
                     <img
                       src={image.urls.small || "/placeholder.svg"}
@@ -208,6 +215,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
                     key={image.id}
                     className="w-48 h-32 flex-shrink-0 cursor-pointer relative overflow-hidden rounded-md"
                     onClick={() => handleImageSelect(image)}
+                    onDoubleClick={() => handleImagePreview(image)}
                   >
                     <img
                       src={image.urls.small || "/placeholder.svg"}
