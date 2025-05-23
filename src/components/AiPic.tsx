@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { Loader2, Plus, X, ZoomIn, ZoomOut, RotateCw } from "lucide-react"
+import { Loader2, Plus, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 
 interface AiPicProps {
   prompt: string
@@ -26,24 +26,20 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
         } else {
           setLoadingMore(true)
         }
+        for (let i = 0; i < 4; i++) {
+          const response = await fetch(`/api/ai/imageGen?data=${encodeURIComponent(ImgPrompt)}`)
 
-        // Create an array of 4 promises for parallel image fetching
-        const imagePromises = Array(4)
-          .fill(null)
-          .map(async () => {
-            const response = await fetch(`/api/ai/imageGen?data=${encodeURIComponent(ImgPrompt)}`)
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.statusText}`)
+          }
 
-            if (!response.ok) {
-              throw new Error(`Failed to fetch image: ${response.statusText}`)
-            }
+          const data = await response.json()
+          const newImage = data.base64Image
+          fetch(`${newImage}`)
+          setImages((prev) => (isLoadingMore ? [...prev, ...newImage] : newImage))
+        }
 
-            const data = await response.json()
-            return data.base64Image
-          })
 
-        const newImages = await Promise.all(imagePromises)
-
-        setImages((prev) => (isLoadingMore ? [...prev, ...newImages] : newImages))
         setError(null)
       } catch (err) {
         console.error("Error fetching images:", err)
@@ -91,7 +87,7 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-    <div className="space-y-2">
+      <div className="space-y-2">
         <label htmlFor="prompt" className="block text-sm font-medium text-gray-700">
           Image Prompt
         </label>
