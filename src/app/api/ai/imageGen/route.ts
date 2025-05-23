@@ -163,14 +163,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "data is required" }, { status: 400 });
     }
 
-    const prompt = await PromptGenerator(data);
+    // const prompt = await PromptGenerator(data);
 
     // Generate image
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-exp",
-      contents: prompt,
+      contents: data,
     });
-
+    var err: string | undefined
     for (const part of response?.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
         const base64Image = part.inlineData.data;
@@ -184,9 +184,16 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ base64Image: dataUrl });
       }
+      else {
+        err = part.text
+      }
     }
 
-    throw new Error("No image generated");
+    return NextResponse.json(
+      { error: `Failed to generate image: ${err}` },
+      { status: 500 }
+    );
+
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
