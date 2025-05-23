@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 interface ImageSelectorProps {
   prompt?: string
-  setSelectedImage: (image: { url: string; id: string } | null) => void
+  setSelectedImage: (image: string) => void
 }
 
 interface UnsplashImage {
@@ -120,10 +120,9 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
 
   const handleImageConfirm = () => {
     if (previewImage) {
-      setSelectedImage({
-        url: previewImage.urls.regular,
-        id: previewImage.id,
-      })
+      if (setSelectedImage) {
+        setSelectedImage(previewImage.urls.regular)
+      }
     }
     setPreviewImage(null)
     setScale(1)
