@@ -37,12 +37,9 @@ module.exports = async (phase) => {
           hostname: "**.supabase.in",
           port: "",
           pathname: "/storage/v1/object/public/**",
-        },
-        {
-          protocol: "https",
-          hostname: "**.unsplash.com",
-          port: "",
-          pathname: "/photo**",
+        },{
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
         },
       ],
     },

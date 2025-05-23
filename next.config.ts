@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig:NextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -15,6 +15,9 @@ const nextConfig:NextConfig = {
         hostname: 'example.com',
         port: '',
         pathname: '/images/**',
+      }, {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },

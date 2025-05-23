@@ -26,6 +26,9 @@ module.exports = async (phase) => {
           hostname: "example.com",
           port: "",
           pathname: "/images/**",
+        }, {
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
         },
       ],
       // Add modern format support
