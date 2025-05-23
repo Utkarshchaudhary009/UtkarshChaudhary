@@ -166,12 +166,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "data is required" }, { status: 400 });
     }
 
-    // const prompt = await PromptGenerator(data);
+    const prompt = await PromptGenerator(data);
 
     // Generate image
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-preview-image-generation",
-      contents: data,
+      contents: prompt,
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
       },

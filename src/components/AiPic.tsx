@@ -16,6 +16,7 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
   const [zoomLevel, setZoomLevel] = useState(1)
   const [error, setError] = useState<string | null>(null)
   const [ImgPrompt, setImgPrompt] = useState<string>(prompt)
+
   const fetchImages = useCallback(
     async (isLoadingMore = false) => {
       try {
@@ -52,14 +53,14 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
         setLoadingMore(false)
       }
     },
-    [prompt],
+    [ImgPrompt],
   )
 
   useEffect(() => {
-    if (prompt) {
+    if (ImgPrompt) {
       fetchImages()
     }
-  }, [prompt, fetchImages])
+  }, [ImgPrompt, fetchImages])
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image)
@@ -89,7 +90,7 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
   }
 
   return (
-    <>
+    <div className="container mx-auto p-4 space-y-6">
     <div className="space-y-2">
         <label htmlFor="prompt" className="block text-sm font-medium text-gray-700">
           Image Prompt
@@ -209,6 +210,6 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
