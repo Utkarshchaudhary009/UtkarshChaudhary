@@ -1,14 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ProjectRequestSchema } from "@/lib/types";
+import AiPic from "@/components/AiPic";
 import { Button } from "@/components/ui/button";
+import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -16,15 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Loader2, X } from "lucide-react";
-import { DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useCreateProject,
   useUpdateProject,
 } from "@/lib/api/services/projectService";
-import { z } from "zod";
+import { ProjectRequestSchema } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, X } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // Error interfaces for better type safety
 interface ApiError {
@@ -75,6 +76,7 @@ const ProjectForm = ({
       githubUrl: initialData?.githubUrl || "",
       liveUrl: initialData?.liveUrl || "",
       featuredImage: initialData?.featuredImage || "",
+      featuredImagePrompt: initialData?.featuredImagePrompt || "",
       gallery: initialData?.gallery || [],
       startDate: initialData?.startDate || "",
       endDate: initialData?.endDate || "",
@@ -134,7 +136,7 @@ const ProjectForm = ({
   const content = watch("content");
   const excerpt = watch("excerpt");
   const featuredImage = watch("featuredImage");
-
+  const watchPrompt = watch("featuredImagePrompt")
   // Memoize mutation hooks
   const createProjectMutation = useCreateProject();
   const updateProjectMutation = useUpdateProject();
@@ -835,7 +837,18 @@ const ProjectForm = ({
                   Uploading...
                 </div>
               )}
+              {/* ✅ AI-PIC GENERATOR HERE */}
+              {typeof watchPrompt === "string" && watchPrompt.trim() !== "" && (
+                <AiPic
+                  prompt={watchPrompt}
+                  setSelectedImage={(url: string) => {
+                    setValue("featuredImage", url);
+                    toast.success("AI-generated image set successfully!");
+                  }}
+                />
+              )}
             </div>
+
             <div
               className={cn(
                 "relative w-32 h-32 border-2 border-dashed rounded-lg flex items-center justify-center",
@@ -940,8 +953,8 @@ const ProjectForm = ({
           }
         >
           {createProjectMutation.isPending ||
-          updateProjectMutation.isPending ||
-          isSaving ? (
+            updateProjectMutation.isPending ||
+            isSaving ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
               {initialData?._id ? "Updating..." : "Creating..."}

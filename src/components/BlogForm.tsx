@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { BlogFormData, BlogRequestSchema } from "@/lib/types";
+import AiPic from "@/components/AiPic";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import Image from "next/image";
-import { toast } from "sonner";
-import { Loader2, X } from "lucide-react";
-import { DialogFooter, Dialog } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useCreateBlog, useUpdateBlog } from "@/lib/api/services/blogService";
+import { BlogFormData, BlogRequestSchema } from "@/lib/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, X } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface BlogFormProps {
   initialData?: BlogFormData & { _id?: string };
@@ -29,12 +30,12 @@ const BlogForm = ({
   onOpenChange,
 }: BlogFormProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  // const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
-
   const {
     register,
     handleSubmit,
@@ -49,6 +50,7 @@ const BlogForm = ({
       content: initialData?.content || "",
       excerpt: initialData?.excerpt || "",
       featuredImage: initialData?.featuredImage || "",
+      featuredImagePrompt: initialData?.featuredImagePrompt || "",
       featured: initialData?.featured || false,
       isPublished: initialData?.isPublished || false,
       seo: {
@@ -64,7 +66,7 @@ const BlogForm = ({
   const watchFeaturedImage = watch("featuredImage");
   const watchFeatured = watch("featured");
   const watchIsPublished = watch("isPublished");
-
+  const watchPrompt = watch("featuredImagePrompt")
   useEffect(() => {
     if (isDirty) {
       setHasUnsavedChanges(true);
@@ -74,7 +76,7 @@ const BlogForm = ({
   useEffect(() => {
     const isMutating = createBlogMutation.isPending || updateBlogMutation.isPending;
     setIsSubmitting(isMutating);
-    
+
     if (createBlogMutation.isSuccess || updateBlogMutation.isSuccess) {
       toast.success(initialData?._id ? "Blog updated successfully" : "Blog created successfully");
       setIsSubmitting(false);
@@ -177,7 +179,7 @@ const BlogForm = ({
         await createBlogMutation.mutateAsync(finalData);
         toast.success("Blog created successfully");
       }
-      
+
       onClose?.();
     } catch (error) {
       toast.error("Failed to save blog post");
@@ -185,7 +187,7 @@ const BlogForm = ({
     }
   };
 
- 
+
 
 
   const generateSlug = () => {
@@ -230,7 +232,6 @@ const BlogForm = ({
               <p className="text-sm text-red-500">{errors.slug.message}</p>
             )}
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="featuredImage">Featured Image</Label>
             <div className="flex gap-4 items-start">
@@ -254,7 +255,20 @@ const BlogForm = ({
                     Uploading...
                   </div>
                 )}
+
+                {/* ✅ AI-PIC GENERATOR HERE */}
+                {typeof watchPrompt === "string" && watchPrompt.trim() !== "" && (
+                  <AiPic
+                    prompt={watchPrompt}
+                    setSelectedImage={(url: string) => {
+                      setValue("featuredImage", url);
+                      toast.success("AI-generated image set successfully!");
+                    }}
+                  />
+                )}
+
               </div>
+
               {watchFeaturedImage && (
                 <div className="relative w-32 h-32">
                   <Image
@@ -330,7 +344,7 @@ const BlogForm = ({
           </div>
         </div>
 
-        
+
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">SEO Settings</h3>

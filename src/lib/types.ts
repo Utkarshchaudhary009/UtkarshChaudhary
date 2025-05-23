@@ -162,6 +162,7 @@ export const ProjectSchema = z.object({
   description: z.string().min(30, "Description must be at least 50 characters"),
   excerpt: z.string().max(160, "Excerpt must not exceed 160 characters"),
   featuredImage: z.string().optional(),
+  featuredImagePrompt: z.string().min(10).max(160).optional().nullable(),
   gallery: z
     .array(z.string().url("Gallery images must be valid URLs"))
     .optional(),
@@ -197,6 +198,7 @@ export const BlogSchema = z.object({
   content: z.string(),
   excerpt: z.string().max(160).optional(),
   featuredImage: z.string().optional(),
+  featuredImagePrompt: z.string().min(10).max(160).optional().nullable(),
   aiGenerated: z.boolean().default(false),
   featured: z.boolean().default(false),
   seo: z
@@ -214,11 +216,15 @@ export const BlogSchema = z.object({
 // Add BlogFormData type
 export type BlogFormData = Omit<IBlog, "_id" | "createdAt" | "updatedAt"> & {
   featured: boolean;
+  featuredImagePrompt?: string | undefined;
   isPublished: boolean;
 };
 
 // Add ProjectFormData type
-export type ProjectFormData = Omit<IProject, "_id" | "createdAt" | "updatedAt">;
+export type ProjectFormData = Omit<IProject, "_id" | "createdAt" | "updatedAt"> & {
+  featured: boolean;
+  featuredImagePrompt?: string | undefined;
+};
 
 // Define the Zod schema for the form
 export const jobSchema = z.object({
@@ -298,6 +304,7 @@ export const BlogRequestSchema = z.object({
   content: z.string(),
   excerpt: z.string().max(160).optional(),
   featuredImage: z.string().optional(),
+  featuredImagePrompt: z.string().min(10).max(160).optional(),
   featured: z.boolean(),
   seo: z
     .object({
@@ -353,13 +360,13 @@ export interface SitemapEntry {
   id?: string;
   url: string;
   changefreq:
-    | "always"
-    | "hourly"
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "yearly"
-    | "never";
+  | "always"
+  | "hourly"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly"
+  | "never";
   priority: number;
   lastmod?: string;
 }

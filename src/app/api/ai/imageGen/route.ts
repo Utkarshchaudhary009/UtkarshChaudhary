@@ -1,9 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
-import { NextRequest, NextResponse } from "next/server";
+import FormData from "form-data";
 import fs from "fs";
+import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import FormData from "form-data";
 
 // Initialize Google GenAI
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
@@ -14,9 +14,8 @@ const ai = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY });
 
 async function PromptGenerator(data: any) {
   try {
-    const enhancementPrompt = `you are an image aretist . with years of expertience write the short discription about ${
-      data.prompt || data || "beautiful landscape"
-    } in 10 words. writ the description in quatation marks (" description ")`;
+    const enhancementPrompt = `you are an image aretist . with years of expertience write the short discription about ${data.prompt || data || "beautiful landscape"
+      } in 10 words. writ the description in quatation marks (" description ")`;
 
     const result = await ai.models.generateContent({
       contents: enhancementPrompt,
@@ -39,11 +38,19 @@ async function PromptGenerator(data: any) {
   } catch (error) {
     console.error("Error generating enhanced prompt:", error);
     // Fallback to original prompt with quality enhancements
-    return `${
-      data.prompt || "beautiful landscape"
-    }, 8K resolution, hyper-detailed, photorealistic, cinematic lighting`;
+    return `${data.prompt || "beautiful landscape"
+      }, 8K resolution, hyper-detailed, photorealistic, cinematic lighting`;
   }
 }
+
+async function saveImage(imageData: string, filename: string) {
+  const tempDir = path.join(process.cwd(), "temp");
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
+  const filePath = path.join(tempDir, filename);
+}
+
 // Function to generate image from prompt
 async function generateImage(prompt: string) {
   try {
@@ -157,21 +164,62 @@ export async function GET(request: NextRequest) {
     }
 
     const prompt = await PromptGenerator(data);
+
     // Generate image
-    const { filePath } = await generateImage(prompt);
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-exp",
+      contents: prompt,
+    });
 
-    // Upload image
-    const imageUrl = await uploadImage(filePath);
+    for (const part of response?.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData) {
+        const base64Image = part.inlineData.data;
+        if (!base64Image) {
+          throw new Error("No image data found");
+        }
 
-    // Delete temp file
-    fs.unlinkSync(filePath);
+        const mimeType = part.inlineData.mimeType || "image/png"; // default fallback
 
-    return NextResponse.json({ imageUrl });
+        const dataUrl = `data:${mimeType};base64,${base64Image}`;
+
+        return NextResponse.json({ base64Image: dataUrl });
+      }
+    }
+
+    throw new Error("No image generated");
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
-      { error: "Failed to generate or upload image" },
+      { error: "Failed to generate image" },
       { status: 500 }
     );
   }
 }
+
+// export async function GET(request: NextRequest) {
+//   try {
+//     const data = request.nextUrl.searchParams.get("data");
+
+//     if (!data) {
+//       return NextResponse.json({ error: "data is required" }, { status: 400 });
+//     }
+
+//     const prompt = await PromptGenerator(data);
+//     // Generate image
+//     const { filePath } = await generateImage(prompt);
+
+//     // Upload image
+//     const imageUrl = await uploadImage(filePath);
+
+//     // Delete temp file
+//     fs.unlinkSync(filePath);
+
+//     return NextResponse.json({ imageUrl });
+//   } catch (error) {
+//     console.error("Error processing request:", error);
+//     return NextResponse.json(
+//       { error: "Failed to generate or upload image" },
+//       { status: 500 }
+//     );
+//   }
+// }

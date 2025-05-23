@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { BlogRequestSchema as BlogPostSchema } from "@/lib/types";
+import { GoogleGenAI } from "@google/genai";
+import { NextRequest, NextResponse } from "next/server";
 
 interface Result {
   title: string;
@@ -63,7 +63,7 @@ async function generateBlogContent(
   slug: z.string(),
   content: z.string().max(1000),
   excerpt: z.string().max(100),
-  featuredImage: z.string(),
+  featuredImagePrompt: z.string().min(10),
   featured: false,
   isPublished: false,
   metaTitle: z.string().max(20),
@@ -132,6 +132,7 @@ export async function GET(request: NextRequest) {
       content: blogPost.content,
       excerpt: blogPost.excerpt,
       featuredImage: "",
+      featuredImagePrompt: blogPost.featuredImagePrompt || `Generate an image for cover of a blog on topic: ${blogPost.title}, photorealistic, 16:9 aspect ratio`,
       featured: blogPost.featured || false,
       isPublished: blogPost.isPublished || false,
       seo: {

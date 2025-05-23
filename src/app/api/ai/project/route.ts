@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 import { ProjectRequestSchema } from "@/lib/types";
+import { GoogleGenAI } from "@google/genai";
+import { NextRequest, NextResponse } from "next/server";
 
 async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
   const prompt = `Generate a detailed project idea (in JSON format) about "${idea}". Include:
@@ -9,6 +9,7 @@ async function generateProjectContent(idea: string, genAI: GoogleGenAI) {
   description: string (200-250 characters),
   excerpt: string (less than 160 characters),
   technologies: string[] (at least 3 to 5 relevant technologies),
+  featuredImagePrompt: string (less than 160 characters and more than 30 characters),
   category: string,
   status: "planned",
   markdown: true
@@ -71,6 +72,7 @@ export async function GET(request: NextRequest) {
       description: projectData.description,
       excerpt: projectData.excerpt || projectData.description.substring(0, 157),
       featuredImage: "",
+      featuredImagePrompt: projectData.featuredImagePrompt || `Generate an image for cover of a project on topic: ${projectData.title}, photorealistic, 16:9 aspect ratio`,
       gallery: [],
       technologies: projectData.technologies || [],
       category: projectData.category || "Web Development",
