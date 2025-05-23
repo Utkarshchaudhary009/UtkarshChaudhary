@@ -167,7 +167,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
   }, [previewImage])
 
   return (
-    <div className="w-1 space-y-4">
+    <div className="w-full space-y-4">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -184,7 +184,7 @@ export default function AiPic({ prompt = "nature", setSelectedImage }: ImageSele
         </Alert>
       )}
 
-      <div ref={scrollContainerRef} className="relative w-full overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
+      <div ref={scrollContainerRef} className="relative overflow-x-auto pb-4" style={{ scrollbarWidth: "thin", width: "27.5rem" }}>
         <ScrollArea className="flex gap-4 min-w-max w-96 whitespace-nowrap rounded-md border">
           {initialLoading
             ? // Skeleton loaders for initial load
