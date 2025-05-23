@@ -25,7 +25,7 @@ interface UnsplashImage {
   }
 }
 
-export function ImageSelector({ prompt = "nature", setSelectedImage }: ImageSelectorProps) {
+export function AiPic({ prompt = "nature", setSelectedImage }: ImageSelectorProps) {
   const [searchPrompt, setSearchPrompt] = useState(prompt)
   const [debouncedPrompt, setDebouncedPrompt] = useState(prompt)
   const [images, setImages] = useState<UnsplashImage[]>([])
