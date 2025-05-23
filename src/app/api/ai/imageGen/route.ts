@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 import FormData from "form-data";
 import fs from "fs";
 import { NextRequest, NextResponse } from "next/server";
@@ -56,8 +56,11 @@ async function generateImage(prompt: string) {
   try {
     // Set responseModalities to include "Image" so the model can generate an image
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.0-flash-preview-image-generation",
       contents: prompt,
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+      },
     });
     console.log("response", response?.candidates?.[0]);
     console.log("response content", response?.candidates?.[0]?.content);
@@ -167,8 +170,11 @@ export async function GET(request: NextRequest) {
 
     // Generate image
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.0-flash-preview-image-generation",
       contents: data,
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+      },
     });
     var err: string | undefined
     for (const part of response?.candidates?.[0]?.content?.parts || []) {

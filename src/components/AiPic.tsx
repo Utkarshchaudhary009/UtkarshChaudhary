@@ -15,7 +15,7 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [zoomLevel, setZoomLevel] = useState(1)
   const [error, setError] = useState<string | null>(null)
-
+  const [ImgPrompt, setImgPrompt] = useState<string>(prompt)
   const fetchImages = useCallback(
     async (isLoadingMore = false) => {
       try {
@@ -30,7 +30,7 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
         const imagePromises = Array(4)
           .fill(null)
           .map(async () => {
-            const response = await fetch(`/api/ai/imageGen?data=${encodeURIComponent(prompt)}`)
+            const response = await fetch(`/api/ai/imageGen?data=${encodeURIComponent(ImgPrompt)}`)
 
             if (!response.ok) {
               throw new Error(`Failed to fetch image: ${response.statusText}`)
@@ -90,10 +90,25 @@ export default function AiPic({ prompt, setSelectedImage }: AiPicProps) {
 
   return (
     <>
+    <div className="space-y-2">
+        <label htmlFor="prompt" className="block text-sm font-medium text-gray-700">
+          Image Prompt
+        </label>
+        <div className="flex gap-2">
+          <input
+            id="prompt"
+            type="text"
+            value={ImgPrompt}
+            onChange={(e) => setImgPrompt(e.target.value)}
+            className="flex-1 rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            placeholder="Enter a prompt for image generation"
+          />
+        </div>
+      </div>
       <div className="w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
         <div className="p-4">
           <h3 className="text-sm font-medium text-gray-700">
-            {loading ? "Generating images..." : `Generated Images for: "${prompt}"`}
+            {loading ? "Generating images..." : `Generated Images for: "${ImgPrompt}"`}
           </h3>
           {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
