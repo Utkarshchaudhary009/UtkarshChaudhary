@@ -119,6 +119,11 @@ export async function POST(req: Request) {
       lastUsedAt: new Date()
     });
 
+    // await ElevenLabsKeys.findByIdAndUpdate(successfulKey._id, {
+    //   $inc: { usedCharacters: getUsage(successfulKey.key) },
+    //   lastUsedAt: new Date()
+    // });
+
     return NextResponse.json({
       audioUrl: cloudinaryUrl,
       success: true,
