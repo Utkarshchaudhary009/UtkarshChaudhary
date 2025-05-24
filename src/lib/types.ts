@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+export interface Audio {
+  public_id: string,
+  url: string,
+  title: string,
+  isTest: boolean,
+  size: string,
+  duration: number,
+  created_at: string,
+  format: string
+}
+
 // Interfaces
 export interface ISEO {
   metaTitle?: string;

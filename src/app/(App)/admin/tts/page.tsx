@@ -1,5 +1,5 @@
 "use client"
-
+import TTSAudioManager from "@/components/ttsAudiosManager";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -312,474 +312,477 @@ export default function TTSAdminPage() {
     }
 
     return (
-        <div className="container mx-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">TTS Service Management</h1>
-                    <p className="text-muted-foreground">Manage your Text-to-Speech service configuration and API keys</p>
+        <>
+            <div className="container mx-auto p-6 space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold">TTS Service Management</h1>
+                        <p className="text-muted-foreground">Manage your Text-to-Speech service configuration and API keys</p>
+                    </div>
+                    <Button onClick={loadData} variant="outline" size="sm">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                    </Button>
                 </div>
-                <Button onClick={loadData} variant="outline" size="sm">
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
-                </Button>
-            </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="keys" className="flex items-center gap-2">
-                        <Key className="h-4 w-4" />
-                        API Keys ({keys.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="requests" className="flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        Requests ({requests.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="config" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        Configuration
-                    </TabsTrigger>
-                </TabsList>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="keys" className="flex items-center gap-2">
+                            <Key className="h-4 w-4" />
+                            API Keys ({keys.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="requests" className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            Requests ({requests.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="config" className="flex items-center gap-2">
+                            <Settings className="h-4 w-4" />
+                            Configuration
+                        </TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="keys" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle>ElevenLabs API Keys</CardTitle>
-                                    <CardDescription>Manage your ElevenLabs API keys and monitor usage</CardDescription>
-                                </div>
-                                <Dialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button>
-                                            <Plus className="h-4 w-4 mr-2" />
-                                            Add Key
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>Add New API Key</DialogTitle>
-                                            <DialogDescription>Add a new ElevenLabs API key to your service</DialogDescription>
-                                        </DialogHeader>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label htmlFor="name">Name</Label>
-                                                <Input
-                                                    id="name"
-                                                    value={keyForm.name}
-                                                    onChange={(e) => setKeyForm({ ...keyForm, name: e.target.value })}
-                                                    placeholder="Key name"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="key">API Key</Label>
-                                                <Input
-                                                    id="key"
-                                                    type="password"
-                                                    value={keyForm.key}
-                                                    onChange={(e) => setKeyForm({ ...keyForm, key: e.target.value })}
-                                                    placeholder="Your ElevenLabs API key"
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="characterLimit">Character Limit</Label>
-                                                <Input
-                                                    id="characterLimit"
-                                                    type="number"
-                                                    value={keyForm.characterLimit}
-                                                    onChange={(e) => setKeyForm({ ...keyForm, characterLimit: Number.parseInt(e.target.value) })}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="tier">Tier</Label>
-                                                <Select value={keyForm.tier} onValueChange={(value) => setKeyForm({ ...keyForm, tier: value })}>
-                                                    <SelectTrigger>
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="free">Free</SelectItem>
-                                                        <SelectItem value="starter">Starter</SelectItem>
-                                                        <SelectItem value="creator">Creator</SelectItem>
-                                                        <SelectItem value="pro">Pro</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="notes">Notes</Label>
-                                                <Textarea
-                                                    id="notes"
-                                                    value={keyForm.notes}
-                                                    onChange={(e) => setKeyForm({ ...keyForm, notes: e.target.value })}
-                                                    placeholder="Optional notes"
-                                                />
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button variant="outline" onClick={() => setKeyDialogOpen(false)}>
-                                                Cancel
+                    <TabsContent value="keys" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>ElevenLabs API Keys</CardTitle>
+                                        <CardDescription>Manage your ElevenLabs API keys and monitor usage</CardDescription>
+                                    </div>
+                                    <Dialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add Key
                                             </Button>
-                                            <Button onClick={handleCreateKey}>Create Key</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Tier</TableHead>
-                                        <TableHead>Usage</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Last Used</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {keys.map((key) => (
-                                        <TableRow key={key._id}>
-                                            <TableCell className="font-medium">{key.name}</TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline">{key.tier}</Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="space-y-1">
-                                                    <div className="text-sm">
-                                                        {key.usedCharacters.toLocaleString()} / {key.characterLimit.toLocaleString()}
-                                                    </div>
-                                                    <div className="w-full bg-gray-200 rounded-full h-2">
-                                                        <div
-                                                            className="bg-blue-600 h-2 rounded-full"
-                                                            style={{ width: `${Math.min((key.usedCharacters / key.characterLimit) * 100, 100)}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Switch
-                                                        checked={key.enabled}
-                                                        onCheckedChange={(enabled) => {
-                                                            handleUpdateKey(key._id, { enabled });
-                                                        }}
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Add New API Key</DialogTitle>
+                                                <DialogDescription>Add a new ElevenLabs API key to your service</DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <Label htmlFor="name">Name</Label>
+                                                    <Input
+                                                        id="name"
+                                                        value={keyForm.name}
+                                                        onChange={(e) => setKeyForm({ ...keyForm, name: e.target.value })}
+                                                        placeholder="Key name"
                                                     />
-                                                    <span className="text-sm">{key.enabled ? "Enabled" : "Disabled"}</span>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">
-                                                {key.lastUsedAt ? formatDate(key.lastUsedAt) : "Never"}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Button variant="outline" size="sm" onClick={() => handleEditKey(key)}>
-                                                        <Edit className="h-4 w-4" />
-                                                    </Button>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="outline" size="sm">
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Delete API Key</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Are you sure you want to delete "{key.name}"? This action cannot be undone.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleDeleteKey(key._id)}>Delete</AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
+                                                <div>
+                                                    <Label htmlFor="key">API Key</Label>
+                                                    <Input
+                                                        id="key"
+                                                        type="password"
+                                                        value={keyForm.key}
+                                                        onChange={(e) => setKeyForm({ ...keyForm, key: e.target.value })}
+                                                        placeholder="Your ElevenLabs API key"
+                                                    />
                                                 </div>
-                                            </TableCell>
+                                                <div>
+                                                    <Label htmlFor="characterLimit">Character Limit</Label>
+                                                    <Input
+                                                        id="characterLimit"
+                                                        type="number"
+                                                        value={keyForm.characterLimit}
+                                                        onChange={(e) => setKeyForm({ ...keyForm, characterLimit: Number.parseInt(e.target.value) })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="tier">Tier</Label>
+                                                    <Select value={keyForm.tier} onValueChange={(value) => setKeyForm({ ...keyForm, tier: value })}>
+                                                        <SelectTrigger>
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="free">Free</SelectItem>
+                                                            <SelectItem value="starter">Starter</SelectItem>
+                                                            <SelectItem value="creator">Creator</SelectItem>
+                                                            <SelectItem value="pro">Pro</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor="notes">Notes</Label>
+                                                    <Textarea
+                                                        id="notes"
+                                                        value={keyForm.notes}
+                                                        onChange={(e) => setKeyForm({ ...keyForm, notes: e.target.value })}
+                                                        placeholder="Optional notes"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setKeyDialogOpen(false)}>
+                                                    Cancel
+                                                </Button>
+                                                <Button onClick={handleCreateKey}>Create Key</Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Tier</TableHead>
+                                            <TableHead>Usage</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Last Used</TableHead>
+                                            <TableHead>Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {keys.map((key) => (
+                                            <TableRow key={key._id}>
+                                                <TableCell className="font-medium">{key.name}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline">{key.tier}</Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="space-y-1">
+                                                        <div className="text-sm">
+                                                            {key.usedCharacters.toLocaleString()} / {key.characterLimit.toLocaleString()}
+                                                        </div>
+                                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                                            <div
+                                                                className="bg-blue-600 h-2 rounded-full"
+                                                                style={{ width: `${Math.min((key.usedCharacters / key.characterLimit) * 100, 100)}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Switch
+                                                            checked={key.enabled}
+                                                            onCheckedChange={(enabled) => {
+                                                                handleUpdateKey(key._id, { enabled });
+                                                            }}
+                                                        />
+                                                        <span className="text-sm">{key.enabled ? "Enabled" : "Disabled"}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-sm text-muted-foreground">
+                                                    {key.lastUsedAt ? formatDate(key.lastUsedAt) : "Never"}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button variant="outline" size="sm" onClick={() => handleEditKey(key)}>
+                                                            <Edit className="h-4 w-4" />
+                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button variant="outline" size="sm">
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Delete API Key</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Are you sure you want to delete "{key.name}"? This action cannot be undone.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDeleteKey(key._id)}>Delete</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                {/* Edit Key Dialog */}
-                <Dialog open={editKeyDialogOpen} onOpenChange={setEditKeyDialogOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Edit API Key</DialogTitle>
-                            <DialogDescription>Update your ElevenLabs API key details</DialogDescription>
-                        </DialogHeader>
-                        {editingKey && (
-                            <div className="space-y-4">
-                                <div>
-                                    <Label htmlFor="edit-name">Name</Label>
-                                    <Input
-                                        id="edit-name"
-                                        value={editingKey.name}
-                                        onChange={(e) => setEditingKey({ ...editingKey, name: e.target.value })}
-                                        placeholder="Key name"
-                                    />
+                    {/* Edit Key Dialog */}
+                    <Dialog open={editKeyDialogOpen} onOpenChange={setEditKeyDialogOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Edit API Key</DialogTitle>
+                                <DialogDescription>Update your ElevenLabs API key details</DialogDescription>
+                            </DialogHeader>
+                            {editingKey && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label htmlFor="edit-name">Name</Label>
+                                        <Input
+                                            id="edit-name"
+                                            value={editingKey.name}
+                                            onChange={(e) => setEditingKey({ ...editingKey, name: e.target.value })}
+                                            placeholder="Key name"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-key">API Key</Label>
+                                        <Input
+                                            id="edit-key"
+                                            type="password"
+                                            value={editingKey.key}
+                                            onChange={(e) => setEditingKey({ ...editingKey, key: e.target.value })}
+                                            placeholder="Your ElevenLabs API key"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-characterLimit">Character Limit</Label>
+                                        <Input
+                                            id="edit-characterLimit"
+                                            type="number"
+                                            value={editingKey.characterLimit}
+                                            onChange={(e) => setEditingKey({ ...editingKey, characterLimit: Number.parseInt(e.target.value) })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-tier">Tier</Label>
+                                        <Select value={editingKey.tier} onValueChange={(value) => setEditingKey({ ...editingKey, tier: value })}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="free">Free</SelectItem>
+                                                <SelectItem value="starter">Starter</SelectItem>
+                                                <SelectItem value="creator">Creator</SelectItem>
+                                                <SelectItem value="pro">Pro</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Switch
+                                            id="edit-enabled"
+                                            checked={editingKey.enabled}
+                                            onCheckedChange={(enabled) => setEditingKey({ ...editingKey, enabled })}
+                                        />
+                                        <Label htmlFor="edit-enabled">Enabled</Label>
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="edit-notes">Notes</Label>
+                                        <Textarea
+                                            id="edit-notes"
+                                            value={editingKey.notes || ""}
+                                            onChange={(e) => setEditingKey({ ...editingKey, notes: e.target.value })}
+                                            placeholder="Optional notes"
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <Label htmlFor="edit-key">API Key</Label>
-                                    <Input
-                                        id="edit-key"
-                                        type="password"
-                                        value={editingKey.key}
-                                        onChange={(e) => setEditingKey({ ...editingKey, key: e.target.value })}
-                                        placeholder="Your ElevenLabs API key"
-                                    />
+                            )}
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setEditKeyDialogOpen(false)}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={() => editingKey && handleUpdateKey(editingKey._id, editingKey)}>Update Key</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <TabsContent value="requests" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>TTS Requests</CardTitle>
+                                        <CardDescription>Monitor all text-to-speech requests and their status</CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {selectedRequests.size > 0 && (
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="sm">
+                                                        <Trash2 className="h-4 w-4 mr-2" />
+                                                        Delete Selected ({selectedRequests.size})
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Delete Selected Requests</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Are you sure you want to delete {selectedRequests.size} selected request(s)? This action
+                                                            cannot be undone.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={handleDeleteSelectedRequests}>Delete</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <Label htmlFor="edit-characterLimit">Character Limit</Label>
-                                    <Input
-                                        id="edit-characterLimit"
-                                        type="number"
-                                        value={editingKey.characterLimit}
-                                        onChange={(e) => setEditingKey({ ...editingKey, characterLimit: Number.parseInt(e.target.value) })}
-                                    />
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-12">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedRequests.size === requests.length && requests.length > 0}
+                                                    onChange={(e) => handleSelectAllRequests(e.target.checked)}
+                                                    className="rounded"
+                                                />
+                                            </TableHead>
+                                            <TableHead>Text Preview</TableHead>
+                                            <TableHead>Voice ID</TableHead>
+                                            <TableHead>API Key</TableHead>
+                                            <TableHead>Characters</TableHead>
+                                            <TableHead>Duration</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>User</TableHead>
+                                            <TableHead>Created</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {requests.map((request) => (
+                                            <TableRow key={request._id}>
+                                                <TableCell>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRequests.has(request._id)}
+                                                        onChange={(e) => handleSelectRequest(request._id, e.target.checked)}
+                                                        className="rounded"
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="max-w-xs">
+                                                    <div className="truncate" title={request.text}>
+                                                        {request.text.length > 50 ? `${request.text.substring(0, 50)}...` : request.text}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="font-mono text-sm">{request.voiceId}</TableCell>
+                                                <TableCell>{request.apiKeyName}</TableCell>
+                                                <TableCell>{request.charactersUsed}</TableCell>
+                                                <TableCell>{(request.durationMs / 1000).toFixed(1)}s</TableCell>
+                                                <TableCell>{getStatusBadge(request.status)}</TableCell>
+                                                <TableCell className="font-mono text-sm">{request.userId}</TableCell>
+                                                <TableCell className="text-sm text-muted-foreground">{formatDate(request.createdAt)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="config" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>ElevenLabs Configuration</CardTitle>
+                                <CardDescription>Configure global settings for your TTS service</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="defaultVoiceId">Default Voice ID</Label>
+                                        <Input
+                                            id="defaultVoiceId"
+                                            value={configForm.defaultVoiceId}
+                                            onChange={(e) => setConfigForm({ ...configForm, defaultVoiceId: e.target.value })}
+                                            placeholder="voice_1"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="fallbackVoiceId">Fallback Voice ID</Label>
+                                        <Input
+                                            id="fallbackVoiceId"
+                                            value={configForm.fallbackVoiceId}
+                                            onChange={(e) => setConfigForm({ ...configForm, fallbackVoiceId: e.target.value })}
+                                            placeholder="voice_2"
+                                        />
+                                    </div>
                                 </div>
+
                                 <div>
-                                    <Label htmlFor="edit-tier">Tier</Label>
-                                    <Select value={editingKey.tier} onValueChange={(value) => setEditingKey({ ...editingKey, tier: value })}>
+                                    <Label htmlFor="rotationStrategy">Rotation Strategy</Label>
+                                    <Select
+                                        value={configForm.rotationStrategy}
+                                        onValueChange={(value) => setConfigForm({ ...configForm, rotationStrategy: value })}
+                                    >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="free">Free</SelectItem>
-                                            <SelectItem value="starter">Starter</SelectItem>
-                                            <SelectItem value="creator">Creator</SelectItem>
-                                            <SelectItem value="pro">Pro</SelectItem>
+                                            <SelectItem value="least-used">Least Used</SelectItem>
+                                            <SelectItem value="round-robin">Round Robin</SelectItem>
+                                            <SelectItem value="random">Random</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <Switch
-                                        id="edit-enabled"
-                                        checked={editingKey.enabled}
-                                        onCheckedChange={(enabled) => setEditingKey({ ...editingKey, enabled })}
-                                    />
-                                    <Label htmlFor="edit-enabled">Enabled</Label>
-                                </div>
-                                <div>
-                                    <Label htmlFor="edit-notes">Notes</Label>
-                                    <Textarea
-                                        id="edit-notes"
-                                        value={editingKey.notes || ""}
-                                        onChange={(e) => setEditingKey({ ...editingKey, notes: e.target.value })}
-                                        placeholder="Optional notes"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setEditKeyDialogOpen(false)}>
-                                Cancel
-                            </Button>
-                            <Button onClick={() => editingKey && handleUpdateKey(editingKey._id, editingKey)}>Update Key</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
 
-                <TabsContent value="requests" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle>TTS Requests</CardTitle>
-                                    <CardDescription>Monitor all text-to-speech requests and their status</CardDescription>
+                                    <Label htmlFor="cloudinaryFolder">Cloudinary Folder</Label>
+                                    <Input
+                                        id="cloudinaryFolder"
+                                        value={configForm.cloudinaryFolder}
+                                        onChange={(e) => setConfigForm({ ...configForm, cloudinaryFolder: e.target.value })}
+                                        placeholder="TTS_Audio"
+                                    />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    {selectedRequests.size > 0 && (
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="sm">
-                                                    <Trash2 className="h-4 w-4 mr-2" />
-                                                    Delete Selected ({selectedRequests.size})
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete Selected Requests</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Are you sure you want to delete {selectedRequests.size} selected request(s)? This action
-                                                        cannot be undone.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={handleDeleteSelectedRequests}>Delete</AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    )}
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-12">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedRequests.size === requests.length && requests.length > 0}
-                                                onChange={(e) => handleSelectAllRequests(e.target.checked)}
-                                                className="rounded"
+
+                                <div className="space-y-4">
+                                    <Label>Voice Settings</Label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label htmlFor="stability">Stability ({configForm.voiceSettings.stability})</Label>
+                                            <Input
+                                                id="stability"
+                                                type="range"
+                                                min="0"
+                                                max="1"
+                                                step="0.1"
+                                                value={configForm.voiceSettings.stability}
+                                                onChange={(e) =>
+                                                    setConfigForm({
+                                                        ...configForm,
+                                                        voiceSettings: {
+                                                            ...configForm.voiceSettings,
+                                                            stability: Number.parseFloat(e.target.value),
+                                                        },
+                                                    })
+                                                }
                                             />
-                                        </TableHead>
-                                        <TableHead>Text Preview</TableHead>
-                                        <TableHead>Voice ID</TableHead>
-                                        <TableHead>API Key</TableHead>
-                                        <TableHead>Characters</TableHead>
-                                        <TableHead>Duration</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>User</TableHead>
-                                        <TableHead>Created</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {requests.map((request) => (
-                                        <TableRow key={request._id}>
-                                            <TableCell>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedRequests.has(request._id)}
-                                                    onChange={(e) => handleSelectRequest(request._id, e.target.checked)}
-                                                    className="rounded"
-                                                />
-                                            </TableCell>
-                                            <TableCell className="max-w-xs">
-                                                <div className="truncate" title={request.text}>
-                                                    {request.text.length > 50 ? `${request.text.substring(0, 50)}...` : request.text}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="font-mono text-sm">{request.voiceId}</TableCell>
-                                            <TableCell>{request.apiKeyName}</TableCell>
-                                            <TableCell>{request.charactersUsed}</TableCell>
-                                            <TableCell>{(request.durationMs / 1000).toFixed(1)}s</TableCell>
-                                            <TableCell>{getStatusBadge(request.status)}</TableCell>
-                                            <TableCell className="font-mono text-sm">{request.userId}</TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">{formatDate(request.createdAt)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="config" className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>ElevenLabs Configuration</CardTitle>
-                            <CardDescription>Configure global settings for your TTS service</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label htmlFor="defaultVoiceId">Default Voice ID</Label>
-                                    <Input
-                                        id="defaultVoiceId"
-                                        value={configForm.defaultVoiceId}
-                                        onChange={(e) => setConfigForm({ ...configForm, defaultVoiceId: e.target.value })}
-                                        placeholder="voice_1"
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="fallbackVoiceId">Fallback Voice ID</Label>
-                                    <Input
-                                        id="fallbackVoiceId"
-                                        value={configForm.fallbackVoiceId}
-                                        onChange={(e) => setConfigForm({ ...configForm, fallbackVoiceId: e.target.value })}
-                                        placeholder="voice_2"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <Label htmlFor="rotationStrategy">Rotation Strategy</Label>
-                                <Select
-                                    value={configForm.rotationStrategy}
-                                    onValueChange={(value) => setConfigForm({ ...configForm, rotationStrategy: value })}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="least-used">Least Used</SelectItem>
-                                        <SelectItem value="round-robin">Round Robin</SelectItem>
-                                        <SelectItem value="random">Random</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label htmlFor="cloudinaryFolder">Cloudinary Folder</Label>
-                                <Input
-                                    id="cloudinaryFolder"
-                                    value={configForm.cloudinaryFolder}
-                                    onChange={(e) => setConfigForm({ ...configForm, cloudinaryFolder: e.target.value })}
-                                    placeholder="TTS_Audio"
-                                />
-                            </div>
-
-                            <div className="space-y-4">
-                                <Label>Voice Settings</Label>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label htmlFor="stability">Stability ({configForm.voiceSettings.stability})</Label>
-                                        <Input
-                                            id="stability"
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.1"
-                                            value={configForm.voiceSettings.stability}
-                                            onChange={(e) =>
-                                                setConfigForm({
-                                                    ...configForm,
-                                                    voiceSettings: {
-                                                        ...configForm.voiceSettings,
-                                                        stability: Number.parseFloat(e.target.value),
-                                                    },
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="similarity_boost">
-                                            Similarity Boost ({configForm.voiceSettings.similarity_boost})
-                                        </Label>
-                                        <Input
-                                            id="similarity_boost"
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.05"
-                                            value={configForm.voiceSettings.similarity_boost}
-                                            onChange={(e) =>
-                                                setConfigForm({
-                                                    ...configForm,
-                                                    voiceSettings: {
-                                                        ...configForm.voiceSettings,
-                                                        similarity_boost: Number.parseFloat(e.target.value),
-                                                    },
-                                                })
-                                            }
-                                        />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="similarity_boost">
+                                                Similarity Boost ({configForm.voiceSettings.similarity_boost})
+                                            </Label>
+                                            <Input
+                                                id="similarity_boost"
+                                                type="range"
+                                                min="0"
+                                                max="1"
+                                                step="0.05"
+                                                value={configForm.voiceSettings.similarity_boost}
+                                                onChange={(e) =>
+                                                    setConfigForm({
+                                                        ...configForm,
+                                                        voiceSettings: {
+                                                            ...configForm.voiceSettings,
+                                                            similarity_boost: Number.parseFloat(e.target.value),
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <Button onClick={handleUpdateConfig} className="w-full">
-                                Save Configuration
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-        </div>
+                                <Button onClick={handleUpdateConfig} className="w-full">
+                                    Save Configuration
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+                <TTSAudioManager />
+            </div>
+        </>
     )
 }
