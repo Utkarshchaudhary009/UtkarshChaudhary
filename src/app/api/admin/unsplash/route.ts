@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
-
+interface Error {
+  "errors": String[]
+}
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get("query") || "nature"
@@ -7,7 +9,6 @@ export async function GET(request: NextRequest) {
   const perPage = searchParams.get("per_page") || "8"
 
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
-
   if (!accessKey) {
     return NextResponse.json({ error: "Unsplash API key is not configured" }, { status: 500 })
   }
@@ -23,7 +24,8 @@ export async function GET(request: NextRequest) {
     )
 
     if (!response.ok) {
-      throw new Error("Failed to fetch from Unsplash API")
+      const errorData:Error = await response.json()
+      return NextResponse.json({ error: `Failed to fetch images from Unsplash: ${errorData.errors.join(", ")}` }, { status: response.status })
     }
 
     const data = await response.json()

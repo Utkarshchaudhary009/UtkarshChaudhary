@@ -39,7 +39,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             body.lastUsedAt = formatStringDate(body.lastUsedAt)
         }
         if (body.lastCheckedAt) {
-            body.lastCheckedAt = formatStringDate(body.lastCheckedAt)
+            body.lastCheckedAt = formatStringDate(body.createdAt)
         }
         if (body.updatedAt) {
             body.updatedAt = formatStringDate(body.updatedAt)
