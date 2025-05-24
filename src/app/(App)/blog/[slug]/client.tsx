@@ -1,17 +1,17 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useBlog } from "@/lib/api/services/blogService";
-import { useRandomAd } from "@/lib/api/services/adService";
+import { AdBanner } from "@/components/ads/AdBanner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import MarkdownRenderer from "@/components/ui/markdown-renderer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AdBanner } from "@/components/ads/AdBanner";
+import { SocialShareList } from "@/components/ui/social-share";
+import { useRandomAd } from "@/lib/api/services/adService";
+import { useBlog } from "@/lib/api/services/blogService";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import MarkdownRenderer from "@/components/ui/markdown-renderer";
-import { SocialShareList } from "@/components/ui/social-share";
 // const AD_DISPLAY_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
 const AD_DISPLAY_INTERVAL = 2 * 1000; // 2 seconds in milliseconds
 

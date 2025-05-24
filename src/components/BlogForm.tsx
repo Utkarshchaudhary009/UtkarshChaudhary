@@ -1,6 +1,7 @@
 "use client";
 
 import AiPic from "@/components/AiPic";
+import TTSPreview from "@/components/TTSPreview";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,7 @@ const BlogForm = ({
   // const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
+  const [ttsContent, setTtsContent] = useState<string | null>(null);
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
   const {
@@ -67,11 +68,16 @@ const BlogForm = ({
   const watchFeatured = watch("featured");
   const watchIsPublished = watch("isPublished");
   const watchPrompt = watch("featuredImagePrompt")
+  const watchContent = watch("content")
   useEffect(() => {
     if (isDirty) {
       setHasUnsavedChanges(true);
     }
   }, [isDirty]);
+
+  useEffect(() => {
+    setTtsContent(`${initialData?.title}... ${watchContent}`)
+  }, [watchContent, initialData?.title])
 
   useEffect(() => {
     const isMutating = createBlogMutation.isPending || updateBlogMutation.isPending;
@@ -341,6 +347,10 @@ const BlogForm = ({
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ttsUrl">TTS URL</Label>
+            <TTSPreview text={ttsContent || ""} />
           </div>
         </div>
 

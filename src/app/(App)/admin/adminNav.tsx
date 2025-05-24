@@ -36,6 +36,12 @@ export default function AdminNav() {
       href: "/admin/projects",
     },
     {
+      title: "TTS",
+      description: "Manage your TTS settings and requests",
+      icon: <FileText className='h-8 w-8' />,
+      href: "/admin/tts",
+    },
+    {
       title: "Blog",
       description: "Manage your blog posts and articles",
       icon: <FileText className='h-8 w-8' />,

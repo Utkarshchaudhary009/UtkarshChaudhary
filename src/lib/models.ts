@@ -157,6 +157,7 @@ const BlogSchema = new mongoose.Schema<IBlog>({
   excerpt: { type: String, maxlength: 160 },
   featuredImage: { type: String, default: DEFAULT_IMG },
   aiGenerated: { type: Boolean, default: false },
+  ttsUrl: { type: String },
   featured: { type: Boolean, default: false },
   seo: {
     metaTitle: { type: String },

@@ -3,10 +3,10 @@ import { TTSRequest } from '@/lib/models/TTSRequest';
 import { TTSRequestSchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
-        const request = await TTSRequest.findById(params.id);
+        const request = await TTSRequest.findById((await params).id);
         if (!request) return NextResponse.json({ error: 'TTS request not found' }, { status: 404 });
         return NextResponse.json(request);
     } catch (error: any) {
@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
         const body = await req.json();
@@ -23,7 +23,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         const validatedData = TTSRequestSchema.partial().parse(body);
 
         const updated = await TTSRequest.findByIdAndUpdate(
-            params.id,
+            (await params).id,
             validatedData,
             { new: true, runValidators: true }
         );
@@ -39,10 +39,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
-        const deleted = await TTSRequest.findByIdAndDelete(params.id);
+        const deleted = await TTSRequest.findByIdAndDelete((await params).id);
         if (!deleted) return NextResponse.json({ error: 'TTS request not found' }, { status: 404 });
         return NextResponse.json({ message: 'TTS request deleted successfully' });
     } catch (error: any) {

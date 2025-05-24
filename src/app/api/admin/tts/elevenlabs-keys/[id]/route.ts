@@ -3,10 +3,10 @@ import { ElevenLabsKey } from '@/lib/models/ElevenLabsKey';
 import { ElevenLabsKeySchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }>  }) {
     try {
         await connectDB();
-        const key = await ElevenLabsKey.findById(params.id);
+        const key = await ElevenLabsKey.findById((await params).id);
         if (!key) return NextResponse.json({ error: 'ElevenLabs key not found' }, { status: 404 });
         return NextResponse.json(key);
     } catch (error: any) {
@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }>  }) {
     try {
         await connectDB();
         const body = await req.json();
@@ -23,7 +23,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         const validatedData = ElevenLabsKeySchema.partial().parse(body);
 
         const updated = await ElevenLabsKey.findByIdAndUpdate(
-            params.id,
+            (await params).id,
             validatedData,
             { new: true, runValidators: true }
         );
@@ -39,10 +39,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }>  }) {
     try {
         await connectDB();
-        const deleted = await ElevenLabsKey.findByIdAndDelete(params.id);
+        const deleted = await ElevenLabsKey.findByIdAndDelete((await params).id);
         if (!deleted) return NextResponse.json({ error: 'ElevenLabs key not found' }, { status: 404 });
         return NextResponse.json({ message: 'ElevenLabs key deleted successfully' });
     } catch (error: any) {

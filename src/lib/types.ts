@@ -46,6 +46,7 @@ export interface IBlog {
   excerpt?: string;
   featuredImage?: string;
   aiGenerated?: boolean;
+  ttsUrl?: string;
   featured?: boolean;
   seo?: {
     metaTitle?: string;
@@ -243,6 +244,7 @@ export const BlogSchema = z.object({
   excerpt: z.string().max(160).optional(),
   featuredImage: z.string().optional(),
   featuredImagePrompt: z.string().min(10).max(160).optional().nullable(),
+  ttsUrl: z.string().optional(),
   aiGenerated: z.boolean().default(false),
   featured: z.boolean().default(false),
   seo: z
