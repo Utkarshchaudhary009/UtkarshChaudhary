@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Download, Loader2, Pause, Play, Search, Trash2 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 // Utility functions
@@ -78,60 +78,54 @@ const AudioPlayer = ({ src, title }: { src: string, title: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [audio] = useState(() => {
-    // Create a fake audio object for demo purposes
-    return {
-      play: () => setIsPlaying(true),
-      pause: () => setIsPlaying(false),
-      duration: Math.floor(Math.random() * 180) + 30, // 30s to 3min
-      currentTime: 0,
-      addEventListener: () => { },
-      removeEventListener: () => { }
-    };
-  });
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Simulate audio loading
-    setDuration(audio.duration);
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    // Simulate time updates when playing
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          const next = prev + 1;
-          if (next >= duration) {
-            setIsPlaying(false);
-            return 0;
-          }
-          return next;
-        });
-      }, 1000);
-    }
+    const setAudioData = () => setDuration(audio.duration);
+    const setAudioTime = () => setCurrentTime(audio.currentTime);
+    const onEnded = () => setIsPlaying(false);
 
+    // Add event listeners
+    audio.addEventListener('loadedmetadata', setAudioData);
+    audio.addEventListener('timeupdate', setAudioTime);
+    audio.addEventListener('ended', onEnded);
+
+    // Clean up event listeners
     return () => {
-      if (interval) clearInterval(interval);
+      audio.removeEventListener('loadedmetadata', setAudioData);
+      audio.removeEventListener('timeupdate', setAudioTime);
+      audio.removeEventListener('ended', onEnded);
     };
-  }, [isPlaying, duration]);
+  }, []);
 
   const togglePlay = () => {
+    if (!audioRef.current) return;
+
     if (isPlaying) {
-      audio.pause();
+      audioRef.current.pause();
     } else {
-      audio.play();
+      audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
     const newTime = percent * duration;
+    audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
   return (
     <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-md">
+      <audio ref={audioRef} src={src} preload="metadata" />
+
       <Button
         variant="default"
         size="sm"
@@ -246,16 +240,21 @@ const TTSAudioManager = () => {
       if (pageNum === 1) setLoading(true);
       else setLoadingMore(true);
 
-      const response = await fetch("/api/admin/tts/audio-list?page=" + pageNum)
-      const Data = await response.json()
-      if (reset || pageNum === 1) {
-        setAudios(Data);
-      } else {
-        setAudios(prev => [...prev, ...Data]);
+      const response = await fetch("/api/admin/tts/audio-list?page=" + pageNum);
+      if (!response.ok) {
+        throw new Error(`Error fetching audio files: ${response.status}`);
       }
 
-      // Simulate pagination
-      setHasMore(pageNum < 3);
+      const data = await response.json();
+
+      if (reset || pageNum === 1) {
+        setAudios(data);
+      } else {
+        setAudios(prev => [...prev, ...data]);
+      }
+
+      // Check if there are more items to load
+      setHasMore(data.length > 0);
     } catch (error) {
       toast.error('Failed to load audios');
       console.error('Fetch error:', error);
@@ -265,11 +264,18 @@ const TTSAudioManager = () => {
     }
   };
 
-  // Simulate delete
   const deleteAudio = async (publicId: string) => {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 300));
+      const response = await fetch(`/api/admin/tts/audio-list/delete?public_id=${publicId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error deleting audio: ${response.status}`);
+      }
 
       setAudios(prev => prev.filter(audio => audio.public_id !== publicId));
       setSelectedAudios(prev => {
@@ -285,11 +291,20 @@ const TTSAudioManager = () => {
     }
   };
 
-  // Batch delete simulation
   const deleteBatch = async (publicIds: string[]) => {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      for (const id of publicIds) {
+        const response = await fetch(`/api/admin/tts/audio-list/delete?public_id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error deleting audios: ${response.status}`);
+        }
+      }
 
       setAudios(prev => prev.filter(audio => !publicIds.includes(audio.public_id)));
       setSelectedAudios(new Set());

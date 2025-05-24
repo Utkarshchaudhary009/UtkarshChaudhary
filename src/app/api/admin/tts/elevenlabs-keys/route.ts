@@ -11,7 +11,6 @@ export async function GET(req: Request) {
         console.log("Fetching ElevenLabs keys");
 
         const keys = await ElevenLabsKeys.find().sort({ createdAt: -1 });
-
         // Log the result to debug
         console.log(`Found ${keys.length} keys`);
 
