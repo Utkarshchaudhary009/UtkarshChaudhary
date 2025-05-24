@@ -35,12 +35,11 @@ export async function GET(request: NextRequest) {
       type: 'upload',
       prefix: 'TTS_Audio/',
       resource_type: 'video',
-      max_results: 100,
+      max_results: 10,
       page: pageNum
     });
 
     const allAudios = result.resources.map((audio: CloudinaryAudio) => {
-      console.log(audio)
       const rawName = audio.public_id.split('/').pop() || '';
       const isTest = rawName.toLowerCase().includes('test');
       const title = rawName

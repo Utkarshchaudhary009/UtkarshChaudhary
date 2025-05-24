@@ -230,7 +230,6 @@ const TTSAudioManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [confirmModal, setConfirmModal] = useState<{
     title: string;
     message: string;
@@ -257,9 +256,7 @@ const TTSAudioManager = () => {
           audios: [...prev.audios, ...data.audios]
         }));
       }
-
-      // Check if there are more items to load
-      setHasMore(data.test_audios.length > 0 || data.audios.length > 0);
+      setPage(pageNum + 1);
     } catch (error) {
       toast.error('Failed to load audios');
       console.error('Fetch error:', error);
@@ -366,18 +363,15 @@ const TTSAudioManager = () => {
       if (
         window.innerHeight + document.documentElement.scrollTop
         >= document.documentElement.offsetHeight - 1000
-        && hasMore && !loading && !loadingMore
+        && !loading && !loadingMore
       ) {
-        setPage(prev => {
-          fetchAudios(prev + 1);
-          return prev + 1;
-        });
+        fetchAudios(page);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasMore, loading, loadingMore]);
+  }, [loading, loadingMore]);
 
   // Selection handlers
   const handleSelectAll = () => {
