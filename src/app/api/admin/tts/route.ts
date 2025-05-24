@@ -64,13 +64,20 @@ export async function POST(req: Request) {
           }
         }
       );
-
-      audioBuffer = Buffer.from(response.data);
-      status=response.status;
-      successfulKey = keyDoc;
-      break;
+      if (response.status !== 200) {
+        errorLog.push(`Key "${keyDoc.name}" failed: ${response.data.detail.msg} `);
+        status = response.status;
+        continue;
+      }
+      if (response.status === 200) {
+        audioBuffer = Buffer.from(response.data);
+        status = response.status;
+        successfulKey = keyDoc;
+        break;
+      }
     } catch (error: any) {
-      errorLog.push(`Key "${keyDoc.name}" failed: ${error.message}`);
+      errorLog.push(`Key "${keyDoc.name}" failed: ${error.message} `);
+      status = 500
     }
   }
 
