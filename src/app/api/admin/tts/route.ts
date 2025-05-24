@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   if (!voiceId) return NextResponse.json({ error: 'No default voice ID configured' }, { status: 500 });
 
   const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
-    usedCharacters: 1,     // least-used first
+    usedCharacters: -1,     // least-used first
     lastUsedAt: 1
   });
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   let audioBuffer: Buffer | null = null;
   let errorLog: string[] = [];
   const startTime = Date.now();
-
+  let status: number = 0;
   for (const keyDoc of keys) {
     const remaining = keyDoc.characterLimit - keyDoc.usedCharacters;
     if (remaining < charactersNeeded) continue;
@@ -49,6 +49,8 @@ export async function POST(req: Request) {
         `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
         {
           text,
+          model_id: 'eleven_multilingual_v2',
+          language_code: 'en',
           voice_settings: config.voiceSettings || {
             stability: 0.3,
             similarity_boost: 0.75
@@ -64,6 +66,7 @@ export async function POST(req: Request) {
       );
 
       audioBuffer = Buffer.from(response.data);
+      status=response.status;
       successfulKey = keyDoc;
       break;
     } catch (error: any) {
@@ -80,7 +83,7 @@ export async function POST(req: Request) {
       apiKeyName: 'ALL_TRIED',
       charactersUsed: charactersNeeded
     });
-    return NextResponse.json({ error: 'All keys failed', details: errorLog }, { status: 500 });
+    return NextResponse.json({ error: 'All keys failed', details: errorLog }, { status: status });
   }
 
   try {
