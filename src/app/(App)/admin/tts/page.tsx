@@ -1,5 +1,5 @@
 "use client"
-// import TTSAudioManager from "@/components/ttsAudiosManager";
+import TTSAudioManager from "@/components/ttsAudiosManager";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -781,7 +781,7 @@ export default function TTSAdminPage() {
                         </Card>
                     </TabsContent>
                 </Tabs>
-                {/* <TTSAudioManager /> */}
+                <TTSAudioManager />
             </div>
         </>
     )

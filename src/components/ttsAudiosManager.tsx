@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Download, Loader2, Pause, Play, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+
+import { Audio as IAudio } from '@/lib/types';
 import { toast } from 'sonner';
 
 // Utility functions
@@ -317,7 +319,8 @@ const TTSAudioManager = () => {
 
   // Filter and search logic
   const searchAndFilter = useMemo(() => {
-    let result = [...audios];
+    console.log("audios in searchAndFilter: " + audios)
+    let result = [...(Array.isArray(audios) ? audios : [])];
 
     // Apply filter
     if (activeFilter === 'Test Audios') {
