@@ -157,9 +157,9 @@ const AudioPlayer = ({ src, title }: { src: string, title: string }) => {
 };
 
 // Audio Card Component
-const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: any, isSelected: boolean, onSelect: (publicId: string, checked: boolean) => void, onDelete: (publicId: string) => void }) => {
-  const title = cleanTitle(audio.display_name || audio.public_id);
-  const isTest = audio.display_name?.toLowerCase().includes('test') || audio.public_id.toLowerCase().includes('test');
+const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: IAudio, isSelected: boolean, onSelect: (publicId: string, checked: boolean) => void, onDelete: (publicId: string) => void }) => {
+  const title = cleanTitle(audio.title || audio.public_id);
+  const isTest = audio.isTest;
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -174,7 +174,7 @@ const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: any, isSe
               <CardTitle className="text-sm font-medium truncate">{title}</CardTitle>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="secondary" className="text-xs">
-                  {formatFileSize(audio.bytes)}
+                  {audio.size}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
                   {formatDuration(audio.duration)}
@@ -200,7 +200,7 @@ const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: any, isSe
       </CardHeader>
 
       <CardContent className="pt-0">
-        <AudioPlayer src={audio.secure_url} title={title} />
+        <AudioPlayer src={audio.url} title={title} />
 
         <div className="mt-3">
           <Button
@@ -209,7 +209,7 @@ const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: any, isSe
             className="w-full"
             asChild
           >
-            <a href={audio.secure_url} download={`${title}.${audio.format}`}>
+            <a href={audio.url} download={`${title}.${audio.format}`}>
               <Download className="w-4 h-4 mr-2" />
               Download
             </a>
