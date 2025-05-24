@@ -140,6 +140,50 @@ export interface ISEO {
   lastModified: Date;
 }
 
+// ElevenLabs Types
+export interface IElevenLabsKey {
+  _id?: string;
+  name: string;
+  key: string;
+  usedCharacters: number;
+  characterLimit: number;
+  enabled: boolean;
+  lastCheckedAt?: Date;
+  lastUsedAt?: Date;
+  notes?: string;
+  tier: 'free' | 'pro' | 'team';
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ITTSRequest {
+  _id?: string;
+  text: string;
+  voiceId: string;
+  cloudinaryUrl?: string;
+  apiKeyName?: string;
+  charactersUsed?: number;
+  durationMs?: number;
+  status: 'success' | 'failed';
+  error?: string;
+  userId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface IVoiceSettings {
+  stability: number;
+  similarity_boost: number;
+}
+
+export interface IElevenLabsConfig {
+  defaultVoiceId: string;
+  fallbackVoiceId?: string;
+  voiceSettings: IVoiceSettings;
+  rotationStrategy: string;
+  cloudinaryFolder: string;
+}
+
 // Zod Schemas
 export const OpenGraphSchema = z.object({
   title: z.string().optional(),
@@ -354,6 +398,73 @@ export const seoFormSchema = z.object({
   ogTitle: z.string().optional(),
   ogDescription: z.string().optional(),
   ogImage: z.string().optional(),
+});
+
+export const sitemapFormSchema = z.object({
+  url: z.string().url("URL must be valid"),
+  changefreq: z.enum([
+    "always",
+    "hourly",
+    "daily",
+    "weekly",
+    "monthly",
+    "yearly",
+    "never",
+  ]),
+  priority: z.number().min(0).max(1),
+});
+
+// ElevenLabs Zod Schemas
+export const VoiceSettingsSchema = z.object({
+  stability: z.number().min(0).max(1).default(0.3),
+  similarity_boost: z.number().min(0).max(1).default(0.75)
+});
+
+export const ElevenLabsKeySchema = z.object({
+  _id: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  key: z.string().min(1, "API key is required"),
+  usedCharacters: z.number().default(0),
+  characterLimit: z.number().default(10000),
+  enabled: z.boolean().default(true),
+  lastCheckedAt: z.date().optional().nullable(),
+  lastUsedAt: z.date().optional().nullable(),
+  notes: z.string().optional(),
+  tier: z.enum(["free", "pro", "team"]).default("free"),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+export const TTSRequestSchema = z.object({
+  _id: z.string().optional(),
+  text: z.string().min(1, "Text content is required"),
+  voiceId: z.string().min(1, "Voice ID is required"),
+  cloudinaryUrl: z.string().url("Must be a valid URL").optional(),
+  apiKeyName: z.string().optional(),
+  charactersUsed: z.number().optional(),
+  durationMs: z.number().optional(),
+  status: z.enum(["success", "failed"]).default("success"),
+  error: z.string().optional(),
+  userId: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+export const ElevenLabsConfigSchema = z.object({
+  defaultVoiceId: z.string().min(1, "Default voice ID is required"),
+  fallbackVoiceId: z.string().optional(),
+  voiceSettings: VoiceSettingsSchema,
+  rotationStrategy: z.string().default("least-used"),
+  cloudinaryFolder: z.string().default("TTS_Audio"),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+});
+
+export const ElevenLabsConfigDocSchema = z.object({
+  _id: z.string().optional(),
+  config: ElevenLabsConfigSchema,
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
 });
 
 export interface SitemapEntry {
