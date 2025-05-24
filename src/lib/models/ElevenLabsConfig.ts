@@ -13,4 +13,4 @@ const ElevenLabsConfigSchema = new mongoose.Schema({
 
 export const ElevenLabsConfigs = mongoose.models.ElevenLabsConfigs || mongoose.model('ElevenLabsConfigs', new mongoose.Schema({
     config: ElevenLabsConfigSchema
-}, { timestamps: true })); 
+}, { timestamps: true }), 'elevenlabsconfigs'); 

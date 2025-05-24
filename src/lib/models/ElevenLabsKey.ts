@@ -12,4 +12,4 @@ const ElevenLabsKeySchema = new mongoose.Schema({
     tier: { type: String, enum: ['free', 'pro', 'team'], default: 'free' }
 }, { timestamps: true });
 
-export const ElevenLabsKeys = mongoose.models.ElevenLabsKeys || mongoose.model('ElevenLabsKeys', ElevenLabsKeySchema); 
+export const ElevenLabsKeys = mongoose.models.ElevenLabsKeys || mongoose.model('ElevenLabsKeys', ElevenLabsKeySchema, 'elevenlabskeys'); 

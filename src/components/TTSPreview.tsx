@@ -11,7 +11,9 @@ import { toast } from "sonner"
 
 interface TTSPreviewProps {
     text: string
+    title?: string
     className?: string
+    sendAudioUrl?: (url: string) => void
 }
 
 interface TTSResponse {
@@ -22,7 +24,7 @@ interface TTSResponse {
     charactersUsed?: number
 }
 
-export default function TTSPreview({ text, className = "" }: TTSPreviewProps) {
+export default function TTSPreview({ text, className = "", title = "",sendAudioUrl }: TTSPreviewProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [audioUrl, setAudioUrl] = useState<string | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
@@ -31,7 +33,7 @@ export default function TTSPreview({ text, className = "" }: TTSPreviewProps) {
     const [charactersUsed, setCharactersUsed] = useState<number>(0)
     const [previewTextCharacters, setPreviewTextCharacters] = useState<number>(0)
     const audioRef = useRef<HTMLAudioElement>(null)
-
+    
     useEffect(() => {
         setPreviewTextCharacters(text.length)
     }, [text])
@@ -51,6 +53,7 @@ export default function TTSPreview({ text, className = "" }: TTSPreviewProps) {
                 },
                 body: JSON.stringify({
                     text: text.trim(),
+                    title: title,
                     voiceId: "default", // You can make this configurable
                 }),
             })
@@ -61,6 +64,7 @@ export default function TTSPreview({ text, className = "" }: TTSPreviewProps) {
                 setAudioUrl(data.audioUrl)
                 setCharactersUsed(data.charactersUsed || text.length)
                 toast.success("Audio generated successfully")
+                sendAudioUrl?.(data.audioUrl)
             } else {
                 throw new Error(data.error || "Failed to generate audio")
             }

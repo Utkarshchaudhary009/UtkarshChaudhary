@@ -350,7 +350,9 @@ const BlogForm = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="ttsUrl">TTS URL</Label>
-            <TTSPreview text={ttsContent || ""} />
+            <TTSPreview text={ttsContent || ""} title={watch("slug") || "Test"} sendAudioUrl={(url: string) => {
+              setValue("ttsUrl", url)
+            }} />
           </div>
         </div>
 

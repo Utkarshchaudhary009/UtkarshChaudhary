@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
-import { ElevenLabsKey } from '@/lib/models/ElevenLabsKey';
-import { ElevenLabsConfig } from '@/lib/models/ElevenLabsConfig';
-import { TTSRequest } from '@/lib/models/TTSRequest';
 import { connectDB } from '@/lib/db';
+import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
+import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
+import { TTSRequests } from '@/lib/models/TTSRequest';
 import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
-import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
+import { NextResponse } from 'next/server';
+import { Readable } from 'stream';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
@@ -16,17 +16,17 @@ cloudinary.config({
 
 export async function POST(req: Request) {
   await connectDB();
-  const { text } = await req.json();
+  const { text, title } = await req.json();
   if (!text) return NextResponse.json({ error: 'Text is required' }, { status: 400 });
 
   const charactersNeeded = text.length;
 
-  const configDoc = await ElevenLabsConfig.findOne();
+  const configDoc = await ElevenLabsConfigs.findOne();
   const config = configDoc?.config || {};
   const voiceId = config.defaultVoiceId || 'EXAVITQu4vr4xnSDxMaL';
   if (!voiceId) return NextResponse.json({ error: 'No default voice ID configured' }, { status: 500 });
 
-  const keys = await ElevenLabsKey.find({ enabled: true }).sort({
+  const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
     usedCharacters: 1,     // least-used first
     lastUsedAt: 1
   });
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
   }
 
   if (!successfulKey || !audioBuffer) {
-    await TTSRequest.create({
+    await TTSRequests.create({
       text,
       voiceId,
       status: 'failed',
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const fileName = `TTS_${randomUUID()}.mp3`;
+    const fileName = `TTS_${title ? title : randomUUID()}.mp3`;
 
     const cloudinaryUrl = await new Promise<string>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
 
     const durationMs = Date.now() - startTime;
 
-    await TTSRequest.create({
+    await TTSRequests.create({
       text,
       voiceId,
       cloudinaryUrl,
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
       userId: 'admin' // Optional: Replace with real user ID if needed
     });
 
-    await ElevenLabsKey.findByIdAndUpdate(successfulKey._id, {
+    await ElevenLabsKeys.findByIdAndUpdate(successfulKey._id, {
       $inc: { usedCharacters: charactersNeeded },
       lastUsedAt: new Date()
     });
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
     });
 
   } catch (cloudErr: any) {
-    await TTSRequest.create({
+    await TTSRequests.create({
       text,
       voiceId,
       status: 'failed',
