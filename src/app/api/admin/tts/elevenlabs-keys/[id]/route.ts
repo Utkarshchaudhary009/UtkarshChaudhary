@@ -1,6 +1,7 @@
 import { connectDB } from '@/lib/db';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
 import { ElevenLabsKeySchema } from '@/lib/types';
+import { parse } from 'date-fns';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -23,11 +24,26 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 }
 
+const formatStringDate = (dateString: string) => {
+    // converst string datato date type
+    const date = parse(dateString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", new Date())
+    return date
+}
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
         const body = await req.json();
-
+        // if the date is a string, format it
+        if (body.lastUsedAt) {
+            body.lastUsedAt = formatStringDate(body.lastUsedAt)
+        }
+        if (body.lastCheckedAt) {
+            body.lastCheckedAt = formatStringDate(body.lastCheckedAt)
+        }
+        if (body.updatedAt) {
+            body.updatedAt = formatStringDate(body.updatedAt)
+        }
         // Validate the request body
         const validatedData = ElevenLabsKeySchema.partial().parse(body);
 

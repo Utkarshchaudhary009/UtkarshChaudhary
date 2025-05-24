@@ -33,7 +33,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit, FileText, Key, Plus, RefreshCw, Settings, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 // Types based on the API specification
 interface ElevenLabsKey {
     _id: string
@@ -258,7 +257,6 @@ export default function TTSAdminPage() {
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleString()
     }
-
     const getStatusBadge = (status: string) => {
         const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
             success: "default",
