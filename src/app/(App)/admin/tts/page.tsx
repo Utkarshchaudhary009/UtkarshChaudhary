@@ -94,6 +94,7 @@ export default function TTSAdminPage() {
     })
     const [editingKey, setEditingKey] = useState<ElevenLabsKey | null>(null)
     const [keyDialogOpen, setKeyDialogOpen] = useState(false)
+    const [editKeyDialogOpen, setEditKeyDialogOpen] = useState(false)
 
     const [configForm, setConfigForm] = useState<ElevenLabsConfig>({
         defaultVoiceId: "",
@@ -202,6 +203,7 @@ export default function TTSAdminPage() {
 
             if (response.ok) {
                 await loadKeys()
+                setEditKeyDialogOpen(false)
                 toast.success("API key updated successfully")
             } else {
                 throw new Error("Failed to update key")
@@ -226,6 +228,11 @@ export default function TTSAdminPage() {
         } catch (error) {
             toast.error("Failed to delete API key")
         }
+    }
+
+    const handleEditKey = (key: ElevenLabsKey) => {
+        setEditingKey(key)
+        setEditKeyDialogOpen(true)
     }
 
     const handleUpdateConfig = async () => {
@@ -454,7 +461,9 @@ export default function TTSAdminPage() {
                                                 <div className="flex items-center gap-2">
                                                     <Switch
                                                         checked={key.enabled}
-                                                        onCheckedChange={(enabled) => handleUpdateKey(key._id, { enabled })}
+                                                        onCheckedChange={(enabled) => {
+                                                            handleUpdateKey(key._id, { enabled });
+                                                        }}
                                                     />
                                                     <span className="text-sm">{key.enabled ? "Enabled" : "Disabled"}</span>
                                                 </div>
@@ -464,7 +473,7 @@ export default function TTSAdminPage() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <Button variant="outline" size="sm">
+                                                    <Button variant="outline" size="sm" onClick={() => handleEditKey(key)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
                                                     <AlertDialog>
@@ -495,6 +504,85 @@ export default function TTSAdminPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+
+                {/* Edit Key Dialog */}
+                <Dialog open={editKeyDialogOpen} onOpenChange={setEditKeyDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Edit API Key</DialogTitle>
+                            <DialogDescription>Update your ElevenLabs API key details</DialogDescription>
+                        </DialogHeader>
+                        {editingKey && (
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="edit-name">Name</Label>
+                                    <Input
+                                        id="edit-name"
+                                        value={editingKey.name}
+                                        onChange={(e) => setEditingKey({ ...editingKey, name: e.target.value })}
+                                        placeholder="Key name"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-key">API Key</Label>
+                                    <Input
+                                        id="edit-key"
+                                        type="password"
+                                        value={editingKey.key}
+                                        onChange={(e) => setEditingKey({ ...editingKey, key: e.target.value })}
+                                        placeholder="Your ElevenLabs API key"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-characterLimit">Character Limit</Label>
+                                    <Input
+                                        id="edit-characterLimit"
+                                        type="number"
+                                        value={editingKey.characterLimit}
+                                        onChange={(e) => setEditingKey({ ...editingKey, characterLimit: Number.parseInt(e.target.value) })}
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-tier">Tier</Label>
+                                    <Select value={editingKey.tier} onValueChange={(value) => setEditingKey({ ...editingKey, tier: value })}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="free">Free</SelectItem>
+                                            <SelectItem value="starter">Starter</SelectItem>
+                                            <SelectItem value="creator">Creator</SelectItem>
+                                            <SelectItem value="pro">Pro</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="edit-enabled"
+                                        checked={editingKey.enabled}
+                                        onCheckedChange={(enabled) => setEditingKey({ ...editingKey, enabled })}
+                                    />
+                                    <Label htmlFor="edit-enabled">Enabled</Label>
+                                </div>
+                                <div>
+                                    <Label htmlFor="edit-notes">Notes</Label>
+                                    <Textarea
+                                        id="edit-notes"
+                                        value={editingKey.notes || ""}
+                                        onChange={(e) => setEditingKey({ ...editingKey, notes: e.target.value })}
+                                        placeholder="Optional notes"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setEditKeyDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button onClick={() => editingKey && handleUpdateKey(editingKey._id, editingKey)}>Update Key</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
                 <TabsContent value="requests" className="space-y-4">
                     <Card>
