@@ -11,6 +11,6 @@ const ElevenLabsConfigSchema = new mongoose.Schema({
     cloudinaryFolder: { type: String, default: 'TTS_Audio' }
 }, { _id: false });
 
-export const ElevenLabsConfig = mongoose.models.ElevenLabsConfig || mongoose.model('ElevenLabsConfig', new mongoose.Schema({
+export const ElevenLabsConfigs = mongoose.models.ElevenLabsConfigs || mongoose.model('ElevenLabsConfigs', new mongoose.Schema({
     config: ElevenLabsConfigSchema
 }, { timestamps: true })); 

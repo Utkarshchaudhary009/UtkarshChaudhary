@@ -12,4 +12,4 @@ const TTSRequestSchema = new mongoose.Schema({
     userId: { type: String }
 }, { timestamps: true });
 
-export const TTSRequest = mongoose.models.TTSRequest || mongoose.model('TTSRequest', TTSRequestSchema); 
+export const TTSRequests = mongoose.models.TTSRequests || mongoose.model('TTSRequests', TTSRequestSchema); 

@@ -1,15 +1,24 @@
 import { connectDB } from '@/lib/db';
-import { ElevenLabsConfig } from '@/lib/models/ElevenLabsConfig';
+import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { ElevenLabsConfigSchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
         await connectDB();
-        const configDoc = await ElevenLabsConfig.findOne();
-        if (!configDoc) return NextResponse.json({ error: 'Config not found' }, { status: 404 });
+        console.log("Fetching ElevenLabs config");
+
+        const configDoc = await ElevenLabsConfigs.findOne();
+
+        if (!configDoc) {
+            console.log("ElevenLabs config not found");
+            return NextResponse.json({ error: 'Config not found' }, { status: 404 });
+        }
+
+        console.log("Found ElevenLabs config");
         return NextResponse.json(configDoc);
     } catch (error: any) {
+        console.error("Error fetching ElevenLabs config:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
@@ -22,7 +31,7 @@ export async function POST(req: Request) {
         // Validate the request body
         const validatedData = ElevenLabsConfigSchema.parse(body);
 
-        const exists = await ElevenLabsConfig.findOne();
+        const exists = await ElevenLabsConfigs.findOne();
         if (exists) {
             return NextResponse.json(
                 { error: 'Config already exists. Use PATCH to update.' },
@@ -30,7 +39,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const newConfig = await ElevenLabsConfig.create({ config: validatedData });
+        const newConfig = await ElevenLabsConfigs.create({ config: validatedData });
         return NextResponse.json(newConfig, { status: 201 });
     } catch (error: any) {
         // Handle Zod validation errors
@@ -49,7 +58,7 @@ export async function PATCH(req: Request) {
         // Validate the request body
         const validatedData = ElevenLabsConfigSchema.parse(body);
 
-        const updated = await ElevenLabsConfig.findOneAndUpdate(
+        const updated = await ElevenLabsConfigs.findOneAndUpdate(
             {},
             { config: validatedData },
             { new: true, upsert: true, runValidators: true }
@@ -68,10 +77,11 @@ export async function PATCH(req: Request) {
 export async function DELETE() {
     try {
         await connectDB();
-        const deleted = await ElevenLabsConfig.findOneAndDelete();
+        const deleted = await ElevenLabsConfigs.findOneAndDelete();
         if (!deleted) return NextResponse.json({ error: 'Config not found' }, { status: 404 });
         return NextResponse.json({ message: 'Config deleted successfully' });
     } catch (error: any) {
+        console.error("Error deleting ElevenLabs config:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 } 

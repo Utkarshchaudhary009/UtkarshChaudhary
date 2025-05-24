@@ -1,5 +1,5 @@
-import {connectDB} from '@/lib/db';
-import { TTSRequest } from '@/lib/models/TTSRequest';
+import { connectDB } from '@/lib/db';
+import { TTSRequests } from '@/lib/models/TTSRequest';
 import { TTSRequestSchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
@@ -7,18 +7,23 @@ export async function GET(req: Request) {
     try {
         await connectDB();
 
+        console.log("Fetching TTS requests");
+
         const { searchParams } = new URL(req.url);
         const limit = Number(searchParams.get('limit') || '100');
         const userId = searchParams.get('userId');
 
         const query = userId ? { userId } : {};
 
-        const requests = await TTSRequest.find(query)
+        const requests = await TTSRequests.find(query)
             .sort({ createdAt: -1 })
             .limit(Math.min(limit, 100)); // Max 100 records
 
+        console.log(`Found ${requests.length} TTS requests`);
+
         return NextResponse.json(requests);
     } catch (error: any) {
+        console.error("Error fetching TTS requests:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
@@ -31,7 +36,7 @@ export async function POST(req: Request) {
         // Validate the request body
         const validatedData = TTSRequestSchema.parse(body);
 
-        const newRequest = await TTSRequest.create(validatedData);
+        const newRequest = await TTSRequests.create(validatedData);
         return NextResponse.json(newRequest, { status: 201 });
     } catch (error: any) {
         // Handle Zod validation errors
