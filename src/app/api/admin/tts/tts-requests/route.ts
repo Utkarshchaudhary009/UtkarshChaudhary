@@ -21,7 +21,8 @@ export async function GET(req: Request) {
 
         console.log(`Found ${requests.length} TTS requests`);
 
-        return NextResponse.json(requests);
+        // Serialize the mongoose documents to plain objects
+        return NextResponse.json(JSON.parse(JSON.stringify(requests)));
     } catch (error: any) {
         console.error("Error fetching TTS requests:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
         const validatedData = TTSRequestSchema.parse(body);
 
         const newRequest = await TTSRequests.create(validatedData);
-        return NextResponse.json(newRequest, { status: 201 });
+        return NextResponse.json(JSON.parse(JSON.stringify(newRequest)), { status: 201 });
     } catch (error: any) {
         // Handle Zod validation errors
         if (error.errors) {

@@ -10,12 +10,13 @@ export async function GET(req: Request) {
         // Log to debug
         console.log("Fetching ElevenLabs keys");
 
-        const keys = await ElevenLabsKeys.find().lean().sort({ createdAt: -1 });
+        const keys = await ElevenLabsKeys.find().sort({ createdAt: -1 });
 
         // Log the result to debug
         console.log(`Found ${keys.length} keys`);
 
-        return NextResponse.json(keys);
+        // Serialize the mongoose documents to plain objects
+        return NextResponse.json(JSON.parse(JSON.stringify(keys)));
     } catch (error: any) {
         console.error("Error fetching ElevenLabs keys:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
         const validatedData = ElevenLabsKeySchema.parse(body);
 
         const newKey = await ElevenLabsKeys.create(validatedData);
-        return NextResponse.json(newKey, { status: 201 });
+        return NextResponse.json(JSON.parse(JSON.stringify(newKey)), { status: 201 });
     } catch (error: any) {
         // Handle Zod validation errors
         if (error.errors) {

@@ -3,27 +3,27 @@ import { TTSRequests } from '@/lib/models/TTSRequest';
 import { TTSRequestSchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
-        console.log(`Fetching TTS request with ID: ${params.id}`);
+        console.log(`Fetching TTS request with ID: ${(await params).id}`);
 
-        const request = await TTSRequests.findById(params.id);
+        const request = await TTSRequests.findById((await params).id);
 
         if (!request) {
-            console.log(`TTS request not found with ID: ${params.id}`);
+            console.log(`TTS request not found with ID: ${(await params).id}`);
             return NextResponse.json({ error: 'TTS request not found' }, { status: 404 });
         }
 
         console.log(`Found TTS request with ID: ${request._id}`);
         return NextResponse.json(request);
     } catch (error: any) {
-        console.error(`Error fetching TTS request ${params.id}:`, error);
+        console.error(`Error fetching TTS request ${(await params).id}:`, error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
         const body = await req.json();
@@ -32,7 +32,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         const validatedData = TTSRequestSchema.partial().parse(body);
 
         const updated = await TTSRequests.findByIdAndUpdate(
-            params.id,
+            (await params).id,
             validatedData,
             { new: true, runValidators: true }
         );
@@ -48,14 +48,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
-        const deleted = await TTSRequests.findByIdAndDelete(params.id);
+        const deleted = await TTSRequests.findByIdAndDelete((await params).id);
         if (!deleted) return NextResponse.json({ error: 'TTS request not found' }, { status: 404 });
         return NextResponse.json({ message: 'TTS request deleted successfully' });
     } catch (error: any) {
-        console.error(`Error deleting TTS request ${params.id}:`, error);
+        console.error(`Error deleting TTS request ${(await params).id}:`, error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 } 

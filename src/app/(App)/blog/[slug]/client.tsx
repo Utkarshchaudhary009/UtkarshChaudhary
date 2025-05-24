@@ -1,6 +1,7 @@
 "use client";
 
 import { AdBanner } from "@/components/ads/AdBanner";
+import AudioPlayer from "@/components/AudioPlayer";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import MarkdownRenderer from "@/components/ui/markdown-renderer";
@@ -19,6 +20,7 @@ export default function ClientBlogDetail() {
   const { slug } = useParams();
   const { data: blog, isLoading, error } = useBlog(slug as string);
   const [shouldFetchAd, setShouldFetchAd] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false)
   const [showAd, setShowAd] = useState(false);
   const { data: ad, isSuccess: adFetched } = useRandomAd(
     shouldFetchAd ? true : false
@@ -124,6 +126,12 @@ export default function ClientBlogDetail() {
                   day: "numeric",
                 })}
               </p>
+            )}
+            {blog?.ttsUrl && (
+              <AudioPlayer
+                audioUrl={blog?.ttsUrl || ""}
+                className="left-1 my-2 md:my-0"
+              />
             )}
             <SocialShareList
               url={`${process.env.NEXT_PUBLIC_BASE_URL}/blog/${blog?.slug}`}

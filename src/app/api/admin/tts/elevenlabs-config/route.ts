@@ -16,7 +16,7 @@ export async function GET() {
         }
 
         console.log("Found ElevenLabs config");
-        return NextResponse.json(configDoc);
+        return NextResponse.json(JSON.parse(JSON.stringify(configDoc)));
     } catch (error: any) {
         console.error("Error fetching ElevenLabs config:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         }
 
         const newConfig = await ElevenLabsConfigs.create({ config: validatedData });
-        return NextResponse.json(newConfig, { status: 201 });
+        return NextResponse.json(JSON.parse(JSON.stringify(newConfig)), { status: 201 });
     } catch (error: any) {
         // Handle Zod validation errors
         if (error.errors) {
@@ -64,7 +64,7 @@ export async function PATCH(req: Request) {
             { new: true, upsert: true, runValidators: true }
         );
 
-        return NextResponse.json(updated);
+        return NextResponse.json(JSON.parse(JSON.stringify(updated)));
     } catch (error: any) {
         // Handle Zod validation errors
         if (error.errors) {
