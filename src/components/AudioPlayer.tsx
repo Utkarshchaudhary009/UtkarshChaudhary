@@ -39,16 +39,18 @@ export default function AudioPlayer({ audioUrl, className }: { audioUrl: string,
 
 
     return (
-        <Button
-            variant="outline"
-            size="icon"
-            className={cn("h-12 w-12 rounded-full", className)}
-            onClick={togglePlay}
-
-        >
-            {isPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
-            <span className="sr-only">{isPlaying ? "Pause" : "Play"} Audio</span>
-        </Button>
+        <div className={cn("inline-flex items-center space-x-3 bg-muted-foreground text-white rounded-full pl-4 ", className)}>
+            <span className="text-sm font-medium">Listen</span>
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={togglePlay}
+                className={cn("h-12 w-12 flex items-center justify-center rounded-full text-black bg-white  transition")}
+                aria-label={isPlaying ? "Pause Audio" : "Play Audio"}
+            >
+                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+            </Button>
+        </div>
 
     )
 }

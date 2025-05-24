@@ -113,6 +113,12 @@ export default function ClientBlogDetail() {
 
   return (
     <>
+      {blog?.ttsUrl && (
+        <AudioPlayer
+          audioUrl={blog?.ttsUrl || ""}
+          className="fixed bottom-8 right-4"
+        />
+      )}
       <div className='container py-8 space-y-8 max-w-4xl mx-auto'>
         <div className='space-y-4'>
           <h1 className='text-4xl font-bold'>{blog?.title}</h1>
@@ -126,12 +132,6 @@ export default function ClientBlogDetail() {
                   day: "numeric",
                 })}
               </p>
-            )}
-            {blog?.ttsUrl && (
-              <AudioPlayer
-                audioUrl={blog?.ttsUrl || ""}
-                className="left-1 my-2 md:my-0"
-              />
             )}
             <SocialShareList
               url={`${process.env.NEXT_PUBLIC_BASE_URL}/blog/${blog?.slug}`}

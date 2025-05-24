@@ -154,7 +154,17 @@ export default function TTSAdminPage() {
             if (response.ok) {
                 const data = await response.json()
                 setConfig(data)
-                setConfigForm(data)
+                console.log(data)
+                setConfigForm({
+                    ...configForm,
+                    ...data,
+                    voiceSettings: {
+                        stability: 0.3,
+                        similarity_boost: 0.75,
+                        ...(data.voiceSettings || {})
+                    }
+
+                })
             }
         } catch (error) {
             console.error("Failed to load config:", error)

@@ -120,7 +120,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
-      url: cloudinaryUrl,
+      audioUrl: cloudinaryUrl,
+      success: true,
       voiceId,
       usedKey: successfulKey.name,
       charactersUsed: charactersNeeded,
