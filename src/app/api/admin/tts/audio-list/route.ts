@@ -1,5 +1,5 @@
 // app/api/tts/list/route.ts
-import { Audio as IAudio } from '@/lib/types';
+import { IAudio, IAudioResponse } from '@/lib/types';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     const test_audios = allAudios.filter((a: IAudio) => a.isTest);
     const audios = allAudios.filter((a: IAudio) => !a.isTest);
 
-    return NextResponse.json({ test_audios, audios });
+    return NextResponse.json({ test_audios, audios } as IAudioResponse);
   } catch (err: any) {
     return NextResponse.json({ error: 'Failed to fetch audios', message: err.message }, { status: 500 });
   }

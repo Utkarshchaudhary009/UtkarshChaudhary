@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export interface Audio {
+export interface IAudio {
   public_id: string,
   url: string,
   title: string,
@@ -9,6 +9,11 @@ export interface Audio {
   duration: number,
   created_at: string,
   format: string
+}
+
+export interface IAudioResponse {
+  test_audios: IAudio[],
+  audios: IAudio[]
 }
 
 // Interfaces

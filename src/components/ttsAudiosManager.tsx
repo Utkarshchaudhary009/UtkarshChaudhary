@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Download, Loader2, Pause, Play, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Audio as IAudio } from '@/lib/types';
+import { IAudio, IAudioResponse } from '@/lib/types';
 import { toast } from 'sonner';
 
 // Utility functions
@@ -222,8 +222,8 @@ const AudioCard = ({ audio, isSelected, onSelect, onDelete }: { audio: any, isSe
 
 // Main Component
 const TTSAudioManager = () => {
-  const [audios, setAudios] = useState<any[]>([]);
-  const [filteredAudios, setFilteredAudios] = useState<any[]>([]);
+  const [audios, setAudios] = useState<IAudioResponse>({ test_audios: [], audios: [] });
+  const [filteredAudios, setFilteredAudios] = useState<IAudio[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedAudios, setSelectedAudios] = useState(new Set());
@@ -247,16 +247,19 @@ const TTSAudioManager = () => {
         throw new Error(`Error fetching audio files: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: IAudioResponse = await response.json();
 
       if (reset || pageNum === 1) {
         setAudios(data);
       } else {
-        setAudios(prev => [...prev, ...data]);
+        setAudios(prev => ({
+          test_audios: [...prev.test_audios, ...data.test_audios],
+          audios: [...prev.audios, ...data.audios]
+        }));
       }
 
       // Check if there are more items to load
-      setHasMore(data.length > 0);
+      setHasMore(data.test_audios.length > 0 || data.audios.length > 0);
     } catch (error) {
       toast.error('Failed to load audios');
       console.error('Fetch error:', error);
@@ -279,7 +282,10 @@ const TTSAudioManager = () => {
         throw new Error(`Error deleting audio: ${response.status}`);
       }
 
-      setAudios(prev => prev.filter(audio => audio.public_id !== publicId));
+      setAudios(prev => ({
+        test_audios: prev.test_audios.filter(audio => audio.public_id !== publicId),
+        audios: prev.audios.filter(audio => audio.public_id !== publicId)
+      }));
       setSelectedAudios(prev => {
         const updated = new Set(prev);
         updated.delete(publicId);
@@ -308,7 +314,10 @@ const TTSAudioManager = () => {
         }
       }
 
-      setAudios(prev => prev.filter(audio => !publicIds.includes(audio.public_id)));
+      setAudios(prev => ({
+        test_audios: prev.test_audios.filter(audio => !publicIds.includes(audio.public_id)),
+        audios: prev.audios.filter(audio => !publicIds.includes(audio.public_id))
+      }));
       setSelectedAudios(new Set());
       toast.success(`${publicIds.length} audio(s) deleted successfully`);
     } catch (error) {
@@ -319,26 +328,19 @@ const TTSAudioManager = () => {
 
   // Filter and search logic
   const searchAndFilter = useMemo(() => {
-    console.log("audios in searchAndFilter: " + audios)
-    let result = [...(Array.isArray(audios) ? audios : [])];
-
+    console.log("audios in searchAndFilter: " + audios.test_audios[0])
+    let result = [...(Array.isArray(audios.test_audios) ? audios.test_audios : []), ...(Array.isArray(audios.audios) ? audios.audios : [])];
     // Apply filter
     if (activeFilter === 'Test Audios') {
-      result = result.filter(audio =>
-        audio.public_id.toLowerCase().includes('test') ||
-        (audio.display_name && audio.display_name.toLowerCase().includes('test'))
-      );
+      result = audios.test_audios
     } else if (activeFilter === 'Real Audios') {
-      result = result.filter(audio =>
-        !audio.public_id.toLowerCase().includes('test') &&
-        !(audio.display_name && audio.display_name.toLowerCase().includes('test'))
-      );
+      result = audios.audios
     }
 
     // Apply search
     if (searchQuery.trim()) {
       const searchResults = result.map(audio => {
-        const title = cleanTitle(audio.display_name || audio.public_id);
+        const title = cleanTitle(audio.title || audio.public_id);
         const score = fuzzyScore(searchQuery, title);
         return { ...audio, searchScore: score.score, matched: score.matched };
       }).filter(audio => audio.matched);
@@ -388,7 +390,7 @@ const TTSAudioManager = () => {
       filteredAudios
         .filter(audio =>
           audio.public_id.toLowerCase().includes('test') ||
-          (audio.display_name && audio.display_name.toLowerCase().includes('test'))
+          (audio.title && audio.title.toLowerCase().includes('test'))
         )
         .map(audio => audio.public_id)
     );
@@ -409,8 +411,8 @@ const TTSAudioManager = () => {
 
   // Confirmation handlers
   const handleSingleDelete = (publicId: string) => {
-    const audio = audios.find(a => a.public_id === publicId);
-    const title = cleanTitle(audio?.display_name || publicId);
+    const audio = audios.test_audios.find(a => a.public_id === publicId) || audios.audios.find(a => a.public_id === publicId);
+    const title = cleanTitle(audio?.title || publicId);
 
     setConfirmModal({
       title: 'Delete Audio',
@@ -447,7 +449,7 @@ const TTSAudioManager = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">TTS Audio Manager</h1>
         <Badge variant="secondary" className="text-sm">
-          {audios.length} Total Files
+          {audios.test_audios.length + audios.audios.length} Total Files
         </Badge>
       </div>
 
@@ -510,7 +512,7 @@ const TTSAudioManager = () => {
       {/* Results Summary */}
       <Alert>
         <AlertDescription>
-          Showing {filteredAudios.length} of {audios.length} audio files
+          Showing {filteredAudios.length} of {audios.test_audios.length + audios.audios.length} audio files
           {selectedAudios.size > 0 && ` • ${selectedAudios.size} selected`}
         </AlertDescription>
       </Alert>
