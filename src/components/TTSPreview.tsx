@@ -48,16 +48,23 @@ export default function TTSPreview({ text, className = "", title = "", sendAudio
 
         setIsLoading(true)
         if (type === "Test") {
-            const response = await fetch(`/api/admin/tts/test?voiceName=${voiceId}`)
-            const data: TTSResponse = await response.json()
-            if (data.success && data.audioUrl) {
-                setAudioUrl(data.audioUrl)
-                setCharactersUsed(data.charactersUsed || text.length)
-                toast.success("Audio generated successfully")
-                sendAudioUrl?.(data.audioUrl)
-            }
-            else {
-                throw new Error(data.error || "Failed to generate audio")
+            try {
+                const response = await fetch(`/api/admin/tts/test?voiceName=${voiceId}`)
+                const data: TTSResponse = await response.json()
+                if (data.success && data.audioUrl) {
+                    setAudioUrl(data.audioUrl)
+                    setCharactersUsed(data.charactersUsed || text.length)
+                    toast.success("Audio generated successfully")
+                    sendAudioUrl?.(data.audioUrl)
+                }
+                else {
+                    throw new Error(data.error || "Failed to generate audio")
+                }
+            } catch (error) {
+                console.error("TTS Error:", error)
+                toast.error(error instanceof Error ? error.message : "Failed to generate audio")
+            } finally {
+                setIsLoading(false)
             }
         }
         else {

@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         if (remaining < charactersNeeded) continue;
 
         // Generate audio using Gemini TTS
-        audioBuffer = await GeminiTTS(keyDoc.key, text, "base64");
+        audioBuffer = await GeminiTTS(keyDoc.key, text, voiceId, "base64");
         successfulKey = keyDoc;
 
         if (audioBuffer) break; // Successfully generated audio
