@@ -14,6 +14,8 @@ interface TTSPreviewProps {
     title?: string
     className?: string
     sendAudioUrl?: (url: string) => void
+    type: "Test" | "NonTest"
+    voiceId: string
 }
 
 interface TTSResponse {
@@ -24,7 +26,7 @@ interface TTSResponse {
     charactersUsed?: number
 }
 
-export default function TTSPreview({ text, className = "", title = "",sendAudioUrl }: TTSPreviewProps) {
+export default function TTSPreview({ text, className = "", title = "", sendAudioUrl, type = "Test", voiceId }: TTSPreviewProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [audioUrl, setAudioUrl] = useState<string | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
@@ -33,7 +35,7 @@ export default function TTSPreview({ text, className = "", title = "",sendAudioU
     const [charactersUsed, setCharactersUsed] = useState<number>(0)
     const [previewTextCharacters, setPreviewTextCharacters] = useState<number>(0)
     const audioRef = useRef<HTMLAudioElement>(null)
-    
+
     useEffect(() => {
         setPreviewTextCharacters(text.length)
     }, [text])
@@ -45,34 +47,50 @@ export default function TTSPreview({ text, className = "", title = "",sendAudioU
         }
 
         setIsLoading(true)
-        try {
-            const response = await fetch("/api/admin/tts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    text: text.trim(),
-                    title: title,
-                    voiceId: "default", // You can make this configurable
-                }),
-            })
-
+        if (type === "Test") {
+            const response = await fetch(`/api/admin/tts/test?voiceName=${voiceId}`)
             const data: TTSResponse = await response.json()
-
             if (data.success && data.audioUrl) {
                 setAudioUrl(data.audioUrl)
                 setCharactersUsed(data.charactersUsed || text.length)
                 toast.success("Audio generated successfully")
                 sendAudioUrl?.(data.audioUrl)
-            } else {
+            }
+            else {
                 throw new Error(data.error || "Failed to generate audio")
             }
-        } catch (error) {
-            console.error("TTS Error:", error)
-            toast.error(error instanceof Error ? error.message : "Failed to generate audio")
-        } finally {
-            setIsLoading(false)
+        }
+        else {
+
+            try {
+                const response = await fetch("/api/admin/tts", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        text: text.trim(),
+                        title: title,
+                        voiceId: "default", // You can make this configurable
+                    }),
+                })
+
+                const data: TTSResponse = await response.json()
+
+                if (data.success && data.audioUrl) {
+                    setAudioUrl(data.audioUrl)
+                    setCharactersUsed(data.charactersUsed || text.length)
+                    toast.success("Audio generated successfully")
+                    sendAudioUrl?.(data.audioUrl)
+                } else {
+                    throw new Error(data.error || "Failed to generate audio")
+                }
+            } catch (error) {
+                console.error("TTS Error:", error)
+                toast.error(error instanceof Error ? error.message : "Failed to generate audio")
+            } finally {
+                setIsLoading(false)
+            }
         }
     }
 

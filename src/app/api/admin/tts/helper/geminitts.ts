@@ -19,7 +19,7 @@ const errorBuffer: Buffer = Buffer.from("Sorry Some Error Occured");
 
 export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "mp3" | "base64url" | "base64" = "mp3", fileName: string = "test.mp3") {
 
-    if (!apiKey && !process.env.GEMINI_AI_KEY) {
+    if (!apiKey && !process.env.GOOGLE_AI_KEY) {
         throw new Error("API key is required. Please provide an API key or set GEMINI_AI_KEY environment variable.");
     }
 

@@ -1,5 +1,6 @@
 "use client"
 import TTSAudioManager from "@/components/ttsAudiosManager";
+import TTSPreview from "@/components/TTSPreview";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -75,6 +76,38 @@ interface ElevenLabsConfig {
     createdAt?: string
     updatedAt?: string
 }
+export const geminiTTSVoices = [
+    "Zephyr",         // Bright
+    "Puck",           // Upbeat
+    "Charon",         // Informative
+    "Kore",           // Firm
+    "Fenrir",         // Excitable
+    "Leda",           // Youthful
+    "Orus",           // Firm
+    "Aoede",          // Breezy
+    "Callirhoe",      // Easy-going
+    "Autonoe",        // Bright
+    "Enceladus",      // Breathy
+    "Iapetus",        // Clear
+    "Umbriel",        // Easy-going
+    "Algieba",        // Smooth
+    "Despina",        // Smooth
+    "Erinome",        // Clear
+    "Algenib",        // Gravelly
+    "Rasalgethi",     // Informative
+    "Laomedeia",      // Upbeat
+    "Achernar",       // Soft
+    "Alnilam",        // Firm
+    "Schedar",        // Even
+    "Gacrux",         // Mature
+    "Pulcherrima",    // Forward
+    "Achird",         // Friendly
+    "Zubenelgenubi",  // Casual
+    "Vindemiatrix",   // Gentle
+    "Sadachbia",      // Lively
+    "Sadaltager",     // Knowledgeable
+    "Sulafat"         // Warm
+];
 
 export default function TTSAdminPage() {
     const [keys, setKeys] = useState<ElevenLabsKey[]>([])
@@ -686,21 +719,48 @@ export default function TTSAdminPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <Label htmlFor="defaultVoiceId">Default Voice ID</Label>
-                                        <Input
-                                            id="defaultVoiceId"
+                                        <Select
                                             value={configForm.defaultVoiceId}
-                                            onChange={(e) => setConfigForm({ ...configForm, defaultVoiceId: e.target.value })}
-                                            placeholder="voice_1"
-                                        />
+                                            onValueChange={(value) => setConfigForm({ ...configForm, defaultVoiceId: value })}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {geminiTTSVoices.map((voice) => (
+                                                    <SelectItem key={voice} value={voice}>
+                                                        {voice}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </div>
                                     <div>
+                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.defaultVoiceId}`} voiceId={configForm.defaultVoiceId} type="Test" />
+                                    </div>
+
+
+
+                                    <div>
                                         <Label htmlFor="fallbackVoiceId">Fallback Voice ID</Label>
-                                        <Input
-                                            id="fallbackVoiceId"
+                                        <Select
                                             value={configForm.fallbackVoiceId}
-                                            onChange={(e) => setConfigForm({ ...configForm, fallbackVoiceId: e.target.value })}
-                                            placeholder="voice_2"
-                                        />
+                                            onValueChange={(value) => setConfigForm({ ...configForm, fallbackVoiceId: value })}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {geminiTTSVoices.map((voice) => (
+                                                    <SelectItem key={voice} value={voice}>
+                                                        {voice}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.fallbackVoiceId}`} voiceId={configForm.fallbackVoiceId} type="Test" />
                                     </div>
                                 </div>
 

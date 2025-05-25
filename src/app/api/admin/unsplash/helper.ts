@@ -5,7 +5,7 @@ import axios from "axios";
 import { z } from "zod";
 
 const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_AI_KEY || "AIzaSyCpsngjTfKzpwbF3fEKD8RLToZG7qOgK3k",
+    apiKey: process.env.GOOGLE_AI_KEY,
 });
 
 export async function GoogleUnsplashScraper(query: string) {
