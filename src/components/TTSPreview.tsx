@@ -14,8 +14,8 @@ interface TTSPreviewProps {
     title?: string
     className?: string
     sendAudioUrl?: (url: string) => void
-    type: "Test" | "NonTest"
-    voiceId: string
+    type?: "Test" | "NonTest"
+    voiceId?: string
 }
 
 interface TTSResponse {
