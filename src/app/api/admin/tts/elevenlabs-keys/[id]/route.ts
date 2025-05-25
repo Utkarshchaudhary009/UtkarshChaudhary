@@ -1,9 +1,8 @@
 import { connectDB } from '@/lib/db';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
 import { ElevenLabsKeySchema } from '@/lib/types';
-import { parse } from 'date-fns';
 import { NextResponse } from 'next/server';
-
+import { formatStringDate } from '../../helper/formatStringDate';
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connectDB();
@@ -24,11 +23,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 }
 
-const formatStringDate = (dateString: string) => {
-    // converst string datato date type
-    const date = parse(dateString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", new Date())
-    return date
-}
+
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {

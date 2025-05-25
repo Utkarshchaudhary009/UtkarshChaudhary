@@ -1,3 +1,4 @@
+import { formatStringDate } from '@/app/api/admin/tts/helper/formatStringDate';
 import { connectDB } from '@/lib/db';
 import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { ElevenLabsConfigSchema } from '@/lib/types';
@@ -55,6 +56,12 @@ export async function PATCH(req: Request) {
         await connectDB();
         const body = await req.json();
 
+        if (body.lastCheckedAt) {
+            body.lastCheckedAt = formatStringDate(body.createdAt)
+        }
+        if (body.updatedAt) {
+            body.updatedAt = formatStringDate(body.updatedAt)
+        }
         // Validate the request body
         const validatedData = ElevenLabsConfigSchema.parse(body);
 

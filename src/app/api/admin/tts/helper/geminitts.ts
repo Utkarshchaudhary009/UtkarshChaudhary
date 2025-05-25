@@ -15,10 +15,19 @@ export async function Mp4Writer(data: string, fileName: string) {
     return filePath;
 }
 
+const errorBuffer: Buffer = Buffer.from("Sorry Some Error Occured");
+
 export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "mp3" | "base64url" | "base64" = "mp3", fileName: string = "test.mp3") {
+
+    if (!apiKey && !process.env.GEMINI_AI_KEY) {
+        throw new Error("API key is required. Please provide an API key or set GEMINI_AI_KEY environment variable.");
+    }
+
     for (let i = 0; i < 5; i++) {
         try {
-            const ai = new GoogleGenAI({ apiKey: apiKey || process.env.GEMINI_AI_KEY! });
+
+            let Key: string = apiKey || process.env.GEMINI_AI_KEY!;
+            const ai = new GoogleGenAI({ apiKey: Key });
 
             const response = await ai.models.generateContent({
                 model: "gemini-2.5-flash-preview-tts",
@@ -49,6 +58,9 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
             return path;
         } catch (err: any) {
             console.log(err);
+            if (i === 4) { // If this is the last retry
+                throw err; // Rethrow the error to provide better context
+            }
         }
     }
     throw new Error("Failed to generate audio");
