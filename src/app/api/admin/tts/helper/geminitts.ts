@@ -32,6 +32,11 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
     if (!apiKey && !process.env.GOOGLE_AI_KEY) {
         throw new Error("API key is required. Please provide an API key or set GEMINI_AI_KEY environment variable.");
     }
+    console.log("API Key:", apiKey);
+    console.log("Text:", text);
+    console.log("Voice Name:", voiceName);
+    console.log("Type:", type);
+    console.log("File Name:", fileName);
     try {
 
         let Key: string = apiKey || process.env.GEMINI_AI_KEY!;
@@ -51,6 +56,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
         });
 
         const data: string = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || "Sorry Some Error Occured";
+        console.log("Data:", data);
 
         if (type === "base64url") {
             const audioBuffer = Buffer.from(data, 'base64');
@@ -67,12 +73,12 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
         if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
         const outputPath = path.join(outputDir, fileName.replace(/\.mp3$/, '.wav'));
         await saveWaveFile(outputPath, Buffer.from(data, 'base64'));
+        console.log("Audio saved to:", outputPath);
         return outputPath;
     } catch (err: any) {
         console.log(err);
         throw err;
     }
 
-    throw new Error("Failed to generate audio");
 }
 
