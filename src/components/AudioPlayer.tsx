@@ -1,10 +1,9 @@
-'use client'
-
-import { Pause, Play } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Pause, Play } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 interface AudioPlayerProps {
     audioUrl: string
@@ -13,117 +12,65 @@ interface AudioPlayerProps {
 
 export default function AudioPlayer({ audioUrl, className }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false)
-    const audioRef = useRef<HTMLAudioElement | null>(null)
-    const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    const progressRef = useRef<HTMLDivElement | null>(null)
-    const animationRef = useRef<number | null>(null)
+    const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
+    const [bars, setBars] = useState<number[]>(new Array(20).fill(10))
+    const animationRef = useRef<number>(0)
 
-    // Load audio and draw waveform
     useEffect(() => {
-        const audio = new Audio(audioUrl)
-        audioRef.current = audio
+        const audioElement = new Audio(audioUrl)
+        setAudio(audioElement)
 
-        const ctx = new AudioContext()
-        fetch(audioUrl)
-            .then(res => res.arrayBuffer())
-            .then(buffer => ctx.decodeAudioData(buffer))
-            .then(decoded => {
-                drawWaveform(decoded)
-            })
-
-        audio.addEventListener("ended", () => {
+        audioElement.addEventListener("ended", () => {
             setIsPlaying(false)
             cancelAnimationFrame(animationRef.current!)
         })
 
         return () => {
-            audio.pause()
-            audio.src = ""
+            audioElement.pause()
+            audioElement.src = ""
         }
     }, [audioUrl])
 
-    const drawWaveform = (buffer: AudioBuffer) => {
-        const canvas = canvasRef.current
-        if (!canvas) return
-
-        const ctx = canvas.getContext("2d")
-        if (!ctx) return
-
-        const { width, height } = canvas
-        canvas.width = width
-        canvas.height = height
-
-        ctx.clearRect(0, 0, width, height)
-
-        const data = buffer.getChannelData(0)
-        const step = Math.floor(data.length / width)
-        const amp = height / 2
-
-        ctx.fillStyle = "#ccc"
-        for (let i = 0; i < width; i++) {
-            let min = 1.0
-            let max = -1.0
-
-            for (let j = 0; j < step; j++) {
-                const datum = data[i * step + j]
-                if (datum < min) min = datum
-                if (datum > max) max = datum
-            }
-
-            ctx.fillRect(i, (1 + min) * amp, 1, Math.max(1, (max - min) * amp))
-        }
-    }
-
-    const animateProgress = () => {
-        if (!audioRef.current || !progressRef.current) return
-
-        const update = () => {
-            const progress =
-                (audioRef.current!.currentTime / audioRef.current!.duration) * 100
-            progressRef.current!.style.width = `${progress}%`
-            animationRef.current = requestAnimationFrame(update)
-        }
-
-        update()
+    const animateBars = () => {
+        setBars(bars.map(() => Math.floor(Math.random() * 30 + 5))) // height between 5px and 35px
+        animationRef.current = requestAnimationFrame(animateBars)
     }
 
     const togglePlay = () => {
-        if (!audioRef.current) return
+        if (!audio) return
 
         if (isPlaying) {
-            audioRef.current.pause()
+            audio.pause()
             setIsPlaying(false)
             cancelAnimationFrame(animationRef.current!)
         } else {
-            audioRef.current.play()
+            audio.play()
             setIsPlaying(true)
-            animateProgress()
+            animateBars()
         }
     }
 
     return (
-        <div
-            className={cn(
-                "inline-flex items-center space-x-3 bg-muted-foreground text-white rounded-full px-4 py-2",
-                className
-            )}
-        >{isPlaying ?
-            <div className="relative">
-                <canvas
-                    ref={canvasRef}
-                    width={160}
-                    height={30}
-                    className="w-40 h-8 bg-transparent"
-                />
-                <div className="absolute top-0 left-0 h-full bg-white/80 pointer-events-none" ref={progressRef} style={{ width: "0%" }} />
+        <div className={cn("inline-flex z-50 items-center space-x-3 bg-muted-foreground text-white rounded-full pl-4", className)}>
+            <div className="flex space-x-1 items-end h-10 w-40">
+                {isPlaying ? (
+                    bars.map((height, i) => (
+                        <div
+                            key={i}
+                            style={{ height: `${height}px` }}
+                            className="w-[2px] bg-white rounded-sm transition-all duration-100"
+                        />
+                    ))
+                ) : (
+                    <span className="text-sm font-medium">Listen</span>
+                )}
             </div>
-            :
-            <span className="text-sm font-medium">Listen</span>}
+
             <Button
                 variant="outline"
                 size="icon"
                 onClick={togglePlay}
-                className="h-12 w-12 rounded-full text-black bg-white transition"
+                className="h-12 w-12 flex items-center justify-center rounded-full text-black bg-white  transition"
                 aria-label={isPlaying ? "Pause Audio" : "Play Audio"}
             >
                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
