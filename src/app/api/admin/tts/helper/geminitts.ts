@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 
-export async function Mp4Writer(data: string, fileName: string) {
+export async function Mp3Writer(data: string, fileName: string) {
     const audioBuffer = Buffer.from(data, 'base64');
     const dir = path.join(process.cwd(), 'public', 'audio');
     if (!fs.existsSync(dir)) {
@@ -47,7 +47,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
             });
 
             const data: string = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || "Sorry Some Error Occured";
-            console.log(data);
+
             if (type === "base64url") {
                 const audioBuffer = Buffer.from(data, 'base64');
                 const base64Url = `data:audio/wav;base64,${audioBuffer.toString('base64')}`;
@@ -58,7 +58,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
                 const audioBuffer = Buffer.from(data, 'base64');
                 return audioBuffer;
             }
-            const path = await Mp4Writer(data, fileName);
+            const path = await Mp3Writer(data, fileName);
             return path;
         } catch (err: any) {
             console.log(err);

@@ -42,6 +42,12 @@ export default function AdminNav() {
       href: "/admin/tts",
     },
     {
+      title: "Conversation",
+      description: "Manage your conversation settings and requests",
+      icon: <FileText className='h-8 w-8' />,
+      href: "/admin/conversation",
+    },
+    {
       title: "Blog",
       description: "Manage your blog posts and articles",
       icon: <FileText className='h-8 w-8' />,

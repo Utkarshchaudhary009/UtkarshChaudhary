@@ -3,9 +3,7 @@ import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
 import { TTSRequests } from '@/lib/models/TTSRequest';
 import { v2 as cloudinary } from 'cloudinary';
-import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
-import { Readable } from 'stream';
 import { GeminiTTS } from './helper/geminitts';
 
 /**
@@ -65,8 +63,8 @@ export async function POST(req: Request) {
 
     // Process with available keys
     let successfulKey = null;
-    let audioBuffer = null;
-    let errorLog = [];
+    let Filepath: string | null | Buffer<ArrayBuffer> = null;
+    let errorLog: string[] = [];
     const startTime = Date.now();
 
     for (const keyDoc of keys) {
@@ -76,10 +74,10 @@ export async function POST(req: Request) {
         if (remaining < charactersNeeded) continue;
 
         // Generate audio using Gemini TTS
-        audioBuffer = await GeminiTTS(keyDoc.key, text, voiceId, "base64");
+        Filepath = await GeminiTTS(keyDoc.key, text, voiceId, "mp3", `TTS_${title ? title : "test"}.mp3`);
         successfulKey = keyDoc;
 
-        if (audioBuffer) break; // Successfully generated audio
+        if (Filepath) break; // Successfully generated audio
       } catch (error: any) {
         errorLog.push(`Key "${keyDoc.name}" failed: ${error.message}`);
         continue; // Try next key
@@ -87,7 +85,7 @@ export async function POST(req: Request) {
     }
 
     // Handle case where no key succeeded
-    if (!successfulKey || !audioBuffer) {
+    if (!successfulKey || !Filepath) {
       await TTSRequests.create({
         text,
         voiceId,
@@ -109,23 +107,14 @@ export async function POST(req: Request) {
     try {
       // Generate unique filename for the audio
       const fileName = `TTS_${title ? title : "test"}.mp3`;
-
-      // Upload audio to Cloudinary
-      const cloudinaryUrl = await new Promise<string>((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: 'video',
-            folder: config.cloudinaryFolder || 'TTS_Audio',
-            public_id: fileName.replace('.mp3', '')
-          },
-          (err, result) => {
-            if (err || !result) return reject(err);
-            resolve(result.secure_url);
-          }
-        );
-        Readable.from(audioBuffer).pipe(stream);
+      const upload = await cloudinary.uploader.upload(Filepath as string, {
+        resource_type: 'video',
+        folder: config.cloudinaryFolder || 'TTS_Audio',
+        public_id: fileName.replace('.mp3', '')
       });
 
+      // Upload audio to Cloudinary
+      const cloudinaryUrl = upload.secure_url;
       const durationMs = Date.now() - startTime;
 
       // Log successful request
