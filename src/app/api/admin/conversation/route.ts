@@ -19,7 +19,7 @@ const Schema = z.object({
     })),
 });
 
-export async function Conversation(prompt: string, schema: z.ZodSchema) {
+async function Conversation(prompt: string, schema: z.ZodSchema) {
     const { object } = await generateObject({
         model: google('gemini-2.5-flash-preview-05-20'),
         schema: schema,
