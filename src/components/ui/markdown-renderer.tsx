@@ -34,7 +34,7 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
           rehypeSlug,
           rehypeKatex,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
-          [rehypeHighlight, { ignoreMissing: true }],
+          rehypeHighlight,
         ]}
         components={{
           h1: ({ className, ...props }) => (
@@ -117,28 +117,7 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
               {...props}
             />
           ),
-          code: ({ className, children, ...props }) => {
-            const match = /language-(\w+)/.exec(className || "");
-
-            return (
-              <CodeBlock
-                className={className}
-                language={match ? match[1] : ""}
-                {...props}
-              >
-                {
-                  (
-                    typeof children === "string"
-                      ? children
-                      : Array.isArray(children)
-                        ? children.join("")
-                        : String(children)
-                  ).replace(/\n$/, "")
-                }
-              </CodeBlock>
-
-            );
-          },
+          
           pre: ({ className, ...props }) => (
             <pre
               className={cn(

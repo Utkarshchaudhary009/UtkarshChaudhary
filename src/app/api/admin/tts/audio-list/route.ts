@@ -2,6 +2,7 @@
 import { IAudio, IAudioResponse } from '@/lib/types';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 
 interface CloudinaryAudio {
   public_id: string;
