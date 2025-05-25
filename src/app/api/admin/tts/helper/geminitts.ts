@@ -24,6 +24,10 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
     }
 
     for (let i = 0; i < 5; i++) {
+        if (i !== 0 && i % 2 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
         try {
 
             let Key: string = apiKey || process.env.GEMINI_AI_KEY!;
