@@ -5,7 +5,7 @@ interface GeminiTTSVoice {
     description: string;
 }
 
-export const geminiTTSVoices: GeminiTTSVoice[] = [
+const geminiTTSVoices: GeminiTTSVoice[] = [
     { name: "Zephyr", description: "Bright" },
     { name: "Puck", description: "Upbeat" },
     { name: "Charon", description: "Informative" },
