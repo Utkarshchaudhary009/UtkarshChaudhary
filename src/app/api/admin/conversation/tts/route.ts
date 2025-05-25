@@ -50,8 +50,8 @@ export async function POST(req: Request) {
                 // Map speakers to their voice names for GeminiTTS
                 const voiceMap = Object.fromEntries(speakers.map(s => [s.name, s.voiceName]));
 
-                const filename = `TTS_MultiSpeaker_${Date.now()}.mp3`;
-                audioPath = await GeminiTTS(key.key, fullText, voiceMap, 'mp3', filename);
+                const filename = `TTS_MultiSpeaker_${Date.now()}.wav`;
+                audioPath = await GeminiTTS(key.key, fullText, voiceMap, 'wav', filename);
                 successKey = key;
                 if (audioPath) break;
             } catch (err: any) {

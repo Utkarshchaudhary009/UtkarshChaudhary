@@ -1,17 +1,31 @@
 // app/api/tts/route.ts
 import { GoogleGenAI } from '@google/genai';
-import fs from 'fs';
+import wav from 'wav';
 
+async function saveWaveFile(
+    filename: string,
+    pcmData: Buffer,
+    channels = 1,
+    rate = 24000,
+    sampleWidth = 2,
+) {
+    return new Promise((resolve, reject) => {
+        const writer = new wav.FileWriter(filename, {
+            channels,
+            sampleRate: rate,
+            bitDepth: sampleWidth * 8,
+        });
 
-export async function Mp3Writer(data: string, fileName: string) {
-    const audioBuffer = Buffer.from(data, 'base64');
-    fs.writeFileSync(fileName, audioBuffer);
-    return fileName;
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+
+        writer.write(pcmData);
+        writer.end();
+    });
 }
-
 const errorBuffer: Buffer = Buffer.from("Sorry Some Error Occured");
 
-export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "mp3" | "base64url" | "base64" = "mp3", fileName: string = "test.mp3") {
+export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "mp3" | "base64url" | "base64" = "mp3", fileName: string = "test.mp3"): Promise<string | Buffer> {
 
     if (!apiKey && !process.env.GOOGLE_AI_KEY) {
         throw new Error("API key is required. Please provide an API key or set GEMINI_AI_KEY environment variable.");
@@ -44,7 +58,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
 
             if (type === "base64url") {
                 const audioBuffer = Buffer.from(data, 'base64');
-                const base64Url = `data:audio/wav;base64,${audioBuffer.toString('base64')}`;
+                const base64Url = `data:audio/wav;base64,${audioBuffer}`;
                 return base64Url;
             }
 
@@ -52,8 +66,8 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
                 const audioBuffer = Buffer.from(data, 'base64');
                 return audioBuffer;
             }
-            const path = await Mp3Writer(data, fileName);
-            return path;
+            await saveWaveFile(fileName.replace(/\.mp3$/, '.wav'), Buffer.from(data, 'base64'));
+            return fileName.replace(/\.mp3$/, '.wav');
         } catch (err: any) {
             console.log(err);
             if (i === 4) { // If this is the last retry

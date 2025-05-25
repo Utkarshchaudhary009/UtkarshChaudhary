@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     // Process with available keys
     let successfulKey = null;
-    let Filepath: string | null | Buffer<ArrayBuffer> = null;
+    let Filepath: string | null | Buffer<ArrayBufferLike> = null;
     let errorLog: string[] = [];
     const startTime = Date.now();
 
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         if (remaining < charactersNeeded) continue;
 
         // Generate audio using Gemini TTS
-        Filepath = await GeminiTTS(keyDoc.key, text, voiceId, "mp3", `TTS_${title ? title : "test"}.mp3`);
+        Filepath = await GeminiTTS(keyDoc.key, text, voiceId, "mp3", `TTS_${title ? title : "test"}.wav`);
         successfulKey = keyDoc;
 
         if (Filepath) break; // Successfully generated audio
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
       // Generate unique filename for the audio
       const fileName = `TTS_${title ? title : "test"}.mp3`;
       const upload = await cloudinary.uploader.upload(Filepath as string, {
-        resource_type: 'video',
+        resource_type: 'auto',
         folder: config.cloudinaryFolder || 'TTS_Audio',
         public_id: fileName.replace('.mp3', '')
       });

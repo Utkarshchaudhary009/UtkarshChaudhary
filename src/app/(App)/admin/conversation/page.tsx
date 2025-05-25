@@ -237,7 +237,7 @@ export default function ConversationGenerator() {
                 })),
             }
 
-            const response = await fetch("/api/admin/conversation", {
+            const response = await fetch("/api/admin/conversation/tts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
