@@ -2,158 +2,187 @@ import { connectDB } from '@/lib/db';
 import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
 import { TTSRequests } from '@/lib/models/TTSRequest';
-import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
 import { Readable } from 'stream';
+import { GeminiTTS } from './helper/geminitts';
 
+/**
+ * Cloudinary configuration for audio storage
+ */
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,
   api_secret: process.env.CLOUDINARY_API_SECRET!
 });
 
+/**
+ * Text-to-Speech API endpoint
+ * 
+ * Converts text to audio using available TTS services
+ * and uploads the result to Cloudinary
+ */
 export async function POST(req: Request) {
-  await connectDB();
-  const { text, title } = await req.json();
-  if (!text) return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+  try {
+    await connectDB();
 
-  const charactersNeeded = text.length;
+    // Extract and validate request data
+    const { text, title } = await req.json();
+    if (!text) {
+      return NextResponse.json(
+        { error: 'Text is required' },
+        { status: 400 }
+      );
+    }
 
-  const configDoc = await ElevenLabsConfigs.findOne();
-  const config = configDoc?.config || {};
-  const voiceId = config.defaultVoiceId || 'EXAVITQu4vr4xnSDxMaL';
-  if (!voiceId) return NextResponse.json({ error: 'No default voice ID configured' }, { status: 500 });
+    const charactersNeeded = text.length;
 
-  const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
-    usedCharacters: -1,     // least-used first
-    lastUsedAt: 1
-  });
+    // Get configuration settings
+    const configDoc = await ElevenLabsConfigs.findOne();
+    const config = configDoc?.config || {};
+    const voiceId = config.defaultVoiceId || 'EXAVITQu4vr4xnSDxMaL';
 
-  if (!keys.length) {
-    return NextResponse.json({ error: 'No active API keys available' }, { status: 500 });
-  }
+    if (!voiceId) {
+      return NextResponse.json(
+        { error: 'No default voice ID configured' },
+        { status: 500 }
+      );
+    }
 
-  let successfulKey: any = null;
-  let audioBuffer: Buffer | null = null;
-  let errorLog: string[] = [];
-  const startTime = Date.now();
-  let status: number = 0;
-  for (const keyDoc of keys) {
-    const remaining = keyDoc.characterLimit - keyDoc.usedCharacters;
-    if (remaining < charactersNeeded) continue;
+    // Find available API keys with sufficient quota
+    const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
+      usedCharacters: 1,     // least-used first
+      lastUsedAt: 1          // oldest used first
+    });
+
+    if (!keys.length) {
+      return NextResponse.json(
+        { error: 'No active API keys available' },
+        { status: 500 }
+      );
+    }
+
+    // Process with available keys
+    let successfulKey = null;
+    let audioBuffer = null;
+    let errorLog = [];
+    const startTime = Date.now();
+
+    for (const keyDoc of keys) {
+      try {
+        // Check if key has sufficient character quota
+        const remaining = keyDoc.characterLimit - keyDoc.usedCharacters;
+        if (remaining < charactersNeeded) continue;
+
+        // Generate audio using Gemini TTS
+        audioBuffer = await GeminiTTS(keyDoc.key, text, "base64");
+        successfulKey = keyDoc;
+
+        if (audioBuffer) break; // Successfully generated audio
+      } catch (error: any) {
+        errorLog.push(`Key "${keyDoc.name}" failed: ${error.message}`);
+        continue; // Try next key
+      }
+    }
+
+    // Handle case where no key succeeded
+    if (!successfulKey || !audioBuffer) {
+      await TTSRequests.create({
+        text,
+        voiceId,
+        status: 'failed',
+        error: 'All keys failed or quota exceeded',
+        apiKeyName: 'ALL_TRIED',
+        charactersUsed: charactersNeeded
+      });
+
+      return NextResponse.json(
+        {
+          error: 'All TTS service keys failed',
+          details: errorLog
+        },
+        { status: 503 }
+      );
+    }
 
     try {
-      const response = await axios.post(
-        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-        {
-          text,
-          model_id: 'eleven_multilingual_v2',
-          language_code: 'en',
-          voice_settings: config.voiceSettings || {
-            stability: 0.3,
-            similarity_boost: 0.75
+      // Generate unique filename for the audio
+      const fileName = `TTS_${title ? title : randomUUID()}.mp3`;
+
+      // Upload audio to Cloudinary
+      const cloudinaryUrl = await new Promise<string>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'video',
+            folder: config.cloudinaryFolder || 'TTS_Audio',
+            public_id: fileName.replace('.mp3', '')
+          },
+          (err, result) => {
+            if (err || !result) return reject(err);
+            resolve(result.secure_url);
           }
+        );
+        Readable.from(audioBuffer).pipe(stream);
+      });
+
+      const durationMs = Date.now() - startTime;
+
+      // Log successful request
+      await TTSRequests.create({
+        text,
+        voiceId,
+        cloudinaryUrl,
+        apiKeyName: successfulKey.name,
+        charactersUsed: charactersNeeded,
+        durationMs,
+        status: 'success',
+        userId: 'admin' // Replace with actual user ID in production
+      });
+
+      // Update key usage statistics
+      await ElevenLabsKeys.findByIdAndUpdate(successfulKey._id, {
+        $inc: { usedCharacters: charactersNeeded },
+        lastUsedAt: new Date()
+      });
+
+      // Return success response with audio URL
+      return NextResponse.json({
+        audioUrl: cloudinaryUrl,
+        success: true,
+        voiceId,
+        usedKey: successfulKey.name,
+        charactersUsed: charactersNeeded,
+        durationMs
+      });
+
+    } catch (cloudErr: any) {
+      // Log failed upload
+      await TTSRequests.create({
+        text,
+        voiceId,
+        status: 'failed',
+        apiKeyName: successfulKey.name,
+        charactersUsed: charactersNeeded,
+        error: 'Cloudinary upload failed'
+      });
+
+      return NextResponse.json(
+        {
+          error: 'Cloudinary upload failed',
+          message: cloudErr.message
         },
-        {
-          responseType: 'arraybuffer',
-          headers: {
-            'xi-api-key': keyDoc.key,
-            'Content-Type': 'application/json'
-          }
-        }
+        { status: 500 }
       );
-      if (response.status !== 200) {
-        
-        errorLog.push(`Key "${keyDoc.name}" failed: ${response.data.detail.msg} `);
-        status = response.status;
-        continue;
-      }
-      if (response.status === 200) {
-        audioBuffer = Buffer.from(response.data);
-        status = response.status;
-        successfulKey = keyDoc;
-        break;
-      }
-    } catch (error: any) {
-      errorLog.push(`Key "${keyDoc.name}" failed: ${error.message} `);
-      status = 500
     }
-  }
-
-  if (!successfulKey || !audioBuffer) {
-    await TTSRequests.create({
-      text,
-      voiceId,
-      status: 'failed',
-      error: 'All keys failed or quota exceeded',
-      apiKeyName: 'ALL_TRIED',
-      charactersUsed: charactersNeeded
-    });
-    return NextResponse.json({ error: 'All keys failed', details: errorLog }, { status: status });
-  }
-
-  try {
-    const fileName = `TTS_${title ? title : randomUUID()}.mp3`;
-
-    const cloudinaryUrl = await new Promise<string>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'video',
-          folder: config.cloudinaryFolder || 'TTS_Audio',
-          public_id: fileName.replace('.mp3', '')
-        },
-        (err, result) => {
-          if (err || !result) return reject(err);
-          resolve(result.secure_url);
-        }
-      );
-      Readable.from(audioBuffer).pipe(stream);
-    });
-
-    const durationMs = Date.now() - startTime;
-
-    await TTSRequests.create({
-      text,
-      voiceId,
-      cloudinaryUrl,
-      apiKeyName: successfulKey.name,
-      charactersUsed: charactersNeeded,
-      durationMs,
-      status: 'success',
-      userId: 'admin' // Optional: Replace with real user ID if needed
-    });
-
-    await ElevenLabsKeys.findByIdAndUpdate(successfulKey._id, {
-      $inc: { usedCharacters: charactersNeeded },
-      lastUsedAt: new Date()
-    });
-
-    // await ElevenLabsKeys.findByIdAndUpdate(successfulKey._id, {
-    //   $inc: { usedCharacters: getUsage(successfulKey.key) },
-    //   lastUsedAt: new Date()
-    // });
-
-    return NextResponse.json({
-      audioUrl: cloudinaryUrl,
-      success: true,
-      voiceId,
-      usedKey: successfulKey.name,
-      charactersUsed: charactersNeeded,
-      durationMs
-    });
-
-  } catch (cloudErr: any) {
-    await TTSRequests.create({
-      text,
-      voiceId,
-      status: 'failed',
-      apiKeyName: successfulKey.name,
-      charactersUsed: charactersNeeded,
-      error: 'Cloudinary upload failed'
-    });
-
-    return NextResponse.json({ error: 'Cloudinary upload failed', message: cloudErr.message }, { status: 500 });
+  } catch (error: any) {
+    // Handle unexpected errors
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error.message
+      },
+      { status: 500 }
+    );
   }
 }

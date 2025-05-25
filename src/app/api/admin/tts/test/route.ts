@@ -1,51 +1,18 @@
-import { connectDB } from '@/lib/db';
-import mongoose from 'mongoose';
+// app/api/tts/route.ts
 import { NextResponse } from 'next/server';
+import { GeminiTTS } from '../helper/geminitts';
 
-export async function GET() {
+export const dynamic = 'force-dynamic'; // optional if you're running serverless
+
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const voiceName = searchParams.get('voiceName') || 'Zephyr';
+
+    const text = `Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${voiceName}`;
     try {
-        console.log("Testing database connection...");
-        await connectDB();
-
-        // Check connection status
-        const readyState = mongoose.connection.readyState;
-        const readyStateText = [
-            "disconnected",
-            "connected",
-            "connecting",
-            "disconnecting",
-            "uninitialized"
-        ][readyState];
-
-        console.log(`Database connection state: ${readyStateText} (${readyState})`);
-
-        // Get list of all collections
-        const collections = await mongoose.connection.db?.listCollections().toArray();
-        const collectionNames = collections?.map(c => c.name) || [];
-
-        console.log(`Available collections: ${collectionNames.join(', ')}`);
-
-        // Get database name
-        const dbName = mongoose.connection.db?.databaseName || 'unknown';
-
-        return NextResponse.json({
-            status: "success",
-            database: {
-                connection: {
-                    readyState,
-                    readyStateText,
-                    host: mongoose.connection.host,
-                    name: dbName
-                },
-                collections: collectionNames
-            }
-        });
-    } catch (error: any) {
-        console.error("Database connection test failed:", error);
-        return NextResponse.json({
-            status: "error",
-            message: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        }, { status: 500 });
+        const base64Url = await GeminiTTS(process.env.GEMINI_AI_KEY!, text, "base64url");
+        return NextResponse.json({ base64Url: base64Url });
+    } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 500 });
     }
-} 
+}
