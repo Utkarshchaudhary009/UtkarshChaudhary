@@ -13,7 +13,7 @@ interface ImageSelectorProps {
   setSelectedImage: (image: string) => void
 }
 
-interface UnsplashImage {
+export interface UnsplashImage {
   id: string
   urls: {
     regular: string

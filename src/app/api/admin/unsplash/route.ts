@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { pic } from "./helper"
+
 interface Error {
   "errors": String[]
 }
@@ -24,8 +26,8 @@ export async function GET(request: NextRequest) {
     )
 
     if (!response.ok) {
-      const errorData:Error = await response.json()
-      return NextResponse.json({ error: `Failed to fetch images from Unsplash: ${errorData.errors.join(", ")}` }, { status: response.status })
+      const images = await pic(query)
+      return NextResponse.json(images)
     }
 
     const data = await response.json()
