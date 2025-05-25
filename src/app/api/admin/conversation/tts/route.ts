@@ -16,13 +16,12 @@ export async function POST(req: Request) {
     try {
         await connectDB();
 
-        const { speakers, content, apiKey }: {
+        const { speakers, content }: {
             speakers: { name: string, voiceName: string }[];
             content: { speakerName: string, text: string }[];
-            apiKey: string;
         } = await req.json();
 
-        if (!speakers?.length || !content?.length || !apiKey) {
+        if (!speakers?.length || !content?.length) {
             return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
         }
 
