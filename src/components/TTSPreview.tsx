@@ -70,8 +70,7 @@ export default function TTSPreview({ text, className = "", title = "", sendAudio
                     },
                     body: JSON.stringify({
                         text: text.trim(),
-                        title: title,
-                        voiceId: "default", // You can make this configurable
+                        title: title
                     }),
                 })
 

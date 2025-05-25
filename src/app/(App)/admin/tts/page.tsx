@@ -76,38 +76,12 @@ interface ElevenLabsConfig {
     createdAt?: string
     updatedAt?: string
 }
-export const geminiTTSVoices = [
-    "Zephyr",         // Bright
-    "Puck",           // Upbeat
-    "Charon",         // Informative
-    "Kore",           // Firm
-    "Fenrir",         // Excitable
-    "Leda",           // Youthful
-    "Orus",           // Firm
-    "Aoede",          // Breezy
-    "Callirhoe",      // Easy-going
-    "Autonoe",        // Bright
-    "Enceladus",      // Breathy
-    "Iapetus",        // Clear
-    "Umbriel",        // Easy-going
-    "Algieba",        // Smooth
-    "Despina",        // Smooth
-    "Erinome",        // Clear
-    "Algenib",        // Gravelly
-    "Rasalgethi",     // Informative
-    "Laomedeia",      // Upbeat
-    "Achernar",       // Soft
-    "Alnilam",        // Firm
-    "Schedar",        // Even
-    "Gacrux",         // Mature
-    "Pulcherrima",    // Forward
-    "Achird",         // Friendly
-    "Zubenelgenubi",  // Casual
-    "Vindemiatrix",   // Gentle
-    "Sadachbia",      // Lively
-    "Sadaltager",     // Knowledgeable
-    "Sulafat"         // Warm
-];
+
+
+interface GeminiTTSVoice {
+    name: string;
+    description: string;
+}
 
 export default function TTSAdminPage() {
     const [keys, setKeys] = useState<ElevenLabsKey[]>([])
@@ -115,6 +89,10 @@ export default function TTSAdminPage() {
     const [config, setConfig] = useState<ElevenLabsConfig | null>(null)
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("keys")
+    const [voicesIds, setVoiceIds] = useState<GeminiTTSVoice[]>(
+        [{ name: "Zephyr", description: "Bright" },
+        { name: "Puck", description: "Upbeat" }
+        ])
 
     // Form states
     const [keyForm, setKeyForm] = useState({
@@ -144,11 +122,16 @@ export default function TTSAdminPage() {
     // Load initial data
     useEffect(() => {
         loadData()
+
     }, [])
 
     const loadData = async () => {
         setLoading(true)
         try {
+            const response = await fetch("/api/admin/tts/voices")
+            const voices: GeminiTTSVoice[] = await response.json()
+            setVoiceIds(voices)
+
             await Promise.all([loadKeys(), loadRequests(), loadConfig()])
         } catch (error) {
             toast.error("Failed to load data")
