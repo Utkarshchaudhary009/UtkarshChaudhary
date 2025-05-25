@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-
+.blog-audio-player {
+  position: fixed;
+  bottom: 5rem;
+  right: 4rem;
+  z-index: 100;
+}
 
 @layer base {
   :root {
@@ -57,6 +62,7 @@
 
     --radius: 0.5rem
   }
+
   .dark {
 
     --background: 0 0% 3.9%;
@@ -115,6 +121,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

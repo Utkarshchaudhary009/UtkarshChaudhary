@@ -116,7 +116,7 @@ export default function ClientBlogDetail() {
       {blog?.ttsUrl && (
         <AudioPlayer
           audioUrl={blog?.ttsUrl || ""}
-          className="fixed bottom-8 right-4"
+          className="blog-audio-player"
         />
       )}
       <div className='container py-8 space-y-8 max-w-4xl mx-auto'>
