@@ -49,9 +49,9 @@ export async function pic(prompt: string) {
             images: z.array(z.object({
                 id: z.string(),
                 urls: z.object({
-                    regular: z.string().url(),
-                    small: z.string().url(),
-                    thumb: z.string().url(),
+                    regular: z.string(),
+                    small: z.string(),
+                    thumb: z.string(),
                 }),
                 alt_description: z.string(),
                 user: z.object({
@@ -68,4 +68,4 @@ export async function pic(prompt: string) {
 }
 
 // Run the main function
-pic("a beautiful landscape").catch(console.error);
+// pic("a beautiful landscape").catch(console.error);
