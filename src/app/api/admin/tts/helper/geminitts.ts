@@ -1,18 +1,12 @@
 // app/api/tts/route.ts
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
-import path from 'path';
 
 
 export async function Mp3Writer(data: string, fileName: string) {
     const audioBuffer = Buffer.from(data, 'base64');
-    const dir = path.join(process.cwd(), 'public', 'audio');
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-    const filePath = path.join(dir, fileName);
-    fs.writeFileSync(filePath, audioBuffer);
-    return filePath;
+    fs.writeFileSync(fileName, audioBuffer);
+    return fileName;
 }
 
 const errorBuffer: Buffer = Buffer.from("Sorry Some Error Occured");
