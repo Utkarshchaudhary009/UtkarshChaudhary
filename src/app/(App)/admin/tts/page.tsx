@@ -720,7 +720,7 @@ export default function TTSAdminPage() {
                                         </Select>
                                     </div>
                                     <div>
-                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.defaultVoiceId}`} voiceId={configForm.defaultVoiceId} type="Test" />
+                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.defaultVoiceId}`} voiceId={configForm.defaultVoiceId} />
                                     </div>
 
 
@@ -744,7 +744,7 @@ export default function TTSAdminPage() {
                                         </Select>
                                     </div>
                                     <div>
-                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.fallbackVoiceId}`} voiceId={configForm.fallbackVoiceId} type="Test" />
+                                        <TTSPreview text={`Hi, I am Sam. Which stands for Speech And Audio Machine. With voice ${configForm.fallbackVoiceId}`} voiceId={configForm.fallbackVoiceId} />
                                     </div>
                                 </div>
 

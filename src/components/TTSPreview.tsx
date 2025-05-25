@@ -26,7 +26,7 @@ interface TTSResponse {
     charactersUsed?: number
 }
 
-export default function TTSPreview({ text, className = "", title = "", sendAudioUrl, type = "Test", voiceId }: TTSPreviewProps) {
+export default function TTSPreview({ text, className = "", title = "", sendAudioUrl, type = "NonTest", voiceId }: TTSPreviewProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [audioUrl, setAudioUrl] = useState<string | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
