@@ -65,6 +65,7 @@ export async function POST(req: Request) {
         }
       );
       if (response.status !== 200) {
+        
         errorLog.push(`Key "${keyDoc.name}" failed: ${response.data.detail.msg} `);
         status = response.status;
         continue;

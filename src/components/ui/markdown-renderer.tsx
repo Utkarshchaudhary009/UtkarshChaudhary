@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import "katex/dist/katex.min.css";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
-import rehypeKatex from "rehype-katex";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { cn } from "@/lib/utils";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import "./markdown.css";
-import "katex/dist/katex.min.css";
 
 interface MarkdownRendererProps {
   content: string;
@@ -126,8 +126,17 @@ const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
                 language={match ? match[1] : ""}
                 {...props}
               >
-                {String(children).replace(/\n$/, "")}
+                {
+                  (
+                    typeof children === "string"
+                      ? children
+                      : Array.isArray(children)
+                        ? children.join("")
+                        : String(children)
+                  ).replace(/\n$/, "")
+                }
               </CodeBlock>
+
             );
           },
           pre: ({ className, ...props }) => (

@@ -2,10 +2,11 @@ import { connectDB } from '@/lib/db';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';
 import { ElevenLabsKeySchema } from '@/lib/types';
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
     try {
-        await connectDB();
+        await connectDB()
 
         // Log to debug
         console.log("Fetching ElevenLabs keys");
