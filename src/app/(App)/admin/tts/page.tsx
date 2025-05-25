@@ -80,6 +80,7 @@ interface ElevenLabsConfig {
 
 interface GeminiTTSVoice {
     name: string;
+    voiceId: string;
     description: string;
 }
 
@@ -90,8 +91,8 @@ export default function TTSAdminPage() {
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState("keys")
     const [voicesIds, setVoiceIds] = useState<GeminiTTSVoice[]>(
-        [{ name: "Zephyr", description: "Bright" },
-        { name: "Puck", description: "Upbeat" }
+        [{ name: "Zephyr - Bright", voiceId: "Zephyr", description: "Bright" },
+        { name: "Puck - Upbeat", voiceId: "Puck", description: "Upbeat" }
         ])
 
     // Form states
@@ -710,9 +711,9 @@ export default function TTSAdminPage() {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {geminiTTSVoices.map((voice) => (
-                                                    <SelectItem key={voice} value={voice}>
-                                                        {voice}
+                                                {voicesIds.map((voice) => (
+                                                    <SelectItem key={voice.voiceId} value={voice.voiceId}>
+                                                        {voice.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -734,9 +735,9 @@ export default function TTSAdminPage() {
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {geminiTTSVoices.map((voice) => (
-                                                    <SelectItem key={voice} value={voice}>
-                                                        {voice}
+                                                {voicesIds.map((voice) => (
+                                                    <SelectItem key={voice.voiceId} value={voice.voiceId}>
+                                                        {voice.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
