@@ -8,6 +8,7 @@ import MarkdownRenderer from "@/components/ui/markdown-renderer"
 import { Download, Loader2, Pause, Play, Volume2 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { WaitForAudio } from "@/lib/utils"
 
 interface TTSPreviewProps {
     text: string
@@ -80,6 +81,7 @@ export default function TTSPreview({ text, className = "", title = "", sendAudio
                         title: title
                     }),
                 })
+                await WaitForAudio(text)
 
                 const data: TTSResponse = await response.json()
 

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { WaitForAudio } from "@/lib/utils"
 import {
     CheckCircle,
     Clock,
@@ -255,6 +256,11 @@ export default function ConversationGenerator() {
                 },
                 body: JSON.stringify(requestBody),
             })
+            // Generate a filename based on the conversation
+            const Conversation = conversation.map(c => `${c.speakerName}: ${c.text}`).join('\n');
+            const SpeakersDetails = speakers.map(s => `${s.name} a ${s.description}`).join(' and ');
+            const prompt = `The Speakers are ${SpeakersDetails} and the Conversation is ${Conversation}.`;
+            await WaitForAudio(prompt)
 
             const data: TTSResponse = await response.json()
             setResponse(data)
