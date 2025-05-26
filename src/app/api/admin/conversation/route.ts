@@ -49,7 +49,7 @@ const Schema = z.object({
     speakers: z.array(z.object({
         name: z.string(),
         voiceName: z.enum(voiceNames as [string, ...string[]]),
-        description: z.string().min(2),
+        description: z.string().min(2).describe("The description of the speaker how they will speak in the conversation in 5 words."),
     })),
     content: z.array(z.object({
         speakerName: z.string(),
@@ -66,7 +66,7 @@ async function Conversation(prompt: string, schema: z.ZodSchema) {
             const { object: result } = await generateObject({
                 model: google('gemini-2.5-flash-preview-05-20'),
                 schema: schema,
-                prompt: `${prompt} with help of voices ${geminiTTSVoices}. The Speakers should be described as there role in the conversation as per there tone,mood,and personality in 5 words.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker. Give the conversation style{like podcast, interview,friends casual banter,family,etc.} in 5 words and file name as per the conversation summary in 5 words.`,
+                prompt: `${prompt} with help of voices ${geminiTTSVoices}. The description of the speaker how they will speak in the conversation in 5 words.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker. Give the conversation style{like podcast, interview,friends casual banter,family,etc.} in 5 words and file name as per the conversation summary in 5 words.`,
             });
             object = result;
             break;
@@ -96,6 +96,8 @@ export async function POST(req: Request) {
         success: true,
         speakers: conversation.speakers,
         content: conversation.content,
+        conversationStyle: conversation.conversationStyle,
+        conversationFileName: conversation.conversationFileName,
     }
     return NextResponse.json(result as ConversationResponse);
 }

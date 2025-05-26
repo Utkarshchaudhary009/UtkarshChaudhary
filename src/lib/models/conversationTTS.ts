@@ -17,5 +17,7 @@ export interface ConversationResponse {
     success: boolean
     speakers?: GeneratedSpeaker[]
     content?: GeneratedContent[]
+    conversationStyle?: string
+    conversationFileName?: string
     error?: string
 }

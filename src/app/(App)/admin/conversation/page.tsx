@@ -462,17 +462,23 @@ export default function ConversationGenerator() {
                             <Separator />
                             <div className="grid gap-2">
                                 {speakers.map((speaker) => (
-                                    <div key={speaker.id} className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div className="flex items-center gap-3">
-                                            <Badge variant="secondary">{speaker.name}</Badge>
-                                            <span className="text-sm text-muted-foreground">
-                                                {voices.find((v) => v.voiceId === speaker.voiceName)?.name || speaker.voiceName}
-                                            </span>
+                                    <>
+                                        <div key={speaker.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                            <div className="flex items-center gap-3">
+                                                <Badge variant="secondary">{speaker.name}</Badge>
+                                                <span className="text-sm text-muted-foreground">
+                                                    {voices.find((v) => v.voiceId === speaker.voiceName)?.name || speaker.voiceName}
+                                                </span>
+                                            </div>
+                                            <Button variant="ghost" size="sm" onClick={() => removeSpeaker(speaker.id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
                                         </div>
-                                        <Button variant="ghost" size="sm" onClick={() => removeSpeaker(speaker.id)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+
+                                        <Badge variant="secondary" className="text-muted-foreground">
+                                            {speaker.description}
+                                        </Badge>
+                                    </>
                                 ))}
                             </div>
                         </div>
