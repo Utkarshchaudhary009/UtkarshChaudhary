@@ -24,14 +24,16 @@ cloudinary.config({
  */
 export async function processConversationTTS(
     speakers: { name: string, voiceName: string }[],
-    content: { speakerName: string, text: string }[],
-    fileId: string
+    prompt: string,
+    conversationStyle: string,
+    fileId: string,
+    userId?: string
 ) {
     try {
         await connectDB();
 
         // Validate input
-        if (!speakers?.length || !content?.length) {
+        if (!speakers?.length || !prompt || !conversationStyle) {
             return { error: 'Missing required speaker or content data' };
         }
 
@@ -39,8 +41,7 @@ export async function processConversationTTS(
         const config = configDoc?.config || {};
         const folder = config.cloudinaryFolder || 'TTS_Audio';
 
-        const fullText = content.map(c => `${c.speakerName}: ${c.text}`).join('\n');
-        const charactersNeeded = fullText.length;
+        const charactersNeeded = prompt.length;
 
         // Find available API keys with sufficient quota
         const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
@@ -50,7 +51,7 @@ export async function processConversationTTS(
 
         if (!keys.length) {
             await logRequest({
-                text: fullText,
+                text: prompt,
                 status: 'failed',
                 error: 'No active TTS keys available'
             });
@@ -72,7 +73,7 @@ export async function processConversationTTS(
                 const voiceMap = Object.fromEntries(speakers.map(s => [s.name, s.voiceName]));
                 const filename = `TTS_MultiSpeaker_${fileId}}.wav`;
 
-                audioPath = await GeminiTTS(key.key, fullText, voiceMap, 'wav', filename);
+                audioPath = await GeminiTTS(key.key, prompt, voiceMap, 'wav', filename);
                 successKey = key;
 
                 if (audioPath) break;
@@ -84,7 +85,7 @@ export async function processConversationTTS(
         // Handle case where no key succeeded
         if (!audioPath || !successKey) {
             await logRequest({
-                text: fullText,
+                text: prompt,
                 status: 'failed',
                 error: 'All keys failed or quota exceeded',
                 apiKeyName: 'ALL',
@@ -110,14 +111,14 @@ export async function processConversationTTS(
 
             // Log successful request
             await logRequest({
-                text: fullText,
+                text: prompt,
                 voiceId: 'multi',
                 cloudinaryUrl: url,
                 apiKeyName: successKey.name,
                 charactersUsed: charactersNeeded,
                 durationMs: duration,
                 status: 'success',
-                userId: 'admin'
+                userId: userId || 'admin'
             });
 
             // Update key usage statistics
@@ -135,7 +136,7 @@ export async function processConversationTTS(
 
         } catch (cloudErr: any) {
             await logRequest({
-                text: fullText,
+                text: prompt,
                 voiceId: 'multi',
                 status: 'failed',
                 error: 'Cloudinary upload failed',

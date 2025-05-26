@@ -6,7 +6,9 @@ export interface ConversationTTSEvent {
     name: "conversation.tts.requested";
     data: {
         speakers: { name: string, voiceName: string }[];
-        content: { speakerName: string, text: string }[];
+        prompt: string;
+        conversationStyle: string;
+        fileId: string;
         userId?: string;
     };
 }
@@ -20,11 +22,11 @@ export const conversationProcessor = inngest.createFunction(
     },
     { event: "conversation.tts.requested" },
     async ({ event, step }) => {
-        const { speakers, content,fileId, userId = "admin" } = event.data;
+        const { speakers, prompt, conversationStyle, fileId, userId = "admin" } = event.data;
 
         // Log the start of Conversation TTS processing
         await step.run("log-conversation-tts-start", () => {
-            console.log(`Starting Conversation TTS processing with ${speakers.length} speakers and ${content.length} lines`);
+            console.log(`Starting Conversation TTS processing with ${speakers.length} speakers`);
             return {
                 started: true,
                 timestamp: new Date().toISOString(),
@@ -34,7 +36,7 @@ export const conversationProcessor = inngest.createFunction(
 
         // Process Conversation TTS with retries
         const result = await step.run("process-conversation-tts", async () => {
-            return await processConversationTTS(speakers, content, fileId);
+            return await processConversationTTS(speakers, prompt, conversationStyle, fileId, userId);
         });
 
         // If there was an error, handle it specifically

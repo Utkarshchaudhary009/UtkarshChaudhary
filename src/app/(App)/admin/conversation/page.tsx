@@ -57,6 +57,8 @@ interface ConversationResponse {
     success: boolean
     speakers?: Array<{ name: string; voiceName: string; description: string }>
     content?: Array<{ speakerName: string; text: string }>
+    conversationStyle?: string
+    conversationFileName?: string
     error?: string
 }
 
@@ -73,6 +75,8 @@ export default function ConversationGenerator() {
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
     const [response, setResponse] = useState<TTSResponse | null>(null)
     const [newSpeakerDescription, setNewSpeakerDescription] = useState("")
+    const [conversationStyle, setConversationStyle] = useState("")
+    const [conversationFileName, setConversationFileName] = useState("")
 
     // AI conversation generation
     const [conversationPrompt, setConversationPrompt] = useState("")
@@ -142,7 +146,8 @@ export default function ConversationGenerator() {
                 // Clear existing data
                 setSpeakers([])
                 setConversation([])
-
+                setConversationStyle(data.conversationStyle || "")
+                setConversationFileName(data.conversationFileName?.split(".")[0] || "")
                 // Add generated speakers
                 const generatedSpeakers = data.speakers.map((speaker, index) => ({
                     id: `generated-${index}`,
@@ -159,7 +164,6 @@ export default function ConversationGenerator() {
                     text: item.text,
                 }))
                 setConversation(generatedConversation)
-
                 setConversationPrompt("")
             } else {
                 setError(data.error || "Failed to generate conversation")
@@ -240,6 +244,8 @@ export default function ConversationGenerator() {
                     speakerName: c.speakerName,
                     text: c.text,
                 })),
+                conversationStyle: conversationStyle,
+                conversationFileName: conversationFileName,
             }
 
             const response = await fetch("/api/admin/conversation/tts", {
@@ -348,6 +354,50 @@ export default function ConversationGenerator() {
                                         Generate
                                     </>
                                 )}
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Conversation Details Management Like Style of conversation, file Name, etc*/}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Conversation Details
+                    </CardTitle>
+                    <CardDescription>Add details for your conversation</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {/* Add Speaker Form */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="conversationStyle">Conversation Style</Label>
+                            <Input
+                                id="conversationStyle"
+                                placeholder="e.g., Casual, Formal, Professional, etc."
+                                value={conversationStyle}
+                                onChange={(e) => setConversationStyle(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="conversationFileName">Conversation File Name</Label>
+                            <Input
+                                id="conversationFileName"
+                                placeholder="e.g., Conversation_with_Alice_and_Bob"
+                                value={conversationFileName}
+                                onChange={(e) => setConversationFileName(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex items-end">
+                            <Button
+                                onClick={addSpeaker}
+                                disabled={!newSpeakerName.trim() || !newSpeakerVoice || isLoadingVoices}
+                                className="w-full"
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Speaker
                             </Button>
                         </div>
                     </div>

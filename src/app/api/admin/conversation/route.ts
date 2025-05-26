@@ -55,13 +55,15 @@ const Schema = z.object({
         speakerName: z.string(),
         text: z.string(),
     })),
+    conversationStyle: z.string().min(7).max(20).describe("The style of the conversation like podcast, interview,friends casual banter,family,etc."),
+    conversationFileName: z.string().min(7).max(20).describe("The name of the conversation file based conversation."),
 });
 
 async function Conversation(prompt: string, schema: z.ZodSchema) {
     const { object } = await generateObject({
         model: google('gemini-2.5-flash-preview-05-20'),
         schema: schema,
-        prompt: `${prompt} with help of voices ${geminiTTSVoices}. The Speakers should be described as there role in the conversation as per there tone,mood,and personality.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker.`,
+        prompt: `${prompt} with help of voices ${geminiTTSVoices}. The Speakers should be described as there role in the conversation as per there tone,mood,and personality.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker. Give the conversation style{like podcast, interview,friends casual banter,family,etc.} and file name as per the conversation summary.`,
     });
 
     return object;
