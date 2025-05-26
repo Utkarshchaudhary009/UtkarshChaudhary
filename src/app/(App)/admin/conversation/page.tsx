@@ -396,6 +396,7 @@ export default function ConversationGenerator() {
                                 onChange={(e) => setConversationFileName(e.target.value)}
                             />
                         </div>
+                    </div>
                 </CardContent>
             </Card>
 
