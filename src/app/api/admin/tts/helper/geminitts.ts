@@ -39,15 +39,15 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
     console.log("File Name:", fileName);
     const Model = ["gemini-2.5-pro-preview-tts", "gemini-2.5-flash-preview-tts"]
 
-    for (const model in Model) {
-        console.log("Model:", model);
+    for (const modelNum in Model) {
+        console.log("Model:", Model[modelNum]);
         try {
 
             let Key: string = apiKey || process.env.GEMINI_AI_KEY!;
             const ai = new GoogleGenAI({ apiKey: Key });
 
             const response = await ai.models.generateContent({
-                model: model,
+                model: Model[modelNum],
                 contents: [{ parts: [{ text: text }] }],
                 config: {
                     responseModalities: ['AUDIO'],
