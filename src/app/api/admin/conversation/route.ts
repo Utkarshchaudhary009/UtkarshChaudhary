@@ -49,14 +49,14 @@ const Schema = z.object({
     speakers: z.array(z.object({
         name: z.string(),
         voiceName: z.enum(voiceNames as [string, ...string[]]),
-        description: z.string().min(7).max(20),
+        description: z.string().min(2),
     })),
     content: z.array(z.object({
         speakerName: z.string(),
         text: z.string(),
     })),
-    conversationStyle: z.string().min(4).max(20).describe("The style of the conversation like podcast, interview,friends casual banter,family,etc."),
-    conversationFileName: z.string().min(4).max(20).describe("The name of the conversation file based conversation."),
+    conversationStyle: z.string().min(5).describe("The style of the conversation like podcast, interview,friends casual banter,family,etc."),
+    conversationFileName: z.string().min(4).describe("The name of the conversation file based conversation."),
 });
 
 async function Conversation(prompt: string, schema: z.ZodSchema) {
@@ -66,7 +66,7 @@ async function Conversation(prompt: string, schema: z.ZodSchema) {
             const { object: result } = await generateObject({
                 model: google('gemini-2.5-flash-preview-05-20'),
                 schema: schema,
-                prompt: `${prompt} with help of voices ${geminiTTSVoices}. The Speakers should be described as there role in the conversation as per there tone,mood,and personality.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker. Give the conversation style{like podcast, interview,friends casual banter,family,etc.} in 10 words and file name as per the conversation summary in 10 words.`,
+                prompt: `${prompt} with help of voices ${geminiTTSVoices}. The Speakers should be described as there role in the conversation as per there tone,mood,and personality in 5 words.NOTE: The Speakers should not be described as description of voices.Description of voices are just to help you choose the right voice for the speaker. Give the conversation style{like podcast, interview,friends casual banter,family,etc.} in 5 words and file name as per the conversation summary in 5 words.`,
             });
             object = result;
             break;
@@ -75,7 +75,7 @@ async function Conversation(prompt: string, schema: z.ZodSchema) {
             continue;
         }
     }
-
+    object.conversationFileName = object.conversationFileName.replace(/ /g, '_').trim()
     if (!object) {
         return { error: 'No object returned' };
     }
@@ -85,9 +85,13 @@ async function Conversation(prompt: string, schema: z.ZodSchema) {
 export async function POST(req: Request) {
     const { prompt } = await req.json();
     if (!prompt) {
-        return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
+        return NextResponse.json({ success: false, error: 'Prompt is required' } as ConversationResponse, { status: 400 });
     }
     const conversation = await Conversation(prompt, Schema);
+    if (conversation.error) {
+
+        return NextResponse.json({ success: false, error: conversation.error } as ConversationResponse, { status: 500 });
+    }
     const result: ConversationResponse = {
         success: true,
         speakers: conversation.speakers,
