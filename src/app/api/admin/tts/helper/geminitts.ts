@@ -92,5 +92,6 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
             throw err;
         }
     }
+    return errorBuffer;
 }
 
