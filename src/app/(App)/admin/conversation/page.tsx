@@ -396,17 +396,6 @@ export default function ConversationGenerator() {
                                 onChange={(e) => setConversationFileName(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-end">
-                            <Button
-                                onClick={addSpeaker}
-                                disabled={!newSpeakerName.trim() || !newSpeakerVoice || isLoadingVoices}
-                                className="w-full"
-                            >
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add Speaker
-                            </Button>
-                        </div>
-                    </div>
                 </CardContent>
             </Card>
 
