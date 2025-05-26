@@ -1,5 +1,5 @@
-import { inngest } from "../client";
-import { TTS } from "../helper/tts";
+import { inngest } from "@/lib/inngest/client";
+import { TTS } from "@/lib/inngest/helper/tts";
 
 // Define the TTS result interface
 

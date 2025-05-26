@@ -1,7 +1,7 @@
 import { connectDB } from '@/lib/db';
 import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { NextResponse } from 'next/server';
-import { inngest } from '../inngest/client';
+import { inngest } from '@/lib/inngest/client';
 
 function GenerateCloudinaryUrl(fileId: string) {
   // https://res.cloudinary.com/dgdfxsuoh/video/upload/v1748061490/TTS_Audio/TTS_gemini-2-5-a-leap-forward-in-ai-capabilities.mp3
