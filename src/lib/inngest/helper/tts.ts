@@ -1,4 +1,4 @@
-import { GeminiTTS } from '@/app/api/admin/inngest/helper/geminitts';
+import { GeminiTTS } from '@/lib/inngest/helper/geminitts';
 import { connectDB } from '@/lib/db';
 import { ElevenLabsConfigs } from '@/lib/models/ElevenLabsConfig';
 import { ElevenLabsKeys } from '@/lib/models/ElevenLabsKey';

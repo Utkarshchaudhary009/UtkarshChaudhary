@@ -1,6 +1,6 @@
 // app/api/tts/route.ts
 import { NextResponse } from 'next/server';
-import { GeminiTTS } from '../../inngest/helper/geminitts';
+import { GeminiTTS } from '@/lib/inngest/helper/geminitts';
 
 export const dynamic = 'force-dynamic'; // optional if you're running serverless
 interface TTSResponse {
