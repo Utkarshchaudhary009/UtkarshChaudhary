@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         if (remaining < charactersNeeded) continue;
 
         // Generate audio using Gemini TTS with cloudinary option
-        audioData = await GeminiTTS(keyDoc.key, text, voiceId, "base64url", `TTS_${title ? title : "test"}.wav`);
+        audioData = await GeminiTTS(keyDoc.key, text, voiceId, "wav", `TTS_${title ? title : "test"}.wav`);
         successfulKey = keyDoc;
 
         if (audioData) break; // Successfully generated audio

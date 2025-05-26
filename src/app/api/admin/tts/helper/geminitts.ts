@@ -27,7 +27,7 @@ async function saveWaveFile(
 }
 const errorBuffer: Buffer = Buffer.from("Sorry Some Error Occured");
 
-export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "mp3" | "base64url" | "base64" | "cloudinary" = "mp3", fileName: string = "test.mp3"): Promise<string | Buffer> {
+export async function GeminiTTS(apiKey: string, text: string, voiceName: string = "Zephyr", type: "wav" | "base64url" | "base64" | "cloudinary" = "wav", fileName: string = "test.wav"): Promise<string | Buffer> {
 
     if (!apiKey && !process.env.GOOGLE_AI_KEY) {
         throw new Error("API key is required. Please provide an API key or set GEMINI_AI_KEY environment variable.");
@@ -83,7 +83,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
             // Save to disk
             const outputDir = path.join(process.cwd(), 'tmp');
             if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
-            const outputPath = path.join(outputDir, fileName.replace(/\.mp3$/, '.wav'));
+            const outputPath = path.join(outputDir, fileName.replace(/\.wav$/, '.wav'));
             await saveWaveFile(outputPath, Buffer.from(data, 'base64'));
             console.log("Audio saved to:", outputPath);
             return outputPath;
