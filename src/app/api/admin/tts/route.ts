@@ -109,7 +109,7 @@ export async function POST(req: Request) {
 
       // Upload audio to Cloudinary directly from base64
       const upload = await cloudinary.uploader.upload(audioData as string, {
-        resource_type: 'auto',
+        resource_type: 'video',
         folder: config.cloudinaryFolder || 'TTS_Audio',
         public_id: fileName.replace('.mp3', '')
       });
