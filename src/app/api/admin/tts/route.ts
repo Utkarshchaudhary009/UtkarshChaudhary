@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     // Process with available keys
     let successfulKey = null;
-    let Filepath: string | null | Buffer<ArrayBufferLike> = null;
+    let audioData: string | null | Buffer<ArrayBufferLike> = null;
     let errorLog: string[] = [];
     const startTime = Date.now();
 
@@ -73,11 +73,11 @@ export async function POST(req: Request) {
         const remaining = keyDoc.characterLimit - keyDoc.usedCharacters;
         if (remaining < charactersNeeded) continue;
 
-        // Generate audio using Gemini TTS
-        Filepath = await GeminiTTS(keyDoc.key, text, voiceId, "mp3", `TTS_${title ? title : "test"}.wav`);
+        // Generate audio using Gemini TTS with cloudinary option
+        audioData = await GeminiTTS(keyDoc.key, text, voiceId, "cloudinary", `TTS_${title ? title : "test"}.wav`);
         successfulKey = keyDoc;
 
-        if (Filepath) break; // Successfully generated audio
+        if (audioData) break; // Successfully generated audio
       } catch (error: any) {
         errorLog.push(`Key "${keyDoc.name}" failed: ${error.message}`);
         continue; // Try next key
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     }
 
     // Handle case where no key succeeded
-    if (!successfulKey || !Filepath) {
+    if (!successfulKey || !audioData) {
       await TTSRequests.create({
         text,
         voiceId,
@@ -107,13 +107,14 @@ export async function POST(req: Request) {
     try {
       // Generate unique filename for the audio
       const fileName = `TTS_${title ? title : "test"}.mp3`;
-      const upload = await cloudinary.uploader.upload(Filepath as string, {
+
+      // Upload audio to Cloudinary directly from base64
+      const upload = await cloudinary.uploader.upload(audioData as string, {
         resource_type: 'auto',
         folder: config.cloudinaryFolder || 'TTS_Audio',
         public_id: fileName.replace('.mp3', '')
       });
 
-      // Upload audio to Cloudinary
       const cloudinaryUrl = upload.secure_url;
       const durationMs = Date.now() - startTime;
 
