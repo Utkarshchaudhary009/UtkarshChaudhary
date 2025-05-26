@@ -376,7 +376,6 @@ export default function ConversationGenerator() {
                     <CardDescription>Add details for your conversation</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {/* Add Speaker Form */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="conversationStyle">Conversation Style</Label>
