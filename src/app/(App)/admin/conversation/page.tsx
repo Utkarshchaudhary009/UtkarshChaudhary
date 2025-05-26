@@ -462,8 +462,8 @@ export default function ConversationGenerator() {
                             <Separator />
                             <div className="grid gap-2">
                                 {speakers.map((speaker) => (
-                                    <>
-                                        <div key={speaker.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                    <div key={speaker.id} className="justify-between p-3 border rounded-lg">
+                                        <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <Badge variant="secondary">{speaker.name}</Badge>
                                                 <span className="text-sm text-muted-foreground">
@@ -478,7 +478,8 @@ export default function ConversationGenerator() {
                                         <Badge variant="secondary" className="text-muted-foreground">
                                             {speaker.description}
                                         </Badge>
-                                    </>
+                                    </div>
+
                                 ))}
                             </div>
                         </div>
