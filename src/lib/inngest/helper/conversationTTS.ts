@@ -102,7 +102,7 @@ export async function processConversationTTS(
             const upload = await cloudinary.uploader.upload(audioPath as string, {
                 resource_type: 'video',
                 folder,
-                public_id: fileId
+                public_id: fileId.replace('.wav', '')
             });
 
             const duration = Date.now() - startTime;
