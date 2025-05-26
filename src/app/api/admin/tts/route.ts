@@ -50,7 +50,6 @@ export async function POST(req: Request) {
 
     // Find available API keys with sufficient quota
     const keys = await ElevenLabsKeys.find({ enabled: true }).sort({
-      usedCharacters: 1,     // least-used first
       lastUsedAt: 1          // oldest used first
     });
 
