@@ -60,6 +60,7 @@
     "form": "^0.2.5",
     "formdata-node": "^6.0.3",
     "framer-motion": "^12.5.0",
+    "inngest": "^3.37.0",
     "input": "^1.0.1",
     "katex": "^0.16.21",
     "lucide-react": "^0.482.0",
