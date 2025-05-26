@@ -1,5 +1,4 @@
 import { GoogleGenAI } from '@google/genai';
-import fs from 'fs';
 import path from 'path';
 import wav from 'wav';
 // // To run this code you need to install the following dependencies:
@@ -226,10 +225,9 @@ export async function GeminiTTS(
 
     const audioBuffer = Buffer.from(base64Data, 'base64');
 
-    // Save to disk
-    const outputDir = path.join(process.cwd(), 'tmp');
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
-    const outputPath = path.join(outputDir, fileName.replace(/\.mp3$/, '.wav'));
+    // Save to disk using /tmp directory for serverless functions
+    const outputDir = '/tmp';
+    const outputPath = path.join(outputDir, fileName.replace(/\.wav$/, '.wav'));
 
     await saveWaveFile(outputPath, audioBuffer);
 

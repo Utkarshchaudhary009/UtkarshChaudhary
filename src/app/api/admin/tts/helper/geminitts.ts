@@ -1,6 +1,5 @@
 // app/api/tts/route.ts
 import { GoogleGenAI } from '@google/genai';
-import fs from 'fs';
 import path from 'path';
 import wav from 'wav';
 
@@ -80,9 +79,8 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
                 return `data:audio/wav;base64,${data}`;
             }
 
-            // Save to disk
-            const outputDir = path.join(process.cwd(), 'tmp');
-            if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
+            // Save to disk using /tmp directory for serverless functions
+            const outputDir = '/tmp';
             const outputPath = path.join(outputDir, fileName.replace(/\.wav$/, '.wav'));
             await saveWaveFile(outputPath, Buffer.from(data, 'base64'));
             console.log("Audio saved to:", outputPath);
