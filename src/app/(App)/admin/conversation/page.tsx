@@ -36,6 +36,7 @@ interface Speaker {
     id: string
     name: string
     voiceName: string
+    description: string
 }
 
 interface ConversationItem {
@@ -54,7 +55,7 @@ interface TTSResponse {
 
 interface ConversationResponse {
     success: boolean
-    speakers?: Array<{ name: string; voiceName: string }>
+    speakers?: Array<{ name: string; voiceName: string; description: string }>
     content?: Array<{ speakerName: string; text: string }>
     error?: string
 }
@@ -71,6 +72,7 @@ export default function ConversationGenerator() {
     const [error, setError] = useState<string | null>(null)
     const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
     const [response, setResponse] = useState<TTSResponse | null>(null)
+    const [newSpeakerDescription, setNewSpeakerDescription] = useState("")
 
     // AI conversation generation
     const [conversationPrompt, setConversationPrompt] = useState("")
@@ -146,6 +148,7 @@ export default function ConversationGenerator() {
                     id: `generated-${index}`,
                     name: speaker.name,
                     voiceName: speaker.voiceName,
+                    description: speaker.description
                 }))
                 setSpeakers(generatedSpeakers)
 
@@ -176,6 +179,7 @@ export default function ConversationGenerator() {
             id: Date.now().toString(),
             name: newSpeakerName.trim(),
             voiceName: newSpeakerVoice,
+            description: newSpeakerDescription.trim()
         }
 
         setSpeakers([...speakers, speaker])
@@ -230,6 +234,7 @@ export default function ConversationGenerator() {
                 speakers: speakers.map((s) => ({
                     name: s.name,
                     voiceName: s.voiceName,
+                    description: s.description
                 })),
                 content: conversation.map((c) => ({
                     speakerName: c.speakerName,
@@ -368,6 +373,15 @@ export default function ConversationGenerator() {
                                 placeholder="e.g., Alice"
                                 value={newSpeakerName}
                                 onChange={(e) => setNewSpeakerName(e.target.value)}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="speakerDescription">Speaker Description</Label>
+                            <Input
+                                id="speakerDescription"
+                                placeholder="e.g., Alice is a software developer"
+                                value={newSpeakerDescription}
+                                onChange={(e) => setNewSpeakerDescription(e.target.value)}
                             />
                         </div>
                         <div className="space-y-2">

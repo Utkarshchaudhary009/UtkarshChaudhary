@@ -20,7 +20,7 @@ export const conversationProcessor = inngest.createFunction(
     },
     { event: "conversation.tts.requested" },
     async ({ event, step }) => {
-        const { speakers, content, userId = "admin" } = event.data;
+        const { speakers, content,fileId, userId = "admin" } = event.data;
 
         // Log the start of Conversation TTS processing
         await step.run("log-conversation-tts-start", () => {
@@ -34,7 +34,7 @@ export const conversationProcessor = inngest.createFunction(
 
         // Process Conversation TTS with retries
         const result = await step.run("process-conversation-tts", async () => {
-            return await processConversationTTS(speakers, content);
+            return await processConversationTTS(speakers, content, fileId);
         });
 
         // If there was an error, handle it specifically

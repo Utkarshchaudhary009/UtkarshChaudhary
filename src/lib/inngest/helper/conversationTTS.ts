@@ -25,6 +25,7 @@ cloudinary.config({
 export async function processConversationTTS(
     speakers: { name: string, voiceName: string }[],
     content: { speakerName: string, text: string }[],
+    fileId: string
 ) {
     try {
         await connectDB();
@@ -69,7 +70,7 @@ export async function processConversationTTS(
             try {
                 // Map speakers to their voice names for GeminiTTS
                 const voiceMap = Object.fromEntries(speakers.map(s => [s.name, s.voiceName]));
-                const filename = `TTS_MultiSpeaker_${Date.now()}.wav`;
+                const filename = `TTS_MultiSpeaker_${fileId}}.wav`;
 
                 audioPath = await GeminiTTS(key.key, fullText, voiceMap, 'wav', filename);
                 successKey = key;
@@ -101,7 +102,7 @@ export async function processConversationTTS(
             const upload = await cloudinary.uploader.upload(audioPath as string, {
                 resource_type: 'video',
                 folder,
-                public_id: `MultiSpeaker_${Date.now()}`
+                public_id: `TTS_MultiSpeaker_${fileId}`
             });
 
             const duration = Date.now() - startTime;
