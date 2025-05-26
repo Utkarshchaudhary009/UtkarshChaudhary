@@ -36,7 +36,7 @@ export async function GeminiTTS(apiKey: string, text: string, voiceName: string 
     console.log("Voice Name:", voiceName);
     console.log("Type:", type);
     console.log("File Name:", fileName);
-    const Model = ["gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"]
+    const Model = ["gemini-2.5-flash-preview-tts"] //, "gemini-2.5-pro-preview-tts"
 
     for (const modelNum in Model) {
         console.log("Model:", Model[modelNum]);

@@ -76,7 +76,7 @@ const BlogForm = ({
   }, [isDirty]);
 
   useEffect(() => {
-    setTtsContent(`${initialData?.title}... ${watchContent}`)
+    setTtsContent(`${watchContent}`)
   }, [watchContent, initialData?.title])
 
   useEffect(() => {
