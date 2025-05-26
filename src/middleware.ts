@@ -1,7 +1,7 @@
 // Middleware for Clerk authentication
+import { createAdminClient } from "@/lib/supabase/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -15,6 +15,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/projects(.*)",
   "/api/ai/chatbot(.*)",
   "/api/users",
+  "/api/inngest(.*)",
 ]);
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
